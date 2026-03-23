@@ -18,29 +18,12 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <a href="#" className="flex items-center gap-2">
-            <svg
-              width="32"
-              height="32"
-              viewBox="0 0 32 32"
-              fill="none"
-              className="text-teal"
-            >
-              <path
-                d="M16 4C12 4 8 7 8 12c0 6 8 16 8 16s8-10 8-16c0-5-4-8-8-8z"
-                fill="currentColor"
-                opacity="0.2"
-              />
-              <path
-                d="M16 6c-2.5 0-5 1.5-5 5 0 1.5.5 3 1.5 4.5L16 21l3.5-5.5C20.5 14 21 12.5 21 11c0-3.5-2.5-5-5-5z"
-                fill="currentColor"
-              />
-              <path
-                d="M14 10.5c0-1.5 1-2.5 2-3 1 .5 2 1.5 2 3s-1 2.5-2 3.5c-1-1-2-2-2-3.5z"
-                fill="white"
-              />
-            </svg>
-            <span className="text-xl font-bold text-teal">KinCare360</span>
+          <a href="#" className="flex items-center">
+            <img
+              src="/kincare360-logo.svg"
+              alt="KinCare360 - Complete Care Coordination for Families"
+              className="h-12 w-auto"
+            />
           </a>
 
           {/* Desktop nav */}

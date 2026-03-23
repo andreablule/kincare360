@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" width="320" height="80">
+  <defs>
+    <linearGradient id="heartGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0EA5A0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#22C55E;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="heartGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d9488;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#16a34a;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Heart shape -->
+  <path d="M40 22 C40 14 34 10 28 10 C22 10 16 14 16 22 C16 30 40 52 40 52 C40 52 64 30 64 22 C64 14 58 10 52 10 C46 10 40 14 40 22Z"
+    fill="url(#heartGrad)" />
+
+  <!-- Family figures inside heart (white silhouettes) -->
+  <!-- Adult figure left -->
+  <circle cx="29" cy="24" r="4" fill="white" opacity="0.95"/>
+  <path d="M23 38 C23 32 26 30 29 30 C32 30 35 32 35 38" fill="white" opacity="0.95"/>
+
+  <!-- Child figure right -->
+  <circle cx="42" cy="27" r="3" fill="white" opacity="0.95"/>
+  <path d="M37 38 C37 33 39.5 31 42 31 C44.5 31 47 33 47 38" fill="white" opacity="0.95"/>
+
+  <!-- Holding hands line -->
+  <line x1="35" y1="34" x2="37" y2="34" stroke="white" stroke-width="1.5" opacity="0.9"/>
+
+  <!-- Brand name -->
+  <text x="76" y="38" font-family="'Segoe UI', Arial, sans-serif" font-size="24" font-weight="700" fill="#0d4f5c">Kin</text>
+  <text x="109" y="38" font-family="'Segoe UI', Arial, sans-serif" font-size="24" font-weight="700" fill="#0EA5A0">Care</text>
+  <text x="153" y="38" font-family="'Segoe UI', Arial, sans-serif" font-size="24" font-weight="700" fill="#22C55E">360</text>
+
+  <!-- Tagline -->
+  <text x="76" y="56" font-family="'Segoe UI', Arial, sans-serif" font-size="11" fill="#64748b" letter-spacing="0.3">Complete Care Coordination for Families</text>
+</svg>
