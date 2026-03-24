@@ -1,3 +1,41 @@
+"use client";
+
+import { useState } from "react";
+
+const ESSENTIAL_PRICE_ID = 'price_1TEOk9JlUr03cRD7ZGB5ssyc';
+const PREMIUM_PRICE_ID = 'price_1TEOk9JlUr03cRD7QI3I9PvL';
+
+function CheckoutButton({ priceId, className, children }: { priceId: string; className: string; children: React.ReactNode }) {
+  const [loading, setLoading] = useState(false);
+
+  async function handleClick() {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ priceId }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert('Something went wrong. Please try again or call (812) 515-5252.');
+        setLoading(false);
+      }
+    } catch {
+      alert('Network error. Please try again.');
+      setLoading(false);
+    }
+  }
+
+  return (
+    <button onClick={handleClick} disabled={loading} className={className}>
+      {loading ? 'Redirecting...' : children}
+    </button>
+  );
+}
+
 export default function Pricing() {
   return (
     <section id="pricing" className="bg-white py-16 md:py-24">
@@ -5,18 +43,25 @@ export default function Pricing() {
         <h2 className="text-3xl md:text-4xl font-bold text-navy text-center mb-4">
           Simple, transparent pricing
         </h2>
-        <p className="text-gray-500 text-center mb-16">
-          Cancel anytime. No contracts. First week free.
+        <p className="text-gray-500 text-center mb-4">
+          Cancel anytime. No contracts.
         </p>
+        {/* Free trial badge */}
+        <div className="flex justify-center mb-12">
+          <span className="bg-teal/10 text-teal text-sm font-semibold px-4 py-2 rounded-full">
+            🎉 7-Day Free Trial — No charge until day 8. Cancel anytime.
+          </span>
+        </div>
 
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {/* Essential */}
           <div className="animate-on-scroll rounded-2xl border-2 border-gray-200 bg-white p-8 flex flex-col">
             <h3 className="text-xl font-bold text-navy">Essential</h3>
             <div className="mt-4 flex items-baseline gap-1">
-              <span className="text-4xl font-extrabold text-navy">$149</span>
+              <span className="text-4xl font-extrabold text-navy">$299</span>
               <span className="text-gray-500">/month</span>
             </div>
+            <p className="text-sm text-teal font-medium mt-1">First 7 days free</p>
             <ul className="mt-8 space-y-4 flex-1">
               {[
                 "Daily wellness check-in calls",
@@ -33,12 +78,12 @@ export default function Pricing() {
                 </li>
               ))}
             </ul>
-            <a
-              href="#contact"
-              className="mt-8 block text-center bg-white border-2 border-teal text-teal px-6 py-3 rounded-full font-semibold hover:bg-teal hover:text-white transition-colors"
+            <CheckoutButton
+              priceId={ESSENTIAL_PRICE_ID}
+              className="mt-8 block w-full text-center bg-white border-2 border-teal text-teal px-6 py-3 rounded-full font-semibold hover:bg-teal hover:text-white transition-colors disabled:opacity-60"
             >
-              Subscribe Now
-            </a>
+              Start Free Trial →
+            </CheckoutButton>
           </div>
 
           {/* Premium */}
@@ -48,13 +93,12 @@ export default function Pricing() {
             </div>
             <h3 className="text-xl font-bold text-white">Premium</h3>
             <div className="mt-4 flex items-baseline gap-1">
-              <span className="text-4xl font-extrabold text-white">$249</span>
+              <span className="text-4xl font-extrabold text-white">$349</span>
               <span className="text-white/70">/month</span>
             </div>
-            <p className="mt-2 text-white/80 text-sm">
-              Everything in Essential, plus:
-            </p>
-            <ul className="mt-6 space-y-4 flex-1">
+            <p className="text-sm text-white/80 font-medium mt-1">First 7 days free</p>
+            <p className="mt-3 text-white/80 text-sm">Everything in Essential, plus:</p>
+            <ul className="mt-4 space-y-4 flex-1">
               {[
                 "Family dashboard access (all members)",
                 "Priority response (same-day callbacks)",
@@ -69,14 +113,20 @@ export default function Pricing() {
                 </li>
               ))}
             </ul>
-            <a
-              href="#contact"
-              className="mt-8 block text-center bg-white text-teal px-6 py-3 rounded-full font-semibold hover:bg-gray-50 transition-colors"
+            <CheckoutButton
+              priceId={PREMIUM_PRICE_ID}
+              className="mt-8 block w-full text-center bg-white text-teal px-6 py-3 rounded-full font-semibold hover:bg-gray-50 transition-colors disabled:opacity-60"
             >
-              Start Premium
-            </a>
+              Start Free Trial →
+            </CheckoutButton>
           </div>
         </div>
+
+        <p className="text-center text-sm text-gray-400 mt-8">
+          Need to manage or cancel your subscription?{' '}
+          <a href="mailto:hello@kincare360.com" className="text-teal hover:underline">Contact us</a> or call{' '}
+          <a href="tel:+18125155252" className="text-teal hover:underline">(812) 515-5252</a>
+        </p>
       </div>
     </section>
   );
