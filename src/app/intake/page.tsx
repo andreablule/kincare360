@@ -265,7 +265,7 @@ export default function IntakePage() {
                   <a href="/terms" target="_blank" className="text-teal underline font-medium">Terms of Service</a>
                   {' '}and{' '}
                   <a href="/privacy" target="_blank" className="text-teal underline font-medium">Privacy Policy</a>.
-                  I understand that my 7-day free trial will automatically convert to a paid subscription unless cancelled.
+                  I understand that: (1) KinCare360 is a <strong>non-medical care coordination service</strong> and does not provide medical advice, diagnosis, treatment, or emergency care; (2) I should call <strong>911</strong> in any emergency; (3) my 7-day free trial will automatically convert to a paid subscription unless cancelled; and (4) KinCare360 is not a substitute for professional medical care.
                 </span>
               </label>
 
