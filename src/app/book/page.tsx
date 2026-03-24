@@ -201,7 +201,16 @@ export default function BookPage() {
 
               {error && <p className="text-red-500 text-sm">{error}</p>}
 
-              <p className="text-xs text-gray-400">By booking you agree to receive a confirmation SMS. Reply STOP to opt out.</p>
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input type="checkbox" required className="w-4 h-4 mt-0.5 accent-teal flex-shrink-0" />
+                <span className="text-xs text-gray-500">
+                  I agree to KinCare360's{' '}
+                  <a href="/terms" target="_blank" className="text-teal underline">Terms of Service</a>
+                  {' '}and{' '}
+                  <a href="/privacy" target="_blank" className="text-teal underline">Privacy Policy</a>,
+                  and consent to receive SMS confirmations. Reply STOP to opt out.
+                </span>
+              </label>
 
               <div className="flex gap-3">
                 <button onClick={() => setStep(2)}

@@ -9,6 +9,7 @@ export default function IntakePage() {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [form, setForm] = useState({
     // Patient info
     patientName: "", dob: "", phone: "", email: "", address: "", city: "", state: "", zip: "",
@@ -251,12 +252,31 @@ export default function IntakePage() {
                 )}
               </div>
 
-              <p className="text-xs text-gray-400">By submitting, you agree to KinCare360's <a href="/terms" className="text-teal underline">Terms of Service</a> and <a href="/privacy" className="text-teal underline">Privacy Policy</a>. Our team will contact you within 24 hours.</p>
+              {/* Terms agreement checkbox */}
+              <label className="flex items-start gap-3 cursor-pointer p-4 rounded-xl border-2 border-gray-200 hover:border-teal transition-colors">
+                <input
+                  type="checkbox"
+                  checked={agreedToTerms}
+                  onChange={e => setAgreedToTerms(e.target.checked)}
+                  className="w-5 h-5 mt-0.5 accent-teal flex-shrink-0"
+                />
+                <span className="text-sm text-gray-600">
+                  I have read and agree to KinCare360's{' '}
+                  <a href="/terms" target="_blank" className="text-teal underline font-medium">Terms of Service</a>
+                  {' '}and{' '}
+                  <a href="/privacy" target="_blank" className="text-teal underline font-medium">Privacy Policy</a>.
+                  I understand that my 7-day free trial will automatically convert to a paid subscription unless cancelled.
+                </span>
+              </label>
+
+              {!agreedToTerms && (
+                <p className="text-xs text-amber-500">⚠️ Please agree to the terms before submitting.</p>
+              )}
 
               <div className="flex gap-3">
                 <button onClick={() => setStep(2)} className="flex-1 border border-gray-200 text-navy py-3 rounded-full font-semibold hover:bg-gray-50">← Back</button>
-                <button onClick={handleSubmit} disabled={submitting}
-                  className="flex-1 bg-teal text-white py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors disabled:opacity-60">
+                <button onClick={handleSubmit} disabled={submitting || !agreedToTerms}
+                  className="flex-1 bg-teal text-white py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors disabled:opacity-40">
                   {submitting ? 'Submitting...' : 'Submit & Start Care ✓'}
                 </button>
               </div>
