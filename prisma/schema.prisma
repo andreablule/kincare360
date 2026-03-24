@@ -32,8 +32,10 @@ model Patient {
   city              String?
   state             String?
   zip               String?
-  preferredCallTime String?
-  createdAt         DateTime         @default(now())
+  preferredCallTime    String?
+  medicationReminderTime String?
+  checkInDays          String?   // comma-separated: "Mon,Tue,Wed,Thu,Fri"
+  createdAt            DateTime  @default(now())
   doctors           Doctor[]
   pharmacies        Pharmacy[]
   medications       Medication[]

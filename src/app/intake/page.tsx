@@ -17,6 +17,9 @@ export default function IntakePage() {
     primaryDoctor: "", doctorPhone: "", doctorAddress: "",
     pharmacy: "", pharmacyPhone: "", pharmacyAddress: "",
     medications: "", conditions: "", allergies: "",
+    // Scheduling preferences
+    checkInTime: "09:00", medicationReminderTime: "08:00",
+    checkInDays: ["Mon", "Tue", "Wed", "Thu", "Fri"] as string[],
     // Family contact
     familyName: "", familyPhone: "", familyEmail: "", familyRelation: "",
     familyName2: "", familyPhone2: "", familyEmail2: "", familyRelation2: "",
@@ -122,6 +125,70 @@ export default function IntakePage() {
                   <input className={inputClass} value={form.zip} onChange={e => update('zip', e.target.value)} placeholder="19103" />
                 </div>
               </div>
+              {/* Scheduling Preferences */}
+              <div className="border border-teal/20 rounded-xl p-4 space-y-4 bg-teal/5 mt-2">
+                <h3 className="text-sm font-semibold text-navy">📞 Call Scheduling Preferences</h3>
+                
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className={labelClass}>Daily Wellness Check-In Time *</label>
+                    <select className={inputClass} value={form.checkInTime} onChange={e => update('checkInTime', e.target.value)}>
+                      {Array.from({length: 28}, (_, i) => {
+                        const hour = Math.floor(i / 2) + 7;
+                        const min = i % 2 === 0 ? "00" : "30";
+                        if (hour > 20) return null;
+                        const h12 = hour > 12 ? hour - 12 : hour;
+                        const ampm = hour >= 12 ? "PM" : "AM";
+                        const val = `${String(hour).padStart(2,'0')}:${min}`;
+                        return <option key={val} value={val}>{h12}:{min} {ampm}</option>;
+                      })}
+                    </select>
+                    <p className="text-xs text-gray-400 mt-1">Lily will call at this time daily</p>
+                  </div>
+                  <div>
+                    <label className={labelClass}>Medication Reminder Time *</label>
+                    <select className={inputClass} value={form.medicationReminderTime} onChange={e => update('medicationReminderTime', e.target.value)}>
+                      {Array.from({length: 28}, (_, i) => {
+                        const hour = Math.floor(i / 2) + 7;
+                        const min = i % 2 === 0 ? "00" : "30";
+                        if (hour > 20) return null;
+                        const h12 = hour > 12 ? hour - 12 : hour;
+                        const ampm = hour >= 12 ? "PM" : "AM";
+                        const val = `${String(hour).padStart(2,'0')}:${min}`;
+                        return <option key={val} value={val}>{h12}:{min} {ampm}</option>;
+                      })}
+                    </select>
+                    <p className="text-xs text-gray-400 mt-1">Reminder call for medications</p>
+                  </div>
+                </div>
+
+                <div>
+                  <label className={labelClass}>Preferred Days for Check-In Calls *</label>
+                  <div className="flex flex-wrap gap-2 mt-1">
+                    {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(day => (
+                      <button
+                        key={day}
+                        type="button"
+                        onClick={() => setForm(prev => ({
+                          ...prev,
+                          checkInDays: prev.checkInDays.includes(day)
+                            ? prev.checkInDays.filter(d => d !== day)
+                            : [...prev.checkInDays, day]
+                        }))}
+                        className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors ${
+                          form.checkInDays.includes(day)
+                            ? 'bg-teal text-white border-teal'
+                            : 'bg-white text-gray-500 border-gray-300 hover:border-teal'
+                        }`}
+                      >
+                        {day}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">Select all days you'd like to receive calls</p>
+                </div>
+              </div>
+
               <button onClick={() => { if (form.patientName && form.phone && form.address) setStep(1); }}
                 disabled={!form.patientName || !form.phone || !form.address}
                 className="w-full bg-teal text-white py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors disabled:opacity-40 mt-2">
@@ -239,6 +306,8 @@ export default function IntakePage() {
                 <div className="flex justify-between"><span className="text-gray-500">Date of Birth</span><span className="font-medium text-navy">{form.dob}</span></div>
                 <div className="flex justify-between"><span className="text-gray-500">Phone</span><span className="font-medium text-navy">{form.phone}</span></div>
                 <div className="flex justify-between"><span className="text-gray-500">Address</span><span className="font-medium text-navy">{form.address}, {form.city} {form.state}</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">Check-In Time</span><span className="font-medium text-navy">{form.checkInTime} ({form.checkInDays.join(', ')})</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">Medication Reminder</span><span className="font-medium text-navy">{form.medicationReminderTime}</span></div>
                 <div className="flex justify-between"><span className="text-gray-500">Doctor</span><span className="font-medium text-navy">{form.primaryDoctor || 'Not provided'}</span></div>
                 <div className="flex justify-between"><span className="text-gray-500">Pharmacy</span><span className="font-medium text-navy">{form.pharmacy || 'Not provided'}</span></div>
                 <div className="flex justify-between"><span className="text-gray-500">Family Contact</span><span className="font-medium text-navy">{form.familyName} ({form.familyRelation})</span></div>
