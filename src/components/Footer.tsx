@@ -49,7 +49,6 @@ export default function Footer() {
         </div>
 
         <div className="mt-10 pt-8 border-t border-white/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-sm text-white/40">
-          <p>Philadelphia, PA | Licensed &amp; Insured</p>
           <p>&copy; 2026 KinCare360. All rights reserved.</p>
         </div>
       </div>
