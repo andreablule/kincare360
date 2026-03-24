@@ -37,13 +37,13 @@ export default function Problem() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-navy">
-            You can&apos;t be there every day. We can.
+            You can&apos;t be there every day. Lily can.
           </h2>
           <p className="mt-6 text-lg text-gray-600 leading-relaxed">
             Caring for an aging parent from a distance is exhausting. You worry
             about missed medications, forgotten appointments, and whether
-            they&apos;re really okay. KinCare360 is your eyes and ears &mdash;
-            daily check-ins, professional coordination, and real-time family
+            they&apos;re really okay. KinCare360&apos;s AI concierge Lily is your eyes and ears &mdash;
+            daily check-ins, automated coordination, and real-time family
             updates so you always know Mom is safe.
           </p>
         </div>

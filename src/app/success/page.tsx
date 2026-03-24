@@ -12,7 +12,7 @@ export default function SuccessPage() {
           Your 7-day free trial has started. No charge until your trial ends.
         </p>
         <p className="text-gray-500 text-sm mb-8">
-          Our team will reach out within 24 hours to set up your care plan and get you started. Questions? Call or text <a href="tel:+18125155252" className="text-teal font-medium">(812) 515-5252</a>
+          Lily will call you within 24 hours to set up your care plan and get you started. Questions? Call or text <a href="tel:+18125155252" className="text-teal font-medium">(812) 515-5252</a>
         </p>
         <div className="space-y-3">
           <a href="/" className="block bg-teal text-white px-8 py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors">

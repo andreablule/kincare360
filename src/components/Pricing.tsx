@@ -147,8 +147,8 @@ export default function Pricing() {
                 "Priority same-day response",
                 "Full family dashboard (all members)",
                 "Monthly care summary report",
-                "Direct care coordinator line",
-                "Doctor & pharmacy liaison",
+                "Local service concierge (find any provider)",
+                "Doctor & pharmacy coordination",
               ].map((item) => (
                 <li key={item} className="flex items-start gap-2 text-sm">
                   <svg className="w-4 h-4 text-teal flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">

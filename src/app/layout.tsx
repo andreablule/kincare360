@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "KinCare360 -- Professional Care Coordination for Aging Parents | Philadelphia",
+  title: "KinCare360 -- AI-Powered Care Coordination for Aging Parents",
   description:
-    "Daily check-ins, medication reminders, and appointment coordination for your aging parent. CNA-backed care starting at $149/month. Philadelphia based.",
+    "Daily check-ins, medication reminders, and appointment coordination for your aging parent. AI-powered care coordination starting at $99/month. Available nationwide in 18 languages.",
   openGraph: {
-    title: "KinCare360 -- Professional Care Coordination for Aging Parents",
+    title: "KinCare360 -- AI-Powered Care Coordination for Aging Parents",
     description:
-      "Daily check-ins, medication reminders, and appointment coordination for your aging parent. CNA-backed care. Philadelphia based.",
+      "Daily check-ins, medication reminders, and appointment coordination for your aging parent. AI-powered care coordination. Available nationwide in 18 languages.",
     url: "https://kincare360.com",
     siteName: "KinCare360",
     type: "website",
@@ -40,3 +40,4 @@ export default function RootLayout({
     </html>
   );
 }
+

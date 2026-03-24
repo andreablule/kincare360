@@ -8,9 +8,9 @@ export default function Hero() {
               We watch over Mom &mdash; so you don&apos;t have to worry.
             </h1>
             <p className="mt-6 text-lg text-gray-600 leading-relaxed max-w-lg">
-              KinCare360 provides daily check-ins, medication reminders, and
-              appointment coordination for your aging parent. Professional
-              oversight. Peace of mind. Starting at $99/month.
+              KinCare360&apos;s AI concierge Lily provides daily check-ins, medication reminders, and
+              appointment coordination for your aging parent — 24/7, in 18 languages.
+              Automated care. Total peace of mind. Starting at $99/month.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
               <a

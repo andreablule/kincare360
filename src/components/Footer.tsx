@@ -20,7 +20,7 @@ export default function Footer() {
               />
             </a>
             <p className="text-white/60 text-sm max-w-xs mb-4">
-              Professional care coordination for aging parents.
+              AI-powered care coordination for aging parents.
             </p>
             {/* Clickable phone + email */}
             <div className="flex flex-col gap-2">

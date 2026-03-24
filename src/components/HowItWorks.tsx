@@ -1,26 +1,26 @@
 const steps = [
   {
     number: "1",
-    title: "Free Consultation",
+    title: "Call or Sign Up",
     description:
-      "We learn about your parent's needs, schedule, and health situation.",
+      "Call Lily at (812) 515-5252 or visit kincare360.com to start your 7-day free trial.",
   },
   {
     number: "2",
-    title: "Personalized Care Plan",
+    title: "Set Up Your Care Plan",
     description:
-      "We build a daily oversight schedule tailored to your family.",
+      "Choose your plan, fill out the intake form, pick your call times, and select your language.",
   },
   {
     number: "3",
-    title: "Daily Oversight Begins",
-    description: "Our coordinators check in every day. You get updates.",
+    title: "Lily Starts Caring",
+    description: "Lily calls your loved one daily — checking in, reminding medications, coordinating appointments.",
   },
   {
     number: "4",
     title: "Family Stays Informed",
     description:
-      "Regular reports and a family dashboard keep everyone aligned.",
+      "Log into your dashboard anytime to see daily summaries, health updates, and care notes.",
   },
 ];
 
@@ -29,13 +29,12 @@ export default function HowItWorks() {
     <section id="how-it-works" className="bg-white py-16 md:py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-3xl md:text-4xl font-bold text-navy text-center mb-16">
-          Simple steps to care
+          How it works
         </h2>
 
         <div className="grid md:grid-cols-4 gap-8">
           {steps.map((step, i) => (
             <div key={step.number} className="animate-on-scroll text-center relative">
-              {/* Connector line (desktop only) */}
               {i < steps.length - 1 && (
                 <div className="hidden md:block absolute top-8 left-[calc(50%+2rem)] right-[calc(-50%+2rem)] h-0.5 bg-teal/20" />
               )}

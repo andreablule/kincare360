@@ -31,7 +31,7 @@ export default function TermsPage() {
             <li>Communication and reporting to family members</li>
             <li>Administrative support for healthcare navigation</li>
           </ul>
-          <p className="mt-3">KinCare360 staff are <strong>not licensed medical professionals</strong> and do not provide clinical assessments, medical diagnoses, or healthcare treatment of any kind.</p>
+          <p className="mt-3">KinCare360 is an <strong>AI-powered coordination service</strong> and does not provide clinical assessments, medical diagnoses, or healthcare treatment of any kind.</p>
         </div>
 
         <div>
@@ -57,7 +57,7 @@ export default function TermsPage() {
         <div>
           <h2 className="text-xl font-semibold text-navy mb-2">5. HIPAA & Privacy of Health Information</h2>
           <p>KinCare360 is a care coordination service and functions as a <strong>Business Associate</strong> where applicable under HIPAA. We handle personal health information with care and implement reasonable administrative, technical, and physical safeguards.</p>
-          <p className="mt-2">However, KinCare360 is <strong>not a Covered Entity</strong> under HIPAA and does not guarantee full HIPAA compliance for all communications. By using our services, you consent to sharing relevant health information with KinCare360 staff solely for coordination purposes.</p>
+          <p className="mt-2">However, KinCare360 is <strong>not a Covered Entity</strong> under HIPAA and does not guarantee full HIPAA compliance for all communications. By using our services, you consent to sharing relevant health information with KinCare360 solely for coordination purposes.</p>
           <p className="mt-2">We will never sell your health information. Information shared is used only to coordinate the care services you have requested.</p>
         </div>
 
@@ -114,3 +114,4 @@ export default function TermsPage() {
     </main>
   );
 }
+
