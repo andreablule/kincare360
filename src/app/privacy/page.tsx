@@ -7,6 +7,7 @@ export default function PrivacyPage() {
   return (
     <main className="max-w-3xl mx-auto px-4 py-16 text-navy">
       <h1 className="text-3xl font-bold mb-2 text-teal">Privacy Policy</h1>
+      <p className="text-sm text-gray-500 mb-1">Son Healthcare Services LLC, operating as KinCare360</p>
       <p className="text-sm text-gray-400 mb-10">Effective Date: March 2026</p>
 
       <section className="space-y-8 text-gray-700 leading-relaxed">
