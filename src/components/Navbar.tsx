@@ -20,7 +20,7 @@ export default function Navbar() {
           {/* Logo */}
           <a href="#" className="flex items-center">
             <img
-              src="/kincare360-logo.svg"
+              src="/kincare360-logo.png"
               alt="KinCare360 - Complete Care Coordination for Families"
               className="h-12 w-auto"
             />
