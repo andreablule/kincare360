@@ -67,13 +67,17 @@ model Pharmacy {
 }
 
 model Medication {
-  id           String  @id @default(cuid())
-  patientId    String
-  patient      Patient @relation(fields: [patientId], references: [id])
-  name         String
-  dosage       String?
-  frequency    String?
-  instructions String?
+  id                String   @id @default(cuid())
+  patientId         String
+  patient           Patient  @relation(fields: [patientId], references: [id])
+  name              String
+  dosage            String?
+  frequency         String?
+  instructions      String?
+  lastRefillDate    DateTime?
+  refillIntervalDays Int?
+  pharmacyName      String?
+  pharmacyPhone     String?
 }
 
 model Condition {
