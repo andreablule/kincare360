@@ -18,6 +18,9 @@ export default function ProfilePage() {
     state: "",
     zip: "",
     preferredCallTime: "",
+    medicationReminderTime: "",
+    checkInDays: "",
+    preferredLanguage: "English",
   });
 
   useEffect(() => {
@@ -35,6 +38,9 @@ export default function ProfilePage() {
             state: data.patient.state || "",
             zip: data.patient.zip || "",
             preferredCallTime: data.patient.preferredCallTime || "",
+            medicationReminderTime: data.patient.medicationReminderTime || "",
+            checkInDays: data.patient.checkInDays || "",
+            preferredLanguage: data.patient.preferredLanguage || "English",
           });
         }
         setLoading(false);
@@ -110,10 +116,57 @@ export default function ProfilePage() {
           </div>
         </div>
 
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-navy mb-1">Preferred Call Time</label>
+            <input type="time" className={inputClass} value={form.preferredCallTime} onChange={(e) => setForm({ ...form, preferredCallTime: e.target.value })} />
+            <p className="text-xs text-gray-400 mt-1">When should Lily call for the daily check-in?</p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-navy mb-1">Medication Reminder Time</label>
+            <input type="time" className={inputClass} value={form.medicationReminderTime} onChange={(e) => setForm({ ...form, medicationReminderTime: e.target.value })} />
+            <p className="text-xs text-gray-400 mt-1">When should Lily remind about medications?</p>
+          </div>
+        </div>
+
         <div>
-          <label className="block text-sm font-medium text-navy mb-1">Preferred Call Time</label>
-          <input type="time" className={inputClass} value={form.preferredCallTime} onChange={(e) => setForm({ ...form, preferredCallTime: e.target.value })} />
-          <p className="text-xs text-gray-400 mt-1">When should Lily call for the daily check-in?</p>
+          <label className="block text-sm font-medium text-navy mb-1">Check-In Days</label>
+          <div className="flex flex-wrap gap-2">
+            {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => {
+              const days = form.checkInDays ? form.checkInDays.split(",") : [];
+              const active = days.includes(day);
+              return (
+                <button
+                  key={day}
+                  type="button"
+                  onClick={() => {
+                    const updated = active ? days.filter((d) => d !== day) : [...days, day];
+                    setForm({ ...form, checkInDays: updated.join(",") });
+                  }}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
+                    active ? "bg-teal text-white border-teal" : "bg-white text-gray-600 border-gray-300 hover:border-teal"
+                  }`}
+                >
+                  {day}
+                </button>
+              );
+            })}
+          </div>
+          <p className="text-xs text-gray-400 mt-1">Which days should Lily check in?</p>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-navy mb-1">Preferred Language</label>
+          <select
+            className={inputClass}
+            value={form.preferredLanguage}
+            onChange={(e) => setForm({ ...form, preferredLanguage: e.target.value })}
+          >
+            {["English", "Spanish", "Albanian", "Ukrainian", "Romanian", "Russian", "Arabic", "Chinese (Mandarin)", "French", "German", "Greek", "Haitian Creole", "Hindi", "Italian", "Korean", "Polish", "Portuguese", "Tagalog", "Vietnamese"].map((lang) => (
+              <option key={lang} value={lang}>{lang}</option>
+            ))}
+          </select>
+          <p className="text-xs text-gray-400 mt-1">Lily will speak to your loved one in this language.</p>
         </div>
 
         <button type="submit" disabled={saving} className="bg-teal text-white px-6 py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors disabled:opacity-40">
