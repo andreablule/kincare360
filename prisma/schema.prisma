@@ -1,0 +1,116 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String    @id @default(cuid())
+  email              String    @unique
+  password           String
+  name               String
+  role               String    @default("CLIENT") // CLIENT | ADMIN
+  stripeCustomerId   String?
+  subscriptionStatus String?
+  plan               String?   // BASIC | STANDARD | PREMIUM
+  createdAt          DateTime  @default(now())
+  patients           Patient[]
+}
+
+model Patient {
+  id                String           @id @default(cuid())
+  userId            String
+  user              User             @relation(fields: [userId], references: [id])
+  firstName         String
+  lastName          String
+  dob               String?
+  phone             String?
+  address           String?
+  city              String?
+  state             String?
+  zip               String?
+  preferredCallTime String?
+  createdAt         DateTime         @default(now())
+  doctors           Doctor[]
+  pharmacies        Pharmacy[]
+  medications       Medication[]
+  conditions        Condition[]
+  familyMembers     FamilyMember[]
+  serviceRequests   ServiceRequest[]
+  callLogs          CallLog[]
+}
+
+model Doctor {
+  id        String  @id @default(cuid())
+  patientId String
+  patient   Patient @relation(fields: [patientId], references: [id])
+  name      String
+  specialty String?
+  phone     String?
+  address   String?
+  notes     String?
+}
+
+model Pharmacy {
+  id        String  @id @default(cuid())
+  patientId String
+  patient   Patient @relation(fields: [patientId], references: [id])
+  name      String
+  phone     String?
+  address   String?
+}
+
+model Medication {
+  id           String  @id @default(cuid())
+  patientId    String
+  patient      Patient @relation(fields: [patientId], references: [id])
+  name         String
+  dosage       String?
+  frequency    String?
+  instructions String?
+}
+
+model Condition {
+  id        String  @id @default(cuid())
+  patientId String
+  patient   Patient @relation(fields: [patientId], references: [id])
+  name      String
+  notes     String?
+}
+
+model FamilyMember {
+  id            String  @id @default(cuid())
+  patientId     String
+  patient       Patient @relation(fields: [patientId], references: [id])
+  name          String
+  relationship  String?
+  phone         String?
+  email         String?
+  notifyUpdates Boolean @default(true)
+}
+
+model ServiceRequest {
+  id          String   @id @default(cuid())
+  patientId   String
+  patient     Patient  @relation(fields: [patientId], references: [id])
+  type        String   // APPOINTMENT | FOLLOWUP | MEDICATION_CHANGE | OTHER
+  description String?
+  status      String   @default("PENDING") // PENDING | IN_PROGRESS | DONE
+  createdAt   DateTime @default(now())
+}
+
+model CallLog {
+  id              String   @id @default(cuid())
+  patientId       String
+  patient         Patient  @relation(fields: [patientId], references: [id])
+  callDate        DateTime
+  summary         String?
+  mood            String?
+  medicationsTaken Boolean @default(false)
+  concerns        String?
+  urgent          Boolean  @default(false)
+  createdAt       DateTime @default(now())
+}

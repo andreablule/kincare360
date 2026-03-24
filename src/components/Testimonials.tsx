@@ -3,13 +3,13 @@ const testimonials = [
     quote:
       "My mother is 81 and lives alone. KinCare360 checks in on her every single day. I used to worry constantly -- now I don't. Worth every penny.",
     name: "Robert M.",
-    location: "Philadelphia",
+    location: "Austin, TX",
   },
   {
     quote:
       "They caught a medication issue we didn't even know about. The daily check-ins are thorough and the team genuinely cares.",
     name: "Maria T.",
-    location: "South Philly",
+    location: "Miami, FL",
   },
 ];
 
