@@ -32,7 +32,7 @@ export default function Hero() {
           <div className="hidden md:block animate-fade-in">
             <div className="relative w-full max-w-md mx-auto">
               <img
-                src="https://images.pexels.com/photos/7551610/pexels-photo-7551610.jpeg?auto=compress&cs=tinysrgb&w=800&q=85"
+                src="/hero-family.png"
                 alt="Adult family member caring for elderly parent at home"
                 className="w-full h-[480px] object-cover rounded-3xl shadow-2xl"
               />
