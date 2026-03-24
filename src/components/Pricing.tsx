@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 
-const ESSENTIAL_PRICE_ID = 'price_1TEOk9JlUr03cRD7ZGB5ssyc';
-const PREMIUM_PRICE_ID = 'price_1TEOk9JlUr03cRD7QI3I9PvL';
+const ESSENTIAL_PRICE_ID = 'price_1TEP5dJlUr03cRD7zOIvgb67'; // test mode
+const PREMIUM_PRICE_ID = 'price_1TEP5eJlUr03cRD7ZdYG15oV'; // test mode
 
 function CheckoutButton({ priceId, className, children }: { priceId: string; className: string; children: React.ReactNode }) {
   const [loading, setLoading] = useState(false);
