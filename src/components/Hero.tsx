@@ -28,46 +28,31 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Hero illustration placeholder */}
-          <div className="hidden md:flex items-center justify-center animate-fade-in">
-            <div className="w-full max-w-md aspect-square rounded-3xl bg-gradient-to-br from-teal to-navy flex items-center justify-center">
-              <svg
-                width="200"
-                height="200"
-                viewBox="0 0 200 200"
-                fill="none"
-                className="opacity-80"
-              >
-                <circle cx="100" cy="70" r="30" fill="white" opacity="0.3" />
-                <circle cx="70" cy="130" r="25" fill="white" opacity="0.2" />
-                <circle cx="130" cy="130" r="25" fill="white" opacity="0.2" />
-                <path
-                  d="M100 50c-8 0-15 5-15 13 0 10 15 22 15 22s15-12 15-22c0-8-7-13-15-13z"
-                  fill="white"
-                  opacity="0.6"
-                />
-                <circle cx="100" cy="70" r="8" fill="white" opacity="0.4" />
-                <rect
-                  x="60"
-                  y="115"
-                  width="80"
-                  height="50"
-                  rx="10"
-                  fill="white"
-                  opacity="0.15"
-                />
-                <text
-                  x="100"
-                  y="145"
-                  textAnchor="middle"
-                  fill="white"
-                  fontSize="14"
-                  fontWeight="bold"
-                  opacity="0.5"
-                >
-                  Family Care
-                </text>
-              </svg>
+          {/* Hero image */}
+          <div className="hidden md:block animate-fade-in">
+            <div className="relative w-full max-w-md mx-auto">
+              <img
+                src="https://images.unsplash.com/photo-1581579438747-1dc8d17bbce4?w=800&q=85&auto=format&fit=crop"
+                alt="Caring professional with elderly patient"
+                className="w-full h-[480px] object-cover rounded-3xl shadow-2xl"
+              />
+              {/* Floating stat card */}
+              <div className="absolute -bottom-5 -left-5 bg-white rounded-2xl shadow-lg px-5 py-4 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-teal/10 flex items-center justify-center">
+                  <svg className="w-5 h-5 text-teal" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-400">Families served</p>
+                  <p className="text-lg font-bold text-navy">500+</p>
+                </div>
+              </div>
+              {/* Floating badge top right */}
+              <div className="absolute -top-4 -right-4 bg-teal text-white rounded-2xl shadow-lg px-4 py-3 text-center">
+                <p className="text-xs font-medium opacity-80">Starting at</p>
+                <p className="text-xl font-extrabold">$299<span className="text-sm font-normal">/mo</span></p>
+              </div>
             </div>
           </div>
         </div>
