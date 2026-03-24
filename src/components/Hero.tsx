@@ -9,7 +9,7 @@ export default function Hero() {
             </h1>
             <p className="mt-6 text-lg text-gray-600 leading-relaxed max-w-lg">
               KinCare360&apos;s AI concierge Lily provides daily check-ins, medication reminders, and
-              appointment coordination for your aging parent — 24/7, in 18 languages.
+              appointment coordination for your aging parent — 24/7, every single day.
               Automated care. Total peace of mind. Starting at $99/month.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">

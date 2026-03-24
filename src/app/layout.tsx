@@ -4,11 +4,11 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "KinCare360 -- AI-Powered Care Coordination for Aging Parents",
   description:
-    "Daily check-ins, medication reminders, and appointment coordination for your aging parent. AI-powered care coordination starting at $99/month. Available nationwide in 18 languages.",
+    "Daily check-ins, medication reminders, and appointment coordination for your aging parent. AI-powered care coordination starting at $99/month. Available nationwide.",
   openGraph: {
     title: "KinCare360 -- AI-Powered Care Coordination for Aging Parents",
     description:
-      "Daily check-ins, medication reminders, and appointment coordination for your aging parent. AI-powered care coordination. Available nationwide in 18 languages.",
+      "Daily check-ins, medication reminders, and appointment coordination for your aging parent. AI-powered care coordination. Available nationwide.",
     url: "https://kincare360.com",
     siteName: "KinCare360",
     type: "website",
@@ -40,4 +40,5 @@ export default function RootLayout({
     </html>
   );
 }
+
 
