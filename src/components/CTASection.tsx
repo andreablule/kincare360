@@ -6,7 +6,7 @@ export default function CTASection() {
           Start protecting your parent today.
         </h2>
         <p className="text-white/70 text-lg mb-8">
-          First week free. No contracts. Cancel anytime.
+          7-day free trial. No contracts. Cancel anytime.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <a
