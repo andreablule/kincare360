@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 
-const ESSENTIAL_PRICE_ID = 'price_1TEOk9JlUr03cRD7ZGB5ssyc';
-const PREMIUM_PRICE_ID = 'price_1TEOk9JlUr03cRD7QI3I9PvL';
+const STARTER_PRICE_ID = 'price_1TEPOcJlUr03cRD7vm4xB09U';
+const ESSENTIAL_PRICE_ID = 'price_1TEPOcJlUr03cRD7ypzyYYif';
+const PREMIUM_PRICE_ID = 'price_1TEPOcJlUr03cRD7tVv6DDjY';
 
 function CheckoutButton({ priceId, className, children }: { priceId: string; className: string; children: React.ReactNode }) {
   const [loading, setLoading] = useState(false);
@@ -46,32 +47,74 @@ export default function Pricing() {
         <p className="text-gray-500 text-center mb-4">
           Cancel anytime. No contracts.
         </p>
-        {/* Free trial badge */}
         <div className="flex justify-center mb-12">
           <span className="bg-teal/10 text-teal text-sm font-semibold px-4 py-2 rounded-full">
-            🎉 7-Day Free Trial — No charge until day 8. Cancel anytime.
+            🎉 7-Day Free Trial on all plans — No charge until day 8
           </span>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {/* Essential */}
-          <div className="animate-on-scroll rounded-2xl border-2 border-gray-200 bg-white p-8 flex flex-col">
-            <h3 className="text-xl font-bold text-navy">Essential</h3>
-            <div className="mt-4 flex items-baseline gap-1">
-              <span className="text-4xl font-extrabold text-navy">$299</span>
+        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+
+          {/* Starter */}
+          <div className="animate-on-scroll rounded-2xl border-2 border-gray-200 bg-white p-7 flex flex-col">
+            <div className="mb-4">
+              <span className="text-xs font-bold uppercase tracking-wide text-teal bg-teal/10 px-3 py-1 rounded-full">Launch Special</span>
+            </div>
+            <h3 className="text-xl font-bold text-navy">Starter</h3>
+            <div className="mt-3 flex items-baseline gap-1">
+              <span className="text-4xl font-extrabold text-navy">$99</span>
               <span className="text-gray-500">/month</span>
             </div>
             <p className="text-sm text-teal font-medium mt-1">First 7 days free</p>
-            <ul className="mt-8 space-y-4 flex-1">
+            <p className="text-xs text-gray-400 mt-1">Best for families just getting started</p>
+            <ul className="mt-6 space-y-3 flex-1">
               {[
                 "Daily wellness check-in calls",
-                "Medication reminder system",
-                "Appointment scheduling & coordination",
-                "Weekly family report",
+                "Medication reminders",
+                "Weekly family update",
                 "Emergency escalation protocol",
               ].map((item) => (
-                <li key={item} className="flex items-start gap-3">
-                  <svg className="w-5 h-5 text-teal flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <li key={item} className="flex items-start gap-2 text-sm">
+                  <svg className="w-4 h-4 text-teal flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-gray-600">{item}</span>
+                </li>
+              ))}
+            </ul>
+            <CheckoutButton
+              priceId={STARTER_PRICE_ID}
+              className="mt-7 block w-full text-center bg-white border-2 border-teal text-teal px-6 py-3 rounded-full font-semibold hover:bg-teal hover:text-white transition-colors disabled:opacity-60 text-sm"
+            >
+              Start Free Trial →
+            </CheckoutButton>
+          </div>
+
+          {/* Essential */}
+          <div className="animate-on-scroll rounded-2xl border-2 border-teal bg-white p-7 flex flex-col relative shadow-lg">
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-teal text-white text-xs font-bold px-4 py-1.5 rounded-full whitespace-nowrap">
+              Most Popular
+            </div>
+            <div className="mb-4 mt-2">
+              <span className="text-xs font-bold uppercase tracking-wide text-navy bg-navy/10 px-3 py-1 rounded-full">Best Value</span>
+            </div>
+            <h3 className="text-xl font-bold text-navy">Essential</h3>
+            <div className="mt-3 flex items-baseline gap-1">
+              <span className="text-4xl font-extrabold text-navy">$199</span>
+              <span className="text-gray-500">/month</span>
+            </div>
+            <p className="text-sm text-teal font-medium mt-1">First 7 days free</p>
+            <p className="text-xs text-gray-400 mt-1">Full care coordination for your family</p>
+            <ul className="mt-6 space-y-3 flex-1">
+              {[
+                "Everything in Starter",
+                "Appointment scheduling & coordination",
+                "Prescription refill reminders",
+                "Family reporting dashboard",
+                "Bi-weekly family check-in call",
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-2 text-sm">
+                  <svg className="w-4 h-4 text-teal flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                   <span className="text-gray-600">{item}</span>
@@ -80,42 +123,44 @@ export default function Pricing() {
             </ul>
             <CheckoutButton
               priceId={ESSENTIAL_PRICE_ID}
-              className="mt-8 block w-full text-center bg-white border-2 border-teal text-teal px-6 py-3 rounded-full font-semibold hover:bg-teal hover:text-white transition-colors disabled:opacity-60"
+              className="mt-7 block w-full text-center bg-teal text-white px-6 py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors disabled:opacity-60 text-sm"
             >
               Start Free Trial →
             </CheckoutButton>
           </div>
 
           {/* Premium */}
-          <div className="animate-on-scroll rounded-2xl bg-teal p-8 flex flex-col relative overflow-hidden">
-            <div className="absolute top-4 right-4 bg-white text-teal text-xs font-bold px-3 py-1 rounded-full">
-              Most Popular
+          <div className="animate-on-scroll rounded-2xl border-2 border-gray-200 bg-navy p-7 flex flex-col">
+            <div className="mb-4">
+              <span className="text-xs font-bold uppercase tracking-wide text-white/60 bg-white/10 px-3 py-1 rounded-full">Full Service</span>
             </div>
             <h3 className="text-xl font-bold text-white">Premium</h3>
-            <div className="mt-4 flex items-baseline gap-1">
-              <span className="text-4xl font-extrabold text-white">$349</span>
-              <span className="text-white/70">/month</span>
+            <div className="mt-3 flex items-baseline gap-1">
+              <span className="text-4xl font-extrabold text-white">$299</span>
+              <span className="text-white/60">/month</span>
             </div>
-            <p className="text-sm text-white/80 font-medium mt-1">First 7 days free</p>
-            <p className="mt-3 text-white/80 text-sm">Everything in Essential, plus:</p>
-            <ul className="mt-4 space-y-4 flex-1">
+            <p className="text-sm text-teal font-medium mt-1">First 7 days free</p>
+            <p className="text-xs text-white/50 mt-1">Priority care for complex needs</p>
+            <ul className="mt-6 space-y-3 flex-1">
               {[
-                "Family dashboard access (all members)",
-                "Priority response (same-day callbacks)",
+                "Everything in Essential",
+                "Priority same-day response",
+                "Full family dashboard (all members)",
                 "Monthly care summary report",
-                "Direct coordinator line",
+                "Direct care coordinator line",
+                "Doctor & pharmacy liaison",
               ].map((item) => (
-                <li key={item} className="flex items-start gap-3">
-                  <svg className="w-5 h-5 text-white flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <li key={item} className="flex items-start gap-2 text-sm">
+                  <svg className="w-4 h-4 text-teal flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
-                  <span className="text-white/90">{item}</span>
+                  <span className="text-white/80">{item}</span>
                 </li>
               ))}
             </ul>
             <CheckoutButton
               priceId={PREMIUM_PRICE_ID}
-              className="mt-8 block w-full text-center bg-white text-teal px-6 py-3 rounded-full font-semibold hover:bg-gray-50 transition-colors disabled:opacity-60"
+              className="mt-7 block w-full text-center bg-teal text-white px-6 py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors disabled:opacity-60 text-sm"
             >
               Start Free Trial →
             </CheckoutButton>
