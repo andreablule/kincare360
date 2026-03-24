@@ -18,69 +18,84 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // Use Google Places API (New) with Text Search
     const googleApiKey = process.env.GOOGLE_PLACES_API_KEY;
     
     if (googleApiKey) {
-      // Use Google Places Text Search API
-      const query = encodeURIComponent(`${serviceType} near ${location}`);
-      const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${query}&key=${googleApiKey}`;
-      
-      const res = await fetch(url);
-      const data = await res.json();
-      
-      if (data.results && data.results.length > 0) {
-        const providers = data.results.slice(0, 5).map((place: any) => ({
-          name: place.name,
-          address: place.formatted_address,
-          rating: place.rating || 'No rating',
-          open: place.opening_hours?.open_now ? 'Open now' : 'Hours unknown',
-        }));
-
-        // For each provider, try to get phone number via Place Details
-        const detailedProviders = await Promise.all(
-          providers.map(async (provider: any, i: number) => {
-            try {
-              const placeId = data.results[i].place_id;
-              const detailUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=formatted_phone_number,name,formatted_address,rating,opening_hours&key=${googleApiKey}`;
-              const detailRes = await fetch(detailUrl);
-              const detailData = await detailRes.json();
-              return {
-                ...provider,
-                phone: detailData.result?.formatted_phone_number || 'No phone listed',
-              };
-            } catch {
-              return { ...provider, phone: 'No phone listed' };
-            }
-          })
-        );
-
-        const providerList = detailedProviders.map((p: any, i: number) => 
-          `${i + 1}. ${p.name} - ${p.address} - Phone: ${p.phone} - Rating: ${p.rating}/5 - ${p.open}`
-        ).join('\n');
-
-        return NextResponse.json({
-          results: [{
-            result: `I found ${detailedProviders.length} ${serviceType} providers near ${location}:\n\n${providerList}\n\nWould you like me to call any of these for you and connect you?`,
-            providers: detailedProviders,
-          }]
+      try {
+        const searchResponse = await fetch('https://places.googleapis.com/v1/places:searchText', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Goog-Api-Key': googleApiKey,
+            'X-Goog-FieldMask': 'places.displayName,places.formattedAddress,places.nationalPhoneNumber,places.rating,places.currentOpeningHours',
+          },
+          body: JSON.stringify({
+            textQuery: `${serviceType} near ${location}`,
+          }),
         });
+
+        if (searchResponse.ok) {
+          const data = await searchResponse.json();
+          
+          if (data.places && data.places.length > 0) {
+            const providers = data.places.slice(0, 5).map((place: any) => ({
+              name: place.displayName?.text || 'Unknown',
+              address: place.formattedAddress || 'Address not available',
+              phone: place.nationalPhoneNumber || 'No phone listed',
+              rating: place.rating || 'No rating',
+              open: place.currentOpeningHours?.openNow ? 'Open now' : 'Hours unknown',
+            }));
+
+            const providerList = providers.map((p: any, i: number) => 
+              `${i + 1}. ${p.name} at ${p.address}. Phone: ${p.phone}. Rating: ${p.rating} out of 5. ${p.open}.`
+            ).join('\n');
+
+            return NextResponse.json({
+              results: [{
+                result: `I found ${providers.length} ${serviceType} providers near ${location}:\n\n${providerList}\n\nWould you like me to call any of these for you and connect you?`,
+                providers: providers,
+              }]
+            });
+          }
+        }
+      } catch (e) {
+        console.error('Google Places error:', e);
       }
     }
 
-    // Fallback: use a web search approach
-    const searchQuery = `${serviceType} near ${location}`;
-    
+    // Fallback: use SerpAPI-style web scrape or direct suggestion
+    // Try a simple web search approach using DuckDuckGo
+    try {
+      const ddgUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(serviceType + ' near ' + location)}&format=json&no_html=1`;
+      const ddgRes = await fetch(ddgUrl);
+      const ddgData = await ddgRes.json();
+      
+      if (ddgData.RelatedTopics && ddgData.RelatedTopics.length > 0) {
+        const results = ddgData.RelatedTopics.slice(0, 3).map((t: any) => t.Text || t.FirstURL).filter(Boolean);
+        if (results.length > 0) {
+          return NextResponse.json({
+            results: [{
+              result: `I found some ${serviceType} options near ${location}. Here's what I found:\n${results.join('\n')}\n\nWould you like me to look for more specific options or help you with something else?`,
+            }]
+          });
+        }
+      }
+    } catch (e) {
+      // DuckDuckGo fallback failed
+    }
+
+    // Final fallback: give helpful guidance
     return NextResponse.json({
       results: [{
-        result: `I searched for ${serviceType} near ${location}. While I'm connecting to our provider directory, here's what I recommend: search Google for "${searchQuery}" for immediate results. I can also connect you with a local referral service — would you like me to do that? Or if you have a specific provider in mind, give me their name and I can look up their number.`,
-        providers: [],
+        result: `I'm looking for a ${serviceType} near ${location} for you. I recommend checking Google Maps or Yelp for "${serviceType} near ${location}" — they'll show you the closest options with ratings and phone numbers. Would you like me to help with anything else in the meantime?`,
       }]
     });
   } catch (err) {
     console.error('Find provider error:', err);
     return NextResponse.json({
       results: [{
-        result: 'I had trouble searching for providers just now. Can you tell me again what service you need? I want to make sure I find the right one for you.'
+        result: 'I had a brief issue searching for providers. Can you tell me again what you need? I want to make sure I find the right one for you.'
       }]
     });
   }
