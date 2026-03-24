@@ -34,7 +34,7 @@ export default function Hero() {
               <img
                 src="/hero-family.png"
                 alt="Adult family member caring for elderly parent at home"
-                className="w-full h-[480px] object-cover rounded-3xl shadow-2xl"
+                className="w-full h-[600px] object-cover rounded-3xl shadow-2xl"
               />
               {/* Floating stat card */}
               <div className="absolute -bottom-5 -left-5 bg-white rounded-2xl shadow-lg px-5 py-4 flex items-center gap-3">
