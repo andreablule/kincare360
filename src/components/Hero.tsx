@@ -32,8 +32,8 @@ export default function Hero() {
           <div className="hidden md:block animate-fade-in">
             <div className="relative w-full max-w-md mx-auto">
               <img
-                src="https://images.unsplash.com/photo-1581579438747-1dc8d17bbce4?w=800&q=85&auto=format&fit=crop"
-                alt="Caring professional with elderly patient"
+                src="https://images.unsplash.com/photo-1543342384-1f1350e27861?w=800&q=85&auto=format&fit=crop"
+                alt="Daughter hugging and caring for elderly mother"
                 className="w-full h-[480px] object-cover rounded-3xl shadow-2xl"
               />
               {/* Floating stat card */}
