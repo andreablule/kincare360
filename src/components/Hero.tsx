@@ -14,10 +14,10 @@ export default function Hero() {
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
               <a
-                href="#contact"
+                href="tel:+18125155252"
                 className="bg-teal text-white px-8 py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors"
               >
-                Get Started Today &rarr;
+                Call Us Free &rarr; (812) 515-5252
               </a>
               <a
                 href="#how-it-works"

@@ -18,8 +18,8 @@ export default function SuccessPage() {
           <a href="/" className="block bg-teal text-white px-8 py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors">
             Back to Home
           </a>
-          <a href="/book" className="block border-2 border-teal text-teal px-8 py-3 rounded-full font-semibold hover:bg-teal hover:text-white transition-colors">
-            Schedule Your First Appointment
+          <a href="tel:+18125155252" className="block border-2 border-teal text-teal px-8 py-3 rounded-full font-semibold hover:bg-teal hover:text-white transition-colors">
+            Call Lily: (812) 515-5252
           </a>
         </div>
       </div>

@@ -38,10 +38,10 @@ export default function Navbar() {
               </a>
             ))}
             <a
-              href="/book"
+              href="tel:+18125155252"
               className="bg-teal text-white px-5 py-2 rounded-full text-sm font-semibold hover:bg-teal-dark transition-colors"
             >
-              Book Appointment
+              Call (812) 515-5252
             </a>
           </div>
 
@@ -85,11 +85,11 @@ export default function Navbar() {
               </a>
             ))}
             <a
-              href="/book"
+              href="tel:+18125155252"
               onClick={() => setMobileOpen(false)}
               className="bg-teal text-white px-5 py-2 rounded-full text-sm font-semibold text-center hover:bg-teal-dark transition-colors"
             >
-              Book Appointment
+              Call (812) 515-5252
             </a>
           </div>
         </div>
