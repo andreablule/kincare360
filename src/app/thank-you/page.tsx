@@ -1,11 +1,12 @@
-import type { Metadata } from "next";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Thank You | KinCare360",
-  description: "Thank you for contacting KinCare360. We'll be in touch within 24 hours.",
-};
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-export default function ThankYou() {
+function ThankYouContent() {
+  const params = useSearchParams();
+  const booked = params.get("booked") === "true";
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 bg-white">
       <div className="text-center max-w-md">
@@ -15,12 +16,19 @@ export default function ThankYou() {
           </svg>
         </div>
         <h1 className="text-3xl md:text-4xl font-bold text-navy mb-4">
-          Thank you!
+          {booked ? "Appointment Confirmed!" : "Thank you!"}
         </h1>
-        <p className="text-gray-600 text-lg mb-8">
-          We&apos;ve received your message. Our team will contact you within 24
-          hours to discuss your family&apos;s care needs.
+        <p className="text-gray-600 text-lg mb-4">
+          {booked
+            ? "Your appointment has been booked successfully. You'll receive a confirmation text message shortly."
+            : "We've received your message. Our team will contact you within 24 hours to discuss your family's care needs."}
         </p>
+        {booked && (
+          <p className="text-gray-500 text-sm mb-6">
+            Didn&apos;t get a text? Call or text us at{" "}
+            <a href="tel:+18125155252" className="text-teal font-medium">(812) 515-5252</a>
+          </p>
+        )}
         <a
           href="/"
           className="inline-block bg-teal text-white px-8 py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors"
@@ -29,5 +37,13 @@ export default function ThankYou() {
         </a>
       </div>
     </div>
+  );
+}
+
+export default function ThankYou() {
+  return (
+    <Suspense>
+      <ThankYouContent />
+    </Suspense>
   );
 }

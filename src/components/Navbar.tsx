@@ -38,10 +38,10 @@ export default function Navbar() {
               </a>
             ))}
             <a
-              href="#contact"
+              href="/book"
               className="bg-teal text-white px-5 py-2 rounded-full text-sm font-semibold hover:bg-teal-dark transition-colors"
             >
-              Get Started
+              Book Appointment
             </a>
           </div>
 
@@ -85,11 +85,11 @@ export default function Navbar() {
               </a>
             ))}
             <a
-              href="#contact"
+              href="/book"
               onClick={() => setMobileOpen(false)}
               className="bg-teal text-white px-5 py-2 rounded-full text-sm font-semibold text-center hover:bg-teal-dark transition-colors"
             >
-              Get Started
+              Book Appointment
             </a>
           </div>
         </div>
