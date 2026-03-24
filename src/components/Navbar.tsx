@@ -16,13 +16,13 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-24">
+        <div className="flex items-center justify-between h-32">
           {/* Logo */}
           <a href="#" className="flex items-center">
             <img
               src="/kincare360-logo.png"
               alt="KinCare360 - Complete Care Coordination for Families"
-              className="h-20 w-auto"
+              className="h-28 w-auto"
             />
           </a>
 

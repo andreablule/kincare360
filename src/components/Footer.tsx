@@ -16,7 +16,7 @@ export default function Footer() {
               <img
                 src="/kincare360-logo.png"
                 alt="KinCare360"
-                className="h-20 w-auto brightness-0 invert"
+                className="h-28 w-auto brightness-0 invert"
               />
             </a>
             <p className="text-white/60 text-sm max-w-xs mb-4">
