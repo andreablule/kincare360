@@ -147,7 +147,7 @@ export default function Pricing() {
                 "Priority same-day response",
                 "Full family dashboard (all members)",
                 "Monthly care summary report",
-                "Local service concierge (find any provider)",
+                "Priority 24/7 access to Lily",
                 "Doctor & pharmacy coordination",
               ].map((item) => (
                 <li key={item} className="flex items-start gap-2 text-sm">

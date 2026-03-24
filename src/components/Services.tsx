@@ -47,19 +47,7 @@ const services = [
       </svg>
     ),
   },
-  {
-    title: "Local Service Concierge",
-    description:
-      "Need a plumber, electrician, pharmacy, or pizza? Lily finds providers near your loved one, calls them, and connects the call — all hands-free.",
-    image: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=600&q=80&auto=format&fit=crop",
-    alt: "Local service provider helping at a home",
-    icon: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-      </svg>
-    ),
-  },
+
 
 ];
 
