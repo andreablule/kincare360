@@ -6,7 +6,6 @@ const navLinks = [
   { label: "How It Works", href: "#how-it-works" },
   { label: "Services", href: "#services" },
   { label: "Pricing", href: "#pricing" },
-
   { label: "Contact", href: "#contact" },
 ];
 
@@ -18,7 +17,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-40">
           {/* Logo */}
-          <a href="#" className="flex items-center">
+          <a href="/" className="flex items-center">
             <img
               src="/kincare360-logo.png"
               alt="KinCare360 - Complete Care Coordination for Families"
@@ -37,6 +36,12 @@ export default function Navbar() {
                 {link.label}
               </a>
             ))}
+            <a
+              href="/login"
+              className="text-sm font-medium text-navy hover:text-teal transition-colors"
+            >
+              Log In
+            </a>
             <a
               href="tel:+18125155252"
               className="bg-teal text-white px-5 py-2 rounded-full text-sm font-semibold hover:bg-teal-dark transition-colors"
@@ -84,6 +89,13 @@ export default function Navbar() {
                 {link.label}
               </a>
             ))}
+            <a
+              href="/login"
+              onClick={() => setMobileOpen(false)}
+              className="text-sm font-medium text-navy hover:text-teal py-2"
+            >
+              Log In
+            </a>
             <a
               href="tel:+18125155252"
               onClick={() => setMobileOpen(false)}
