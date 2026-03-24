@@ -1,36 +1,61 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" width="320" height="80">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 90" width="380" height="90">
   <defs>
     <linearGradient id="heartGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#0EA5A0;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#22C55E;stop-opacity:1" />
+      <stop offset="0%" style="stop-color:#0EA5A0"/>
+      <stop offset="50%" style="stop-color:#14B8B0"/>
+      <stop offset="100%" style="stop-color:#22C55E"/>
     </linearGradient>
-    <linearGradient id="heartGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#0d9488;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#16a34a;stop-opacity:1" />
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#E0F7F6"/>
+      <stop offset="100%" style="stop-color:#DCFCE7"/>
     </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0EA5A0" flood-opacity="0.25"/>
+    </filter>
   </defs>
 
+  <!-- Heart icon background circle -->
+  <circle cx="44" cy="44" r="38" fill="url(#bgGrad)"/>
+
   <!-- Heart shape -->
-  <path d="M40 22 C40 14 34 10 28 10 C22 10 16 14 16 22 C16 30 40 52 40 52 C40 52 64 30 64 22 C64 14 58 10 52 10 C46 10 40 14 40 22Z"
-    fill="url(#heartGrad)" />
+  <path d="M44 62
+    C44 62 18 46 18 30
+    C18 22 24 16 32 16
+    C37 16 41 18.5 44 22
+    C47 18.5 51 16 56 16
+    C64 16 70 22 70 30
+    C70 46 44 62 44 62Z"
+    fill="url(#heartGrad)" filter="url(#shadow)"/>
 
-  <!-- Family figures inside heart (white silhouettes) -->
-  <!-- Adult figure left -->
-  <circle cx="29" cy="24" r="4" fill="white" opacity="0.95"/>
-  <path d="M23 38 C23 32 26 30 29 30 C32 30 35 32 35 38" fill="white" opacity="0.95"/>
+  <!-- Adult figure (left, taller) -->
+  <!-- Head -->
+  <circle cx="36" cy="28" r="4.5" fill="white" opacity="0.95"/>
+  <!-- Body -->
+  <path d="M30 45 C30 38 33 36 36 36 C39 36 42 38 42 45" fill="white" opacity="0.95"/>
+  <!-- Legs hint -->
+  <line x1="33" y1="44" x2="32" y2="50" stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.85"/>
+  <line x1="39" y1="44" x2="40" y2="50" stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.85"/>
 
-  <!-- Child figure right -->
-  <circle cx="42" cy="27" r="3" fill="white" opacity="0.95"/>
-  <path d="M37 38 C37 33 39.5 31 42 31 C44.5 31 47 33 47 38" fill="white" opacity="0.95"/>
+  <!-- Child figure (right, shorter) -->
+  <!-- Head -->
+  <circle cx="52" cy="31" r="3.5" fill="white" opacity="0.95"/>
+  <!-- Body -->
+  <path d="M47 45 C47 39 49.5 37.5 52 37.5 C54.5 37.5 57 39 57 45" fill="white" opacity="0.95"/>
+  <!-- Legs hint -->
+  <line x1="49.5" y1="44" x2="48.5" y2="50" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.85"/>
+  <line x1="54.5" y1="44" x2="55.5" y2="50" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.85"/>
 
-  <!-- Holding hands line -->
-  <line x1="35" y1="34" x2="37" y2="34" stroke="white" stroke-width="1.5" opacity="0.9"/>
+  <!-- Holding hands -->
+  <line x1="42" y1="40" x2="47" y2="40" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.9"/>
 
-  <!-- Brand name -->
-  <text x="76" y="38" font-family="'Segoe UI', Arial, sans-serif" font-size="24" font-weight="700" fill="#0d4f5c">Kin</text>
-  <text x="109" y="38" font-family="'Segoe UI', Arial, sans-serif" font-size="24" font-weight="700" fill="#0EA5A0">Care</text>
-  <text x="153" y="38" font-family="'Segoe UI', Arial, sans-serif" font-size="24" font-weight="700" fill="#22C55E">360</text>
+  <!-- Brand name text -->
+  <!-- "Kin" -->
+  <text x="96" y="46" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="28" font-weight="800" fill="#0d4f5c" letter-spacing="-0.5">Kin</text>
+  <!-- "Care" -->
+  <text x="133" y="46" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="28" font-weight="800" fill="#0EA5A0" letter-spacing="-0.5">Care</text>
+  <!-- "360" -->
+  <text x="192" y="46" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="28" font-weight="800" fill="#22C55E" letter-spacing="-0.5">360</text>
 
   <!-- Tagline -->
-  <text x="76" y="56" font-family="'Segoe UI', Arial, sans-serif" font-size="11" fill="#64748b" letter-spacing="0.3">Complete Care Coordination for Families</text>
+  <text x="97" y="64" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11.5" fill="#64748b" letter-spacing="0.4">Complete Care Coordination for Families</text>
 </svg>
