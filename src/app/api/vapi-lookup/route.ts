@@ -76,7 +76,13 @@ Family contacts: ${familyList}
 
 ${lastCallSummary}
 
-IMPORTANT: Greet ${patient.firstName} by name warmly. Reference their specific medications and doctors when relevant. This is a known client — give them VIP treatment.`;
+Preferred language: ${patient.preferredLanguage || 'English'}
+
+IMPORTANT: 
+- Greet ${patient.firstName} by name warmly.
+- Reference their specific medications and doctors when relevant. 
+- This is a known client — give them VIP treatment.
+- SPEAK IN ${(patient.preferredLanguage || 'English').split(' / ')[0].toUpperCase()} for the entire call. Start the conversation in their preferred language immediately. Do not start in English and switch — begin in their language from the first word.`;
 
     return NextResponse.json({
       known: true,

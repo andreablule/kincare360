@@ -20,6 +20,7 @@ export default function IntakePage() {
     // Scheduling preferences
     checkInTime: "09:00", medicationReminderTime: "08:00",
     checkInDays: ["Mon", "Tue", "Wed", "Thu", "Fri"] as string[],
+    preferredLanguage: "English",
     // Family contact
     familyName: "", familyPhone: "", familyEmail: "", familyRelation: "",
     familyName2: "", familyPhone2: "", familyEmail2: "", familyRelation2: "",
@@ -125,9 +126,26 @@ export default function IntakePage() {
                   <input className={inputClass} value={form.zip} onChange={e => update('zip', e.target.value)} placeholder="19103" />
                 </div>
               </div>
-              {/* Scheduling Preferences */}
+              {/* Language + Scheduling Preferences */}
               <div className="border border-teal/20 rounded-xl p-4 space-y-4 bg-teal/5 mt-2">
-                <h3 className="text-sm font-semibold text-navy">📞 Call Scheduling Preferences</h3>
+                <h3 className="text-sm font-semibold text-navy">📞 Call Preferences</h3>
+
+                <div>
+                  <label className={labelClass}>Preferred Language *</label>
+                  <select className={inputClass} value={form.preferredLanguage} onChange={e => update('preferredLanguage', e.target.value)}>
+                    {[
+                      "English", "Spanish / Español", "Albanian / Shqip", "Ukrainian / Українська",
+                      "Romanian / Română", "Mandarin Chinese / 中文", "Cantonese / 廣東話",
+                      "Korean / 한국어", "Vietnamese / Tiếng Việt", "Russian / Русский",
+                      "Arabic / العربية", "Portuguese / Português", "Italian / Italiano",
+                      "French / Français", "Haitian Creole / Kreyòl", "Polish / Polski",
+                      "Tagalog / Filipino", "Hindi / हिन्दी"
+                    ].map(lang => (
+                      <option key={lang} value={lang}>{lang}</option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-gray-400 mt-1">Lily will speak this language during all calls</p>
+                </div>
                 
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
@@ -306,6 +324,7 @@ export default function IntakePage() {
                 <div className="flex justify-between"><span className="text-gray-500">Date of Birth</span><span className="font-medium text-navy">{form.dob}</span></div>
                 <div className="flex justify-between"><span className="text-gray-500">Phone</span><span className="font-medium text-navy">{form.phone}</span></div>
                 <div className="flex justify-between"><span className="text-gray-500">Address</span><span className="font-medium text-navy">{form.address}, {form.city} {form.state}</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">Language</span><span className="font-medium text-navy">{form.preferredLanguage}</span></div>
                 <div className="flex justify-between"><span className="text-gray-500">Check-In Time</span><span className="font-medium text-navy">{form.checkInTime} ({form.checkInDays.join(', ')})</span></div>
                 <div className="flex justify-between"><span className="text-gray-500">Medication Reminder</span><span className="font-medium text-navy">{form.medicationReminderTime}</span></div>
                 <div className="flex justify-between"><span className="text-gray-500">Doctor</span><span className="font-medium text-navy">{form.primaryDoctor || 'Not provided'}</span></div>

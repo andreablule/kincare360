@@ -35,6 +35,7 @@ model Patient {
   preferredCallTime    String?
   medicationReminderTime String?
   checkInDays          String?   // comma-separated: "Mon,Tue,Wed,Thu,Fri"
+  preferredLanguage    String?   @default("English")
   createdAt            DateTime  @default(now())
   doctors           Doctor[]
   pharmacies        Pharmacy[]
