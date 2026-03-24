@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
       body: new URLSearchParams({
         customer: customerId,
         return_url: `${process.env.NEXT_PUBLIC_URL}/`,
-        configuration: 'bpc_1TEP5eJlUr03cRD7dBeLERXL', // test mode
+        configuration: 'bpc_1TEOkMJlUr03cRD7Ooh3GBwM',
       }).toString(),
     });
     const session = await res.json();
