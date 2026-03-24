@@ -17,24 +17,32 @@ async function stripeAPI(path: string, body: Record<string, string>) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { priceId, email, name } = await req.json();
+    const { priceId, email } = await req.json();
+    const baseUrl = process.env.NEXT_PUBLIC_URL || 'https://kincare360.com';
 
-    const session = await stripeAPI('/v1/checkout/sessions', {
+    const params: Record<string, string> = {
       'mode': 'subscription',
       'line_items[0][price]': priceId,
       'line_items[0][quantity]': '1',
       'subscription_data[trial_period_days]': '7',
-      'success_url': `${process.env.NEXT_PUBLIC_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-      'cancel_url': `${process.env.NEXT_PUBLIC_URL}/#pricing`,
-      'customer_email': email || '',
+      'success_url': `${baseUrl}/intake?session_id={CHECKOUT_SESSION_ID}`,
+      'cancel_url': `${baseUrl}/#pricing`,
       'allow_promotion_codes': 'true',
       'billing_address_collection': 'auto',
       'payment_method_types[0]': 'card',
-    });
+    };
+
+    // Only add email if provided
+    if (email && email.trim()) {
+      params['customer_email'] = email.trim();
+    }
+
+    const session = await stripeAPI('/v1/checkout/sessions', params);
 
     if (session.url) {
       return NextResponse.json({ url: session.url });
     } else {
+      console.error('Stripe error:', session.error);
       return NextResponse.json({ error: session.error?.message || 'Failed to create session' }, { status: 500 });
     }
   } catch (err) {
