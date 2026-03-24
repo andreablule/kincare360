@@ -4,7 +4,6 @@ import Problem from "@/components/Problem";
 import HowItWorks from "@/components/HowItWorks";
 import Services from "@/components/Services";
 import Pricing from "@/components/Pricing";
-import Testimonials from "@/components/Testimonials";
 import CTASection from "@/components/CTASection";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
@@ -20,7 +19,6 @@ export default function Home() {
         <HowItWorks />
         <Services />
         <Pricing />
-        <Testimonials />
         <CTASection />
         <Contact />
       </main>

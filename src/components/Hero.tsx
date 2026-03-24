@@ -36,7 +36,7 @@ export default function Hero() {
                 alt="Adult family member caring for elderly parent at home"
                 className="w-full h-[600px] object-cover rounded-3xl shadow-2xl"
               />
-              {/* Floating stat card */}
+              {/* Floating badge bottom left */}
               <div className="absolute -bottom-5 -left-5 bg-white rounded-2xl shadow-lg px-5 py-4 flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-teal/10 flex items-center justify-center">
                   <svg className="w-5 h-5 text-teal" fill="currentColor" viewBox="0 0 20 20">
@@ -44,8 +44,8 @@ export default function Hero() {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400">Families served</p>
-                  <p className="text-lg font-bold text-navy">500+</p>
+                  <p className="text-xs text-gray-400">Available</p>
+                  <p className="text-lg font-bold text-navy">24/7</p>
                 </div>
               </div>
               {/* Floating badge top right */}
