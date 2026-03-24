@@ -8,12 +8,21 @@ export default function CTASection() {
         <p className="text-white/70 text-lg mb-8">
           First week free. No contracts. Cancel anytime.
         </p>
-        <a
-          href="#contact"
-          className="inline-block bg-teal text-white px-10 py-4 rounded-full text-lg font-semibold hover:bg-teal-dark transition-colors"
-        >
-          Schedule a Free Consultation
-        </a>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <a
+            href="tel:+18125155252"
+            className="inline-block bg-teal text-white px-10 py-4 rounded-full text-lg font-semibold hover:bg-teal-dark transition-colors"
+          >
+            Call Lily Now — (812) 515-5252
+          </a>
+          <a
+            href="#pricing"
+            className="inline-block border-2 border-white text-white px-10 py-4 rounded-full text-lg font-semibold hover:bg-white hover:text-navy transition-colors"
+          >
+            View Plans
+          </a>
+        </div>
+        <p className="text-white/50 text-sm mt-6">Available 24/7 · No hold times · Speak to Lily instantly</p>
       </div>
     </section>
   );
