@@ -1,0 +1,154 @@
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import Link from "next/link";
+
+export default async function DashboardPage() {
+  const session = await getServerSession(authOptions);
+  const userId = (session?.user as any)?.id;
+
+  const patient = await prisma.patient.findFirst({ where: { userId } });
+  const recentCall = patient
+    ? await prisma.callLog.findFirst({
+        where: { patientId: patient.id },
+        orderBy: { callDate: "desc" },
+      })
+    : null;
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  const pendingRequests = patient
+    ? await prisma.serviceRequest.count({
+        where: { patientId: patient.id, status: "PENDING" },
+      })
+    : 0;
+
+  return (
+    <div>
+      <h1 className="text-2xl font-bold text-navy mb-6">
+        Welcome, {session?.user?.name?.split(" ")[0] || "there"}
+      </h1>
+
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        {/* Plan card */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-5">
+          <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Current Plan</div>
+          <div className="text-lg font-bold text-navy">{user?.plan || "No plan"}</div>
+          <div className="text-sm text-gray-500 mt-1">
+            Status: <span className="text-teal font-medium">{user?.subscriptionStatus || "N/A"}</span>
+          </div>
+          <Link href="/dashboard/plan" className="text-sm text-teal font-medium mt-3 inline-block hover:underline">
+            Manage Plan
+          </Link>
+        </div>
+
+        {/* Next check-in */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-5">
+          <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Next Check-In</div>
+          <div className="text-lg font-bold text-navy">
+            {patient?.preferredCallTime || "Not set"}
+          </div>
+          <div className="text-sm text-gray-500 mt-1">Daily wellness call</div>
+          <Link href="/dashboard/profile" className="text-sm text-teal font-medium mt-3 inline-block hover:underline">
+            Update Time
+          </Link>
+        </div>
+
+        {/* Pending requests */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-5">
+          <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Pending Requests</div>
+          <div className="text-lg font-bold text-navy">{pendingRequests}</div>
+          <div className="text-sm text-gray-500 mt-1">Service requests open</div>
+          <Link href="/dashboard/requests" className="text-sm text-teal font-medium mt-3 inline-block hover:underline">
+            View Requests
+          </Link>
+        </div>
+      </div>
+
+      {/* Recent call summary */}
+      <div className="bg-white rounded-2xl border border-gray-100 p-5 mb-6">
+        <h2 className="text-sm font-semibold text-navy mb-3">Most Recent Call</h2>
+        {recentCall ? (
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-gray-500">Date</span>
+              <span className="text-navy font-medium">{new Date(recentCall.callDate).toLocaleDateString()}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-500">Mood</span>
+              <span className="text-navy font-medium">{recentCall.mood || "N/A"}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-500">Medications Taken</span>
+              <span className={`font-medium ${recentCall.medicationsTaken ? "text-teal" : "text-red-500"}`}>
+                {recentCall.medicationsTaken ? "Yes" : "No"}
+              </span>
+            </div>
+            {recentCall.summary && (
+              <div className="pt-2 border-t border-gray-100">
+                <span className="text-gray-500">Summary:</span>
+                <p className="text-navy mt-1">{recentCall.summary}</p>
+              </div>
+            )}
+            {recentCall.urgent && (
+              <div className="bg-red-50 text-red-600 rounded-xl px-3 py-2 text-xs font-medium">
+                Urgent concern flagged
+              </div>
+            )}
+          </div>
+        ) : (
+          <p className="text-gray-400 text-sm">No call logs yet. Lily will begin check-ins soon.</p>
+        )}
+        <Link href="/dashboard/history" className="text-sm text-teal font-medium mt-3 inline-block hover:underline">
+          View All Call History
+        </Link>
+      </div>
+
+      {/* Quick actions */}
+      <div className="grid sm:grid-cols-2 gap-3">
+        <Link href="/dashboard/medical" className="bg-white rounded-2xl border border-gray-100 p-4 hover:border-teal transition-colors flex items-center gap-3">
+          <div className="w-10 h-10 bg-teal/10 rounded-xl flex items-center justify-center">
+            <svg className="w-5 h-5 text-teal" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          </div>
+          <div>
+            <div className="text-sm font-semibold text-navy">Medical Records</div>
+            <div className="text-xs text-gray-500">Doctors, meds, conditions</div>
+          </div>
+        </Link>
+        <Link href="/dashboard/family" className="bg-white rounded-2xl border border-gray-100 p-4 hover:border-teal transition-colors flex items-center gap-3">
+          <div className="w-10 h-10 bg-teal/10 rounded-xl flex items-center justify-center">
+            <svg className="w-5 h-5 text-teal" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </div>
+          <div>
+            <div className="text-sm font-semibold text-navy">Family Members</div>
+            <div className="text-xs text-gray-500">Manage notifications</div>
+          </div>
+        </Link>
+        <Link href="/dashboard/requests" className="bg-white rounded-2xl border border-gray-100 p-4 hover:border-teal transition-colors flex items-center gap-3">
+          <div className="w-10 h-10 bg-teal/10 rounded-xl flex items-center justify-center">
+            <svg className="w-5 h-5 text-teal" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+          </div>
+          <div>
+            <div className="text-sm font-semibold text-navy">New Request</div>
+            <div className="text-xs text-gray-500">Appointments, follow-ups</div>
+          </div>
+        </Link>
+        <Link href="/dashboard/history" className="bg-white rounded-2xl border border-gray-100 p-4 hover:border-teal transition-colors flex items-center gap-3">
+          <div className="w-10 h-10 bg-teal/10 rounded-xl flex items-center justify-center">
+            <svg className="w-5 h-5 text-teal" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+            </svg>
+          </div>
+          <div>
+            <div className="text-sm font-semibold text-navy">Call History</div>
+            <div className="text-xs text-gray-500">View daily check-in logs</div>
+          </div>
+        </Link>
+      </div>
+    </div>
+  );
+}
