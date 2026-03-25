@@ -6,8 +6,12 @@ export async function POST(req: NextRequest) {
   try {
     const { email, password, name, stripeCustomerId, plan } = await req.json();
 
-    if (!email || !password || !name) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    if (!email || !password) {
+      return NextResponse.json({ error: 'Email and password are required' }, { status: 400 });
+    }
+
+    if (password.length < 8) {
+      return NextResponse.json({ error: 'Password must be at least 8 characters' }, { status: 400 });
     }
 
     const existing = await prisma.user.findUnique({ where: { email } });
@@ -32,8 +36,8 @@ export async function POST(req: NextRequest) {
     await prisma.patient.create({
       data: {
         userId: user.id,
-        firstName: name.split(' ')[0] || name,
-        lastName: name.split(' ').slice(1).join(' ') || '',
+        firstName: name ? name.split(' ')[0] : email.split('@')[0],
+        lastName: name ? name.split(' ').slice(1).join(' ') : '',
       },
     });
 
