@@ -76,6 +76,7 @@ Family contacts: ${familyList}
 
 ${lastCallSummary}
 
+Insurance: ${patient.insuranceCompany || 'Not on file'}${patient.insuranceMemberId ? ` (Member ID: ${patient.insuranceMemberId})` : ''}${patient.insuranceGroupNumber ? ` (Group: ${patient.insuranceGroupNumber})` : ''}
 Preferred language: ${patient.preferredLanguage || 'English'}
 
 IMPORTANT: 

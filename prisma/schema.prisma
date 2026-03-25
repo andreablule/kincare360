@@ -36,6 +36,10 @@ model Patient {
   medicationReminderTime String?
   checkInDays          String?   // comma-separated: "Mon,Tue,Wed,Thu,Fri"
   preferredLanguage    String?   @default("English")
+  insuranceCompany     String?
+  insuranceMemberId    String?
+  insuranceGroupNumber String?
+  insurancePolicyHolder String?
   createdAt            DateTime  @default(now())
   doctors           Doctor[]
   pharmacies        Pharmacy[]

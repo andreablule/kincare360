@@ -68,6 +68,7 @@ export default function IntakePage() {
     primaryDoctor: "", doctorPhone: "", doctorAddress: "",
     pharmacy: "", pharmacyPhone: "", pharmacyAddress: "",
     medications: "", conditions: "", allergies: "",
+    insuranceCompany: "", insuranceMemberId: "", insuranceGroupNumber: "", insurancePolicyHolder: "",
     checkInTime: "09:00",
     medicationReminders: [{ time: "08:00" }] as {time: string}[],
     checkInDays: ["Mon", "Tue", "Wed", "Thu", "Fri"] as string[],
@@ -286,6 +287,20 @@ export default function IntakePage() {
               <div><label className={labelClass}>Current Medications</label><textarea className={inputClass + " resize-none"} rows={3} value={form.medications} onChange={e => update('medications', e.target.value)} placeholder="List medications and dosages (e.g. Metformin 500mg, Lisinopril 10mg)" /></div>
               <div><label className={labelClass}>Medical Conditions</label><textarea className={inputClass + " resize-none"} rows={2} value={form.conditions} onChange={e => update('conditions', e.target.value)} placeholder="e.g. Type 2 Diabetes, Hypertension" /></div>
               <div><label className={labelClass}>Known Allergies</label><input className={inputClass} value={form.allergies} onChange={e => update('allergies', e.target.value)} placeholder="e.g. Penicillin, Sulfa, None known" /></div>
+
+              <div className="border border-gray-100 rounded-xl p-4 space-y-3">
+                <h3 className="text-sm font-semibold text-navy">Insurance Information</h3>
+                <p className="text-xs text-gray-400">Needed for scheduling appointments with new doctors. Stored securely.</p>
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <input className={inputClass} value={form.insuranceCompany} onChange={e => update('insuranceCompany', e.target.value)} placeholder="Insurance company (e.g. Aetna, Blue Cross)" />
+                  <input className={inputClass} value={form.insuranceMemberId} onChange={e => update('insuranceMemberId', e.target.value)} placeholder="Member / Subscriber ID" />
+                </div>
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <input className={inputClass} value={form.insuranceGroupNumber} onChange={e => update('insuranceGroupNumber', e.target.value)} placeholder="Group number" />
+                  <input className={inputClass} value={form.insurancePolicyHolder} onChange={e => update('insurancePolicyHolder', e.target.value)} placeholder="Policy holder name" />
+                </div>
+              </div>
+
               <div className="flex gap-3">
                 <button onClick={() => setStep(0)} className="flex-1 border border-gray-200 text-navy py-3 rounded-full font-semibold hover:bg-gray-50">← Back</button>
                 <button onClick={() => setStep(2)} className="flex-1 bg-teal text-white py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors">Next →</button>
