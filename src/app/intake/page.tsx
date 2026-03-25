@@ -5,14 +5,13 @@ import { useRouter } from "next/navigation";
 
 const steps = ["Patient Info", "Medical Info", "Family & Services", "Review & Pay"];
 
-const timeOptions = Array.from({length: 28}, (_, i) => {
-  const hour = Math.floor(i / 2) + 7;
+const timeOptions = Array.from({length: 48}, (_, i) => {
+  const hour = Math.floor(i / 2);
   const min = i % 2 === 0 ? "00" : "30";
-  if (hour > 20) return null;
-  const h12 = hour > 12 ? hour - 12 : hour;
+  const h12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
   const ampm = hour >= 12 ? "PM" : "AM";
   return { value: `${String(hour).padStart(2,'0')}:${min}`, label: `${h12}:${min} ${ampm}` };
-}).filter(Boolean) as {value: string; label: string}[];
+});
 
 function AddressAutocomplete({ value, onChange, onSelect, className, placeholder }: { 
   value: string; onChange: (v: string) => void; onSelect: (address: string, city: string, state: string, zip: string) => void; className: string; placeholder: string; 
