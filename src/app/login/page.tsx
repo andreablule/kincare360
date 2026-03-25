@@ -83,6 +83,12 @@ export default function LoginPage() {
             className="w-full bg-teal text-white py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors disabled:opacity-40">
             {loading ? (mode === "login" ? "Signing in..." : "Creating account...") : (mode === "login" ? "Sign In" : "Create Account")}
           </button>
+
+          {mode === "login" && (
+            <p className="text-center text-xs text-gray-400 mt-2">
+              <a href="mailto:hello@kincare360.com" className="text-teal hover:underline">Forgot your password?</a>
+            </p>
+          )}
         </form>
 
         <p className="text-center text-sm text-gray-500 mt-6">
