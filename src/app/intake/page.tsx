@@ -14,6 +14,50 @@ const timeOptions = Array.from({length: 28}, (_, i) => {
   return { value: `${String(hour).padStart(2,'0')}:${min}`, label: `${h12}:${min} ${ampm}` };
 }).filter(Boolean) as {value: string; label: string}[];
 
+function AddressAutocomplete({ value, onChange, onSelect, className, placeholder }: { 
+  value: string; onChange: (v: string) => void; onSelect: (address: string, city: string, state: string, zip: string) => void; className: string; placeholder: string; 
+}) {
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  async function handleInput(val: string) {
+    onChange(val);
+    if (val.length < 3) { setSuggestions([]); return; }
+    
+    try {
+      const res = await fetch(`/api/address-suggest?q=${encodeURIComponent(val)}`);
+      const data = await res.json();
+      if (data.suggestions) {
+        setSuggestions(data.suggestions);
+        setShowSuggestions(true);
+      }
+    } catch { /* ignore */ }
+  }
+
+  function selectSuggestion(s: any) {
+    onSelect(s.address, s.city, s.state, s.zip);
+    setShowSuggestions(false);
+    setSuggestions([]);
+  }
+
+  return (
+    <div className="relative">
+      <input className={className} value={value} onChange={e => handleInput(e.target.value)} 
+        onBlur={() => setTimeout(() => setShowSuggestions(false), 200)} placeholder={placeholder} />
+      {showSuggestions && suggestions.length > 0 && (
+        <div className="absolute z-50 top-full left-0 right-0 bg-white border border-gray-200 rounded-xl shadow-lg mt-1 max-h-48 overflow-y-auto">
+          {suggestions.map((s, i) => (
+            <button key={i} type="button" onMouseDown={() => selectSuggestion(s)}
+              className="w-full text-left px-4 py-2 text-sm text-navy hover:bg-teal/5 border-b border-gray-50 last:border-0">
+              {s.full}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function IntakePage() {
   const router = useRouter();
   const [step, setStep] = useState(0);
@@ -87,18 +131,12 @@ export default function IntakePage() {
         body: JSON.stringify(form),
       });
       
-      // Then redirect to Stripe checkout
-      const priceMap: Record<string, string> = {
-        starter: process.env.NEXT_PUBLIC_STRIPE_PRICE_STARTER || '',
-        essential: process.env.NEXT_PUBLIC_STRIPE_PRICE_ESSENTIAL || '',
-        premium: process.env.NEXT_PUBLIC_STRIPE_PRICE_PREMIUM || '',
-      };
-      
+      // Redirect to Stripe checkout via server-side API (handles price mapping)
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          priceId: priceMap[form.selectedPlan] || form.selectedPlan,
+          plan: form.selectedPlan,
           email: form.email || form.familyContacts[0]?.email || '',
         }),
       });
@@ -168,7 +206,9 @@ export default function IntakePage() {
               </div>
               <div>
                 <label className={labelClass}>Home Address *</label>
-                <input className={inputClass} value={form.address} onChange={e => update('address', e.target.value)} placeholder="Street address" />
+                <AddressAutocomplete className={inputClass} value={form.address} placeholder="Start typing address..."
+                  onChange={v => update('address', v)}
+                  onSelect={(address, city, state, zip) => setForm(prev => ({ ...prev, address, city, state, zip }))} />
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 <div><label className={labelClass}>City *</label><input className={inputClass} value={form.city} onChange={e => update('city', e.target.value)} placeholder="City" /></div>
