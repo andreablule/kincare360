@@ -1,36 +1,94 @@
 import { NextRequest, NextResponse } from 'next/server';
+import nodemailer from 'nodemailer';
 
 const twilioSid = process.env.TWILIO_ACCOUNT_SID!;
 const twilioToken = process.env.TWILIO_AUTH_TOKEN!;
 const twilioPhone = process.env.TWILIO_PHONE_NUMBER!;
-const alertPhone = process.env.ALERT_PHONE_NUMBER || process.env.ANDREA_PHONE || '+12674996927';
+const alertPhone = process.env.ALERT_PHONE_NUMBER || '+12674996927';
 
 async function sendSMS(to: string, body: string) {
   const auth = Buffer.from(`${twilioSid}:${twilioToken}`).toString('base64');
   const params = new URLSearchParams({ To: to, From: twilioPhone, Body: body });
   try {
-    const res = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`, {
+    await fetch(`https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`, {
       method: 'POST',
       headers: { 'Authorization': `Basic ${auth}`, 'Content-Type': 'application/x-www-form-urlencoded' },
       body: params.toString(),
     });
-    const data = await res.json();
-    return data;
   } catch (e) {
     console.error('SMS error:', e);
   }
 }
 
-async function sendEmail(to: string, subject: string, body: string) {
-  // Send via Google Workspace SMTP using app password
-  const nodemailerAvailable = false; // Would need nodemailer installed
-  // For now, use a simple approach via the Gmail API or skip
-  // TODO: Wire up email sending via Google Workspace
-  console.log(`Email would send to ${to}: ${subject}`);
+async function sendWelcomeEmail(to: string, customerName: string, trialEnd: string) {
+  try {
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,
+      auth: {
+        user: 'hello@kincare360.com',
+        pass: process.env.GOOGLE_APP_PASSWORD || 'rogvowrocfhdsasp',
+      },
+    });
+
+    const firstName = customerName.split(' ')[0] || 'there';
+
+    await transporter.sendMail({
+      from: '"Lily - KinCare360" <hello@kincare360.com>',
+      to: to,
+      subject: `Welcome to KinCare360, ${firstName}! Your 7-day free trial has started 🎉`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <img src="https://kincare360.com/kincare360-logo.png" alt="KinCare360" style="height: 60px; margin-bottom: 20px;" />
+          
+          <h1 style="color: #0F2147; font-size: 24px;">Welcome to KinCare360, ${firstName}!</h1>
+          
+          <p style="color: #555; font-size: 16px; line-height: 1.6;">
+            Your 7-day free trial is now active. Here's what happens next:
+          </p>
+          
+          <div style="background: #f0faf9; border-left: 4px solid #0EA5A0; padding: 16px; margin: 20px 0; border-radius: 0 8px 8px 0;">
+            <p style="margin: 0; color: #0F2147;"><strong>📞 Lily will start calling</strong> your loved one at their preferred time for daily wellness check-ins.</p>
+          </div>
+          
+          <div style="background: #f0faf9; border-left: 4px solid #0EA5A0; padding: 16px; margin: 20px 0; border-radius: 0 8px 8px 0;">
+            <p style="margin: 0; color: #0F2147;"><strong>💊 Medication reminders</strong> will be sent at the times you selected during setup.</p>
+          </div>
+          
+          <div style="background: #f0faf9; border-left: 4px solid #0EA5A0; padding: 16px; margin: 20px 0; border-radius: 0 8px 8px 0;">
+            <p style="margin: 0; color: #0F2147;"><strong>👨‍👩‍👧 Family dashboard</strong> — log in anytime at <a href="https://kincare360.com/login" style="color: #0EA5A0;">kincare360.com/login</a> to see daily summaries and care updates.</p>
+          </div>
+          
+          <div style="background: #fff3cd; padding: 16px; margin: 20px 0; border-radius: 8px;">
+            <p style="margin: 0; color: #856404;"><strong>📅 Your free trial ends:</strong> ${trialEnd}</p>
+            <p style="margin: 8px 0 0 0; color: #856404; font-size: 14px;">No charge until then. Cancel anytime before this date and you won't be billed.</p>
+          </div>
+          
+          <h2 style="color: #0F2147; font-size: 18px; margin-top: 30px;">Need help?</h2>
+          <p style="color: #555; font-size: 16px;">
+            Call Lily anytime: <a href="tel:+18125155252" style="color: #0EA5A0; font-weight: bold;">(812) 515-5252</a><br/>
+            Email us: <a href="mailto:hello@kincare360.com" style="color: #0EA5A0;">hello@kincare360.com</a><br/>
+            Visit: <a href="https://kincare360.com" style="color: #0EA5A0;">kincare360.com</a>
+          </p>
+          
+          <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;" />
+          
+          <p style="color: #999; font-size: 12px;">
+            © 2026 Son Healthcare Services LLC, operating as KinCare360. All rights reserved.<br/>
+            <a href="https://kincare360.com/terms" style="color: #999;">Terms of Service</a> · 
+            <a href="https://kincare360.com/privacy" style="color: #999;">Privacy Policy</a><br/>
+            Reply STOP to unsubscribe from SMS notifications.
+          </p>
+        </div>
+      `,
+    });
+    console.log('Welcome email sent to:', to);
+  } catch (e) {
+    console.error('Email send error:', e);
+  }
 }
 
-// This endpoint handles Stripe checkout completion
-// Called from the success page to trigger confirmations
 export async function POST(req: NextRequest) {
   try {
     const { sessionId } = await req.json();
@@ -39,7 +97,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No session ID' }, { status: 400 });
     }
 
-    // Get checkout session details from Stripe
     const stripeKey = process.env.STRIPE_SECRET_KEY!;
     const auth = Buffer.from(`${stripeKey}:`).toString('base64');
     
@@ -56,22 +113,28 @@ export async function POST(req: NextRequest) {
     const customerName = session.customer_details?.name || session.customer?.name || 'there';
     const customerPhone = session.customer_details?.phone || '';
     const planAmount = session.amount_total ? `$${session.amount_total / 100}` : '';
-    const trialEnd = session.subscription?.trial_end ? new Date(session.subscription.trial_end * 1000).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) : '7 days from now';
+    const trialEnd = session.subscription?.trial_end 
+      ? new Date(session.subscription.trial_end * 1000).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) 
+      : '7 days from now';
 
-    // SMS to Andrea (business alert)
+    // 1. SMS alert to Andrea
     await sendSMS(
-      `+1${alertPhone.replace(/\\D/g, '').slice(-10)}`,
+      `+1${alertPhone.replace(/\D/g, '').slice(-10)}`,
       `🎉 NEW KINCARE360 SIGNUP!\n\nName: ${customerName}\nEmail: ${customerEmail}\nPhone: ${customerPhone || 'Not provided'}\nPlan: ${planAmount}/mo\nTrial ends: ${trialEnd}\n\nLily will begin daily check-ins automatically.`
     );
 
-    // SMS to client (if phone available from intake data)
-    // Note: A2P 10DLC still pending, SMS may not deliver to non-verified numbers
+    // 2. Welcome email to client
+    if (customerEmail) {
+      await sendWelcomeEmail(customerEmail, customerName, trialEnd);
+    }
+
+    // 3. SMS to client (if phone available)
     if (customerPhone) {
       const digits = customerPhone.replace(/\D/g, '').slice(-10);
       if (digits.length === 10) {
         await sendSMS(
           `+1${digits}`,
-          `Welcome to KinCare360, ${customerName}! 🎉\n\nYour 7-day free trial has started. Lily will begin your daily check-in calls at your preferred time.\n\nTrial ends: ${trialEnd}\nManage your plan: kincare360.com/login\nQuestions? Call (812) 515-5252\n\n— Lily, KinCare360`
+          `Welcome to KinCare360, ${customerName.split(' ')[0]}! 🎉\n\nYour 7-day free trial has started. Lily will begin daily check-ins at your preferred time.\n\nTrial ends: ${trialEnd}\nDashboard: kincare360.com/login\nCall Lily: (812) 515-5252\n\nReply STOP to opt out.`
         );
       }
     }

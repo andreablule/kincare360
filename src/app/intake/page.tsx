@@ -67,7 +67,7 @@ export default function IntakePage() {
     primaryDoctor: "", doctorPhone: "", doctorAddress: "",
     pharmacy: "", pharmacyPhone: "", pharmacyAddress: "",
     medications: "", conditions: "", allergies: "",
-    insuranceCompany: "", insuranceMemberId: "", insuranceGroupNumber: "", insurancePolicyHolder: "",
+    insurances: [{ company: "", memberId: "", groupNumber: "", policyHolder: "" }] as {company: string; memberId: string; groupNumber: string; policyHolder: string}[],
     checkInTime: "09:00",
     medicationReminders: [{ time: "08:00" }] as {time: string}[],
     checkInDays: ["Mon", "Tue", "Wed", "Thu", "Fri"] as string[],
@@ -287,18 +287,28 @@ export default function IntakePage() {
               <div><label className={labelClass}>Medical Conditions</label><textarea className={inputClass + " resize-none"} rows={2} value={form.conditions} onChange={e => update('conditions', e.target.value)} placeholder="e.g. Type 2 Diabetes, Hypertension" /></div>
               <div><label className={labelClass}>Known Allergies</label><input className={inputClass} value={form.allergies} onChange={e => update('allergies', e.target.value)} placeholder="e.g. Penicillin, Sulfa, None known" /></div>
 
-              <div className="border border-gray-100 rounded-xl p-4 space-y-3">
-                <h3 className="text-sm font-semibold text-navy">Insurance Information</h3>
-                <p className="text-xs text-gray-400">Needed for scheduling appointments with new doctors. Stored securely.</p>
-                <div className="grid sm:grid-cols-2 gap-3">
-                  <input className={inputClass} value={form.insuranceCompany} onChange={e => update('insuranceCompany', e.target.value)} placeholder="Insurance company (e.g. Aetna, Blue Cross)" />
-                  <input className={inputClass} value={form.insuranceMemberId} onChange={e => update('insuranceMemberId', e.target.value)} placeholder="Member / Subscriber ID" />
+              {form.insurances.map((ins, index) => (
+                <div key={index} className="border border-gray-100 rounded-xl p-4 space-y-3">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-sm font-semibold text-navy">{index === 0 ? 'Primary' : 'Additional'} Insurance{index > 0 ? ` #${index + 1}` : ''}</h3>
+                    {index > 0 && (
+                      <button type="button" onClick={() => setForm(prev => ({ ...prev, insurances: prev.insurances.filter((_, i) => i !== index) }))} className="text-red-400 hover:text-red-600 text-xs font-medium">Remove</button>
+                    )}
+                  </div>
+                  {index === 0 && <p className="text-xs text-gray-400">Needed for scheduling appointments with new doctors. Stored securely.</p>}
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    <input className={inputClass} value={ins.company} onChange={e => setForm(prev => ({ ...prev, insurances: prev.insurances.map((ins2, i) => i === index ? { ...ins2, company: e.target.value } : ins2) }))} placeholder="Insurance company (e.g. Aetna, Blue Cross)" />
+                    <input className={inputClass} value={ins.memberId} onChange={e => setForm(prev => ({ ...prev, insurances: prev.insurances.map((ins2, i) => i === index ? { ...ins2, memberId: e.target.value } : ins2) }))} placeholder="Member / Subscriber ID" />
+                  </div>
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    <input className={inputClass} value={ins.groupNumber} onChange={e => setForm(prev => ({ ...prev, insurances: prev.insurances.map((ins2, i) => i === index ? { ...ins2, groupNumber: e.target.value } : ins2) }))} placeholder="Group number" />
+                    <input className={inputClass} value={ins.policyHolder} onChange={e => setForm(prev => ({ ...prev, insurances: prev.insurances.map((ins2, i) => i === index ? { ...ins2, policyHolder: e.target.value } : ins2) }))} placeholder="Policy holder name" />
+                  </div>
                 </div>
-                <div className="grid sm:grid-cols-2 gap-3">
-                  <input className={inputClass} value={form.insuranceGroupNumber} onChange={e => update('insuranceGroupNumber', e.target.value)} placeholder="Group number" />
-                  <input className={inputClass} value={form.insurancePolicyHolder} onChange={e => update('insurancePolicyHolder', e.target.value)} placeholder="Policy holder name" />
-                </div>
-              </div>
+              ))}
+              <button type="button" onClick={() => setForm(prev => ({ ...prev, insurances: [...prev.insurances, { company: "", memberId: "", groupNumber: "", policyHolder: "" }] }))} className="w-full border-2 border-dashed border-teal/30 text-teal rounded-xl py-3 text-sm font-medium hover:border-teal hover:bg-teal/5 transition-colors">
+                + Add Another Insurance
+              </button>
 
               <div className="flex gap-3">
                 <button onClick={() => setStep(0)} className="flex-1 border border-gray-200 text-navy py-3 rounded-full font-semibold hover:bg-gray-50">← Back</button>
