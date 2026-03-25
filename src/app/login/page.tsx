@@ -65,7 +65,7 @@ export default function LoginPage() {
         {/* Logo & Header */}
         <div className="text-center mb-8">
           <a href="/">
-            <img src="/kincare360-logo.png" alt="KinCare360" className="h-14 w-auto mx-auto mb-6" />
+            <img src="/kincare360-logo.png" alt="KinCare360" className="h-28 w-auto mx-auto mb-6" />
           </a>
           <h1 className="text-2xl font-bold text-navy">
             {mode === "login" ? "Sign in to your account" : "Create your account"}
@@ -202,4 +202,5 @@ export default function LoginPage() {
     </main>
   );
 }
+
 

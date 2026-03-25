@@ -160,7 +160,7 @@ export default function IntakePage() {
     <main className="min-h-screen bg-gray-50 py-12 px-4">
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8">
-          <a href="/"><img src="/kincare360-logo.png" alt="KinCare360" className="h-12 w-auto mx-auto mb-4" /></a>
+          <a href="/"><img src="/kincare360-logo.png" alt="KinCare360" className="h-28 w-auto mx-auto mb-4" /></a>
           <h1 className="text-2xl font-bold text-navy">Set Up Your Care Plan</h1>
           <p className="text-gray-500 mt-1">Complete the details below to start your 7-day free trial.</p>
         </div>
@@ -430,3 +430,4 @@ export default function IntakePage() {
     </main>
   );
 }
+

@@ -63,7 +63,7 @@ export default function SignupPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <a href="/">
-            <img src="/kincare360-logo.png" alt="KinCare360" className="h-14 w-auto mx-auto mb-6" />
+            <img src="/kincare360-logo.png" alt="KinCare360" className="h-28 w-auto mx-auto mb-6" />
           </a>
           <h1 className="text-2xl font-bold text-navy">Start Your Free Trial</h1>
           <p className="text-gray-500 mt-2 text-sm">Create your account to begin your 7-day free trial. No charge until day 8.</p>
@@ -158,3 +158,4 @@ export default function SignupPage() {
     </main>
   );
 }
+
