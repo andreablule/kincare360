@@ -1,41 +1,67 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Free address autocomplete using Nominatim (OpenStreetMap)
+// US address autocomplete using Census Geocoder (free, accurate, US-only)
 export async function GET(req: NextRequest) {
   const q = req.nextUrl.searchParams.get('q') || '';
   
-  if (q.length < 3) {
+  if (q.length < 4) {
     return NextResponse.json({ suggestions: [] });
   }
 
   try {
-    const res = await fetch(
+    // Use Census Bureau geocoder — most accurate for US addresses
+    const url = `https://geocoding.geo.census.gov/geocoder/geographies/onelineaddress?address=${encodeURIComponent(q)}&benchmark=Public_AR_Current&vintage=Current_Current&format=json`;
+    const res = await fetch(url);
+    const data = await res.json();
+    
+    const matches = data?.result?.addressMatches || [];
+    
+    if (matches.length > 0) {
+      const suggestions = matches.slice(0, 5).map((m: any) => {
+        const parts = m.matchedAddress?.split(',').map((s: string) => s.trim()) || [];
+        const streetAddress = m.addressComponents ? 
+          `${m.addressComponents.preQualifier || ''} ${m.addressComponents.preDirection || ''} ${m.addressComponents.streetName || ''} ${m.addressComponents.suffixType || ''} ${m.addressComponents.suffixDirection || ''}`.replace(/\s+/g, ' ').trim() : 
+          (parts[0] || '');
+        const fromNumber = m.addressComponents?.fromAddress || '';
+        const fullStreet = fromNumber ? `${fromNumber} ${streetAddress}` : streetAddress;
+        
+        return {
+          full: m.matchedAddress,
+          address: fullStreet || parts[0] || '',
+          city: m.addressComponents?.city || parts[1] || '',
+          state: m.addressComponents?.state || parts[2] || '',
+          zip: m.addressComponents?.zip || '',
+        };
+      });
+      
+      return NextResponse.json({ suggestions });
+    }
+
+    // Fallback to Nominatim with better formatting
+    const nomRes = await fetch(
       `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&addressdetails=1&limit=5&countrycodes=us`,
       { headers: { 'User-Agent': 'KinCare360/1.0 (hello@kincare360.com)' } }
     );
-    const data = await res.json();
+    const nomData = await nomRes.json();
 
-    const suggestions = data
-      .filter((r: any) => r.address)
+    const suggestions = nomData
+      .filter((r: any) => r.address && (r.address.house_number || r.address.road))
       .map((r: any) => {
         const a = r.address;
-        const houseNumber = a.house_number || '';
-        const road = a.road || a.pedestrian || a.footway || '';
-        const streetAddress = `${houseNumber} ${road}`.trim();
-        const city = a.city || a.town || a.village || a.hamlet || a.county || '';
-        const state = a.state || '';
-        const stateCode = getStateCode(state);
-        const zip = a.postcode || '';
+        const street = `${a.house_number || ''} ${a.road || ''}`.trim();
+        const city = a.city || a.town || a.village || '';
+        const state = getStateCode(a.state || '');
+        const zip = a.postcode?.split('-')[0] || '';
 
         return {
-          full: r.display_name,
-          address: streetAddress,
+          full: `${street}, ${city}, ${state} ${zip}`,
+          address: street,
           city,
-          state: stateCode,
+          state,
           zip,
         };
       })
-      .filter((s: any) => s.address && s.city);
+      .filter((s: any) => s.address.length > 3 && s.city);
 
     return NextResponse.json({ suggestions });
   } catch (err) {
@@ -58,5 +84,5 @@ function getStateCode(stateName: string): string {
     'Virginia': 'VA', 'Washington': 'WA', 'West Virginia': 'WV', 'Wisconsin': 'WI', 'Wyoming': 'WY',
     'District of Columbia': 'DC',
   };
-  return states[stateName] || stateName.substring(0, 2).toUpperCase();
+  return states[stateName] || (stateName.length === 2 ? stateName.toUpperCase() : stateName.substring(0, 2).toUpperCase());
 }
