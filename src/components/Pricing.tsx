@@ -82,7 +82,7 @@ export default function Pricing() {
                 </li>
               ))}
             </ul>
-            <a href="/intake" className="mt-7 block w-full text-center bg-white border-2 border-teal text-teal px-6 py-3 rounded-full font-semibold hover:bg-teal hover:text-white transition-colors disabled:opacity-60 text-sm block text-center">Start Free Trial ?</a>
+            <a href="/signup" className="mt-7 block w-full text-center bg-white border-2 border-teal text-teal px-6 py-3 rounded-full font-semibold hover:bg-teal hover:text-white transition-colors disabled:opacity-60 text-sm block text-center">Start Free Trial ?</a>
           </div>
 
           {/* Essential */}
@@ -116,7 +116,7 @@ export default function Pricing() {
                 </li>
               ))}
             </ul>
-            <a href="/intake" className="mt-7 block w-full text-center bg-teal text-white px-6 py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors disabled:opacity-60 text-sm block text-center">Start Free Trial ?</a>
+            <a href="/signup" className="mt-7 block w-full text-center bg-teal text-white px-6 py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors disabled:opacity-60 text-sm block text-center">Start Free Trial ?</a>
           </div>
 
           {/* Premium */}
@@ -148,7 +148,7 @@ export default function Pricing() {
                 </li>
               ))}
             </ul>
-            <a href="/intake" className="mt-7 block w-full text-center bg-teal text-white px-6 py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors disabled:opacity-60 text-sm block text-center">Start Free Trial ?</a>
+            <a href="/signup" className="mt-7 block w-full text-center bg-teal text-white px-6 py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors disabled:opacity-60 text-sm block text-center">Start Free Trial ?</a>
           </div>
         </div>
 
@@ -161,4 +161,5 @@ export default function Pricing() {
     </section>
   );
 }
+
 

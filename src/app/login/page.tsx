@@ -184,7 +184,7 @@ export default function LoginPage() {
               Don&apos;t have an account?{" "}
               <button onClick={() => { setMode("register"); setError(""); }} className="text-teal font-semibold hover:underline">Sign up</button>
               {" "}or{" "}
-              <a href="/intake" className="text-teal font-semibold hover:underline">Start Free Trial</a>
+              <a href="/signup" className="text-teal font-semibold hover:underline">Start Free Trial</a>
             </p>
           ) : (
             <p className="text-sm text-gray-500">
@@ -202,3 +202,4 @@ export default function LoginPage() {
     </main>
   );
 }
+
