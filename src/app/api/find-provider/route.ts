@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Format phone for natural TTS speech: 2155556840 → "215-555-6840"
+// Format phone as spoken words: 2154648998 → "215-464-8998"
+// Hyphens are the most reliable TTS pause signal
 function formatPhone(raw: string): string {
   const digits = raw.replace(/\D/g, '');
   if (digits.length === 10) return `${digits.slice(0,3)}-${digits.slice(3,6)}-${digits.slice(6)}`;
@@ -8,22 +9,36 @@ function formatPhone(raw: string): string {
   return raw;
 }
 
+// Convert a street number like 8202 into spoken form "eighty-two oh two"
+// so the model reads it as one number not individual digits
+function spokenStreetNumber(num: string): string {
+  const n = parseInt(num, 10);
+  if (isNaN(n)) return num;
+  // For 4-digit numbers, split as pairs: 8202 → "eighty-two oh two"
+  // For 3-digit: 820 → "eight twenty"
+  // Simplest reliable approach: just add spaces every 2 digits so TTS groups them
+  if (num.length === 4) return `${num.slice(0,2)} ${num.slice(2)}`;
+  if (num.length === 3) return `${num[0]} ${num.slice(1)}`;
+  return num;
+}
+
 // Shorten and clean address for natural TTS speech
 function shortAddress(addr: string): string {
-  return addr
-    .split(',').slice(0, 2).map(s => s.trim()).join(', ')
-    .replace(/#\s*(\w+)/g, 'Suite $1')   // #200 → Suite 200
-    .replace(/\bSte\.?\s*/gi, 'Suite ')   // Ste → Suite
-    .replace(/\bAve\b/gi, 'Avenue')
-    .replace(/\bRd\b/gi, 'Road')
-    .replace(/\bSt\b/gi, 'Street')
-    .replace(/\bBlvd\b/gi, 'Boulevard')
-    .replace(/\bDr\b/gi, 'Drive')
-    .replace(/\bLn\b/gi, 'Lane')
-    .replace(/\bPkwy\b/gi, 'Parkway')
-    .replace(/\bHwy\b/gi, 'Highway')
-    .replace(/\bNE\b/g, 'Northeast').replace(/\bNW\b/g, 'Northwest')
-    .replace(/\bSE\b/g, 'Southeast').replace(/\bSW\b/g, 'Southwest');
+  const parts = addr.split(',').slice(0, 2).map(s => s.trim());
+  // Fix the street number in the first part
+  const street = parts[0]?.replace(/^(\d+)/, (_, n) => spokenStreetNumber(n)) || '';
+  const city = parts[1] || '';
+  return [street, city].filter(Boolean).join(', ')
+    .replace(/#\s*(\w+)/g, 'Suite $1')
+    .replace(/\bSte\.?\s*/gi, 'Suite ')
+    .replace(/\bAve\.?\b/gi, 'Avenue')
+    .replace(/\bRd\.?\b/gi, 'Road')
+    .replace(/\bSt\.?\b/gi, 'Street')
+    .replace(/\bBlvd\.?\b/gi, 'Boulevard')
+    .replace(/\bDr\.?\b/gi, 'Drive')
+    .replace(/\bLn\.?\b/gi, 'Lane')
+    .replace(/\bPkwy\.?\b/gi, 'Parkway')
+    .replace(/\bHwy\.?\b/gi, 'Highway');
 }
 
 async function searchPlaces(serviceType: string, location: string): Promise<string> {
@@ -71,8 +86,9 @@ async function searchPlaces(serviceType: string, location: string): Promise<stri
           }
         });
         const results = await Promise.all(detailPromises);
-        const lines = results.map((r, i) => `Option ${i + 1}: ${r}`).join('. ');
-        return `I found ${results.length} options near you. ${lines}. Which one would you like me to call to schedule your appointment?`;
+        const connectors = ['The first one is', 'The second is', 'And the third is'];
+        const lines = results.map((r, i) => `${connectors[i] || `Option ${i+1} is`} ${r}`).join('. ');
+        return `I found ${results.length} options near you. ${lines}. Which one would you like?`;
       }
     } catch (e) {
       console.error('Google Places error:', e);
