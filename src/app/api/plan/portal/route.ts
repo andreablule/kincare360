@@ -4,10 +4,17 @@ import { prisma } from "@/lib/prisma";
 
 const SK = process.env.STRIPE_SECRET_KEY!;
 
+// Map plan name -> Stripe price ID
 const PRICE_MAP: Record<string, string> = {
-  starter: 'price_1TEPOcJlUr03cRD7vm4xB09U',
-  essential: 'price_1TEPOcJlUr03cRD7ypzyYYif',
-  premium: 'price_1TEPOcJlUr03cRD7tVv6DDjY',
+  basic:    process.env.STRIPE_PRICE_BASIC    || "price_1TEPOcJlUr03cRD7vm4xB09U",
+  standard: process.env.STRIPE_PRICE_STANDARD || "price_1TEPOcJlUr03cRD7ypzyYYif",
+  premium:  process.env.STRIPE_PRICE_PREMIUM  || "price_1TEPOcJlUr03cRD7tVv6DDjY",
+};
+
+const PLAN_KEY_MAP: Record<string, string> = {
+  basic: "BASIC",
+  standard: "STANDARD",
+  premium: "PREMIUM",
 };
 
 async function stripeAPI(path: string, body: Record<string, string>) {
@@ -33,9 +40,15 @@ export async function POST(req: Request) {
     select: { stripeCustomerId: true, email: true, plan: true },
   });
 
+  const body = await req.json().catch(() => ({}));
+  const action = body.action || "change"; // "change" | "cancel"
+  const targetPlan = (body.plan || "standard").toLowerCase();
+  const priceId = PRICE_MAP[targetPlan] || PRICE_MAP.standard;
+  const planKey = PLAN_KEY_MAP[targetPlan] || "STANDARD";
+
   const baseUrl = process.env.NEXTAUTH_URL || "https://kincare360.com";
 
-  // If user has a Stripe customer ID, try to create a billing portal session
+  // If user has a Stripe customer ID, try billing portal first
   if (user?.stripeCustomerId) {
     const portalSession = await stripeAPI("/v1/billing_portal/sessions", {
       customer: user.stripeCustomerId,
@@ -45,23 +58,20 @@ export async function POST(req: Request) {
     if (portalSession.url) {
       return Response.json({ url: portalSession.url });
     }
-    // If portal config is missing or fails, fall through to checkout fallback
-    console.error("Portal session failed:", portalSession.error);
+    // Portal not configured — fall through to checkout
+    console.error("Billing portal failed, falling back to checkout:", portalSession.error?.message);
   }
 
-  // Fallback: create a new checkout session for upgrade
-  const { plan } = await req.json().catch(() => ({ plan: null }));
-  const targetPlan = plan || "essential";
-  const priceId = PRICE_MAP[targetPlan] || PRICE_MAP.essential;
-
+  // Fallback: new Stripe checkout session for the selected plan
   const checkoutParams: Record<string, string> = {
     mode: "subscription",
     "line_items[0][price]": priceId,
     "line_items[0][quantity]": "1",
+    "subscription_data[trial_period_days]": "7",
     success_url: `${baseUrl}/dashboard/plan?upgraded=1`,
     cancel_url: `${baseUrl}/dashboard/plan`,
     "metadata[userId]": userId,
-    "metadata[plan]": targetPlan === "starter" ? "BASIC" : targetPlan === "essential" ? "STANDARD" : "PREMIUM",
+    "metadata[plan]": planKey,
   };
 
   if (user?.email) {
