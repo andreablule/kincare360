@@ -75,6 +75,8 @@ export default function RequestsPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [callingId, setCallingId] = useState<string | null>(null);
+  const [callResult, setCallResult] = useState<Record<string, "success" | "error">>({});
 
   // Form state
   const [type, setType] = useState("APPOINTMENT");
@@ -168,6 +170,51 @@ export default function RequestsPage() {
     setTimeout(() => setSuccess(false), 3000);
 
     fetch("/api/service-requests").then(r => r.json()).then(d => setRequests(d.items || []));
+  }
+
+  async function handleLilyCall(req: ServiceRequest) {
+    setCallingId(req.id);
+    try {
+      const parsed = parseDescription(req.description || "");
+      const providerName = parsed["DOCTOR"] || parsed["PHARMACY"] || "";
+      const providerPhone = parsed["DOCTOR PHONE"] || parsed["PHARMACY PHONE"] || "";
+
+      // Fetch patient info
+      const patientRes = await fetch("/api/patient");
+      const patientData = await patientRes.json();
+      const patient = patientData.patient || patientData;
+      const patientName = `${patient.firstName || ""} ${patient.lastName || ""}`.trim();
+      const patientDob = patient.dob ? new Date(patient.dob).toLocaleDateString("en-US") : "";
+      const callbackPhone = patient.phone || "";
+
+      const res = await fetch("/api/outbound-call", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          serviceRequestId: req.id,
+          providerPhone,
+          providerName,
+          patientName,
+          patientDob,
+          preferredDate: parsed["DATE"]?.split(" at ")[0] || "",
+          preferredTime: parsed["DATE"]?.split(" at ")[1] || "",
+          reason: parsed["NOTES"] || "",
+          callbackPhone,
+        }),
+      });
+
+      if (res.ok) {
+        setCallResult((prev) => ({ ...prev, [req.id]: "success" }));
+        setRequests((prev) =>
+          prev.map((r) => (r.id === req.id ? { ...r, status: "IN_PROGRESS" } : r))
+        );
+      } else {
+        setCallResult((prev) => ({ ...prev, [req.id]: "error" }));
+      }
+    } catch {
+      setCallResult((prev) => ({ ...prev, [req.id]: "error" }));
+    }
+    setCallingId(null);
   }
 
   const inputClass = "w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm text-navy focus:outline-none focus:ring-2 focus:ring-teal";
@@ -335,6 +382,22 @@ export default function RequestsPage() {
                     {parsed["NOTES"] && <div className="flex gap-2"><span className="text-gray-400 w-20 flex-shrink-0">Notes:</span><span>{parsed["NOTES"]}</span></div>}
                     {!Object.keys(parsed).length && req.description && <p>{req.description}</p>}
                   </div>
+                  {req.status === "PENDING" && (parsed["DOCTOR PHONE"] || parsed["PHARMACY PHONE"]) && (
+                    <div className="mt-3">
+                      {callingId === req.id ? (
+                        <span className="text-xs text-teal font-medium animate-pulse">Lily is calling...</span>
+                      ) : callResult[req.id] === "success" ? (
+                        <span className="text-xs text-green-600 font-medium">✅ Lily called them</span>
+                      ) : callResult[req.id] === "error" ? (
+                        <span className="text-xs text-red-600 font-medium">Something went wrong. Try again.</span>
+                      ) : (
+                        <button type="button" onClick={() => handleLilyCall(req)}
+                          className="bg-teal text-white text-xs font-semibold px-4 py-2 rounded-full hover:bg-teal-dark transition-colors">
+                          Have Lily Call 📞
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             })}

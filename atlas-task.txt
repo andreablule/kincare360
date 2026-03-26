@@ -1,0 +1,102 @@
+Build TWO features for the KinCare360 Next.js 14 app. Use semicolons not && for PowerShell commands.
+
+## FEATURE 1: Full Owner Admin Dashboard
+
+Rebuild src/app/admin/page.tsx into a comprehensive owner command center. Server component only (no 'use client'). Accessible only to ADMIN role or hello@kincare360.com.
+
+Sections:
+
+SECTION 1 - KPI Cards row:
+- MRR: count active users by plan (BASIC=99, STANDARD=199, PREMIUM=299), sum. Show as '$X,XXX/mo'
+- Pipeline MRR: same for trialing users
+- Active Clients (subscriptionStatus=active)
+- Free Trials (subscriptionStatus=trialing)
+- Total Calls all time
+- Urgent Calls this week
+- Pending Requests
+
+SECTION 2 - Alerts banner (only show if data exists):
+- past_due users -> red alert
+- urgent calls in last 24h -> red alert with patient name
+- new signups today -> green badge
+
+SECTION 3 - Clients Table
+All CLIENT role users. Columns: Name+email, Plan badge (BASIC=gray bg-gray-100, STANDARD=blue bg-blue-100 text-blue-700, PREMIUM=teal bg-teal/10 text-teal), Status badge (trialing=blue, active=green, past_due=red, canceled=gray), Trial end (fetch from Stripe for trialing users in parallel with Promise.all), Last call date, Total calls count, Patient name.
+
+Stripe fetch for trial end date (per trialing user):
+const SK = process.env.STRIPE_SECRET_KEY;
+const auth = Buffer.from(SK + ':').toString('base64');
+const res = await fetch('https://api.stripe.com/v1/subscriptions?customer=' + user.stripeCustomerId + '&status=trialing&limit=1', { headers: { Authorization: 'Basic ' + auth }, cache: 'no-store' });
+const sdata = await res.json();
+const trialEnd = sdata?.data?.[0]?.trial_end ? new Date(sdata.data[0].trial_end * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : null;
+
+SECTION 4 - Recent Calls (last 15, all patients)
+Table: Patient name, Date+time, Call type, Urgent (warning if true), Summary (truncated 80 chars), Mood
+
+SECTION 5 - Recent Service Requests (last 10, all patients)
+Table: Patient name, Type label, Status badge, Created date, Description first 60 chars
+
+Use existing Tailwind classes: bg-white rounded-2xl border border-gray-100 p-5 shadow-sm, text-navy, bg-teal, etc.
+
+---
+
+## FEATURE 2: Lily Outbound Appointment Calling
+
+1. CREATE src/app/api/outbound-call/route.ts
+
+POST endpoint. Body: { serviceRequestId, providerPhone, providerName, patientName, patientDob, preferredDate, preferredTime, reason, callbackPhone }
+
+Make VAPI outbound call to provider:
+- POST to https://api.vapi.ai/call/phone
+- Header: Authorization: Bearer 3e6bdfb6-fc6f-4c60-a584-16cfa60e6846
+- Body (JSON):
+  phoneNumberId: "8354bde3-c67c-4316-b181-95c227479b58"
+  customer.number: "+1" + providerPhone digits only
+  assistant.name: "Lily - KinCare360 Scheduling"
+  assistant.model.provider: "openai"
+  assistant.model.model: "gpt-4o-mini"
+  assistant.model.messages[0].role: "system"
+  assistant.model.messages[0].content: Build a system prompt that says: You are Lily, a care coordination assistant calling from KinCare360 to schedule a medical appointment. You are calling PROVIDER_NAME. Patient name is PATIENT_NAME, DOB is PATIENT_DOB, preferred date/time is PREFERRED_DATE at PREFERRED_TIME, reason is REASON. Steps: 1) Greet and identify yourself. 2) Give patient name and DOB. 3) Request preferred date/time, if unavailable ask for next available. 4) Confirm appointment details. 5) Thank them. Do NOT provide insurance info - say patient will bring insurance card. Leave voicemail with callback (812) 515-5252 if no answer.
+  assistant.voice.provider: "11labs"
+  assistant.voice.voiceId: "paula"
+  assistant.firstMessage: "Hi, this is Lily calling from KinCare360. May I speak with someone who can help me schedule a patient appointment?"
+  assistant.endCallMessage: "Thank you so much. Have a great day!"
+  assistant.serverUrl: "https://www.kincare360.com/api/call-logs"
+
+Substitute actual values (patientName, patientDob, providerName, preferredDate, preferredTime, reason) into the system prompt string before sending.
+
+After VAPI call created:
+1. Update serviceRequest status to IN_PROGRESS via prisma
+2. After 45 seconds (setTimeout fire-and-forget), make a second VAPI call to callbackPhone with a simple assistant that tells the patient Lily just called the provider and will confirm the appointment
+3. Return { success: true, callId }
+
+2. ADD PATCH to src/app/api/service-requests/route.ts:
+export async function PATCH(req) {
+  const user = await getSessionUser();
+  if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!canEdit(user.role)) return Response.json({ error: 'Read-only' }, { status: 403 });
+  const { id, status } = await req.json();
+  const item = await prisma.serviceRequest.update({ where: { id }, data: { status } });
+  return Response.json({ item });
+}
+
+3. MODIFY src/app/dashboard/requests/page.tsx
+
+In the request history list, for each PENDING request where description contains "DOCTOR PHONE:" or "PHARMACY PHONE:", add a teal "Have Lily Call 📞" button.
+
+On click:
+- Parse description lines to get: providerName (from "DOCTOR:" or "PHARMACY:" line), providerPhone (from "DOCTOR PHONE:" or "PHARMACY PHONE:" line), preferredDate (from "DATE:" line), reason (from "NOTES:" line)
+- Fetch /api/patient to get firstName+lastName (patientName), dob (patientDob), phone (callbackPhone)
+- POST to /api/outbound-call with all data plus serviceRequestId
+- Show "Lily is calling..." loading state
+- On success: show green checkmark "Lily called them" and set that request's status to IN_PROGRESS locally
+- On error: show red error message
+
+---
+
+After building everything:
+1. Run: npx next build
+2. If build passes: git add -A
+3. git commit -m "feat: full owner admin dashboard + Lily outbound appointment calling"
+4. git push
+5. Report what was built and any issues

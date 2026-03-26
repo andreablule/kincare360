@@ -30,3 +30,13 @@ export async function POST(req: NextRequest) {
   });
   return Response.json({ item });
 }
+
+export async function PATCH(req: NextRequest) {
+  const user = await getSessionUser();
+  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+  if (!canEdit(user.role)) return Response.json({ error: "Read-only" }, { status: 403 });
+
+  const { id, status } = await req.json();
+  const item = await prisma.serviceRequest.update({ where: { id }, data: { status } });
+  return Response.json({ item });
+}
