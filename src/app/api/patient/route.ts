@@ -31,9 +31,9 @@ export async function PATCH(req: NextRequest) {
     state: body.state,
     zip: body.zip,
     preferredCallTime: body.preferredCallTime,
-    medicationReminderTime: body.medicationReminderTime,
-    checkInDays: body.checkInDays,
-    preferredLanguage: body.preferredLanguage,
+    medicationReminderTime: body.medicationReminderTime ?? undefined,
+    checkInDays: body.checkInDays ?? undefined,
+    preferredLanguage: body.preferredLanguage ?? undefined,
     gender: body.gender ?? undefined,
   };
 

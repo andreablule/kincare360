@@ -200,8 +200,25 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string) {
               },
             },
             destinations: [
-              { type: "number", number: "+12154648998", description: "Dynamic provider number" },
+              { type: "server", url: "https://www.kincare360.com/api/vapi-transfer" },
             ],
+          },
+          {
+            type: "function",
+            server: { url: "https://kincare360.com/api/vapi-update-patient" },
+            function: {
+              name: "updatePatientProfile",
+              description: "Update the client's profile when they request changes to their medication reminder times, gender, preferred call time, or check-in days. Always confirm the new values with the client before calling this.",
+              parameters: {
+                type: "object",
+                properties: {
+                  medicationReminderTime: { type: "string", description: "Comma-separated reminder times in HH:MM 24h format, e.g. '09:20,12:00,20:00'" },
+                  gender: { type: "string", description: "Gender: male, female, non-binary, or other" },
+                  preferredCallTime: { type: "string", description: "Preferred daily check-in time in HH:MM 24h format, e.g. '09:00'" },
+                  checkInDays: { type: "string", description: "Comma-separated days, e.g. 'Mon,Wed,Fri'" },
+                },
+              },
+            },
           },
         ],
       },
