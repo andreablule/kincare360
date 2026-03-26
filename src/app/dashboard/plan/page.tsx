@@ -65,8 +65,7 @@ export default function PlanPage() {
   const [showSwitchConfirm, setShowSwitchConfirm] = useState<string | null>(null);
 
   async function selectPlan(stripeKey: string) {
-    if (stripeKey !== "cancel" && status !== "trialing") {
-      // Show billing cycle notice before redirecting
+    if (stripeKey !== "cancel") {
       setShowSwitchConfirm(stripeKey);
       return;
     }
@@ -112,10 +111,15 @@ export default function PlanPage() {
           <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl">
             <h3 className="text-lg font-bold text-navy mb-2">Switch to {confirmPlan.name}?</h3>
             <p className="text-sm text-gray-600 mb-4">
-              Your plan will change to <strong>{confirmPlan.name} ({confirmPlan.price})</strong>. The change takes effect at the start of your <strong>next billing cycle</strong> — you won't be charged more until then. Your current plan stays active until that date.
+              Your plan will switch to <strong>{confirmPlan.name} ({confirmPlan.price})</strong>.
+              {status === "trialing"
+                ? " Since you're still in your free trial, no charge will occur until your trial ends. You can switch or cancel anytime before then."
+                : " The change takes effect at the start of your next billing cycle — your current plan stays active until that date."}
             </p>
             <div className="bg-blue-50 text-blue-700 rounded-xl px-4 py-3 text-sm mb-5">
-              💡 No immediate charge. Changes apply at next billing cycle.
+              {status === "trialing"
+                ? "🎁 You're on a free trial — no charge until your trial ends."
+                : "💡 No immediate charge. Changes apply at next billing cycle."}
             </div>
             <div className="flex gap-3">
               <button onClick={() => setShowSwitchConfirm(null)}
