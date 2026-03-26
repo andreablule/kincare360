@@ -90,7 +90,149 @@ async function sendWelcomeEmail(to: string, customerName: string, trialEnd: stri
   }
 }
 
+// Map Stripe price IDs to plan names
+function planFromPriceId(priceId: string): string {
+  const map: Record<string, string> = {
+    'price_1TEPOcJlUr03cRD7vm4xB09U': 'BASIC',
+    'price_1TEPOcJlUr03cRD7ypzyYYif': 'STANDARD',
+    'price_1TEPOcJlUr03cRD7tVv6DDjY': 'PREMIUM',
+  };
+  return map[priceId] || 'BASIC';
+}
+
+// Real Stripe webhook handler (called by Stripe with Stripe-Signature header)
+async function handleStripeEvent(req: NextRequest): Promise<NextResponse> {
+  const sig = req.headers.get('stripe-signature');
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+  let rawBody: string;
+  try {
+    rawBody = await req.text();
+  } catch {
+    return NextResponse.json({ error: 'Cannot read body' }, { status: 400 });
+  }
+
+  // Verify webhook signature if secret is configured
+  if (webhookSecret && sig) {
+    // Manual HMAC verification (no Stripe SDK needed)
+    const crypto = await import('crypto');
+    const parts = sig.split(',').reduce((acc: Record<string, string>, part) => {
+      const [key, val] = part.split('=');
+      acc[key] = val;
+      return acc;
+    }, {});
+
+    const timestamp = parts['t'];
+    const expectedSig = parts['v1'];
+
+    if (!timestamp || !expectedSig) {
+      return NextResponse.json({ error: 'Invalid signature format' }, { status: 400 });
+    }
+
+    const signedPayload = `${timestamp}.${rawBody}`;
+    const computedSig = crypto
+      .createHmac('sha256', webhookSecret)
+      .update(signedPayload, 'utf8')
+      .digest('hex');
+
+    if (computedSig !== expectedSig) {
+      console.error('Stripe webhook signature mismatch');
+      return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
+    }
+  }
+
+  let event: any;
+  try {
+    event = JSON.parse(rawBody);
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+  }
+
+  try {
+    switch (event.type) {
+      case 'checkout.session.completed': {
+        const session = event.data.object;
+        const userId = session.metadata?.userId;
+        const plan = session.metadata?.plan;
+        const stripeCustomerId = typeof session.customer === 'string' ? session.customer : session.customer?.id;
+        const subscriptionStatus = 'trialing';
+
+        if (userId) {
+          await prisma.user.update({
+            where: { id: userId },
+            data: {
+              plan: plan || 'BASIC',
+              subscriptionStatus,
+              stripeCustomerId: stripeCustomerId || undefined,
+            },
+          });
+        }
+        break;
+      }
+
+      case 'customer.subscription.updated': {
+        const sub = event.data.object;
+        const customerId = sub.customer;
+        const status = sub.status;
+        const priceId = sub.items?.data?.[0]?.price?.id;
+        const plan = sub.metadata?.plan || (priceId ? planFromPriceId(priceId) : undefined);
+
+        if (customerId) {
+          await prisma.user.updateMany({
+            where: { stripeCustomerId: customerId },
+            data: {
+              subscriptionStatus: status,
+              ...(plan ? { plan } : {}),
+            },
+          });
+        }
+        break;
+      }
+
+      case 'customer.subscription.deleted': {
+        const sub = event.data.object;
+        const customerId = sub.customer;
+
+        if (customerId) {
+          await prisma.user.updateMany({
+            where: { stripeCustomerId: customerId },
+            data: { subscriptionStatus: 'canceled' },
+          });
+        }
+        break;
+      }
+
+      case 'invoice.payment_failed': {
+        const invoice = event.data.object;
+        const customerId = invoice.customer;
+        if (customerId) {
+          await prisma.user.updateMany({
+            where: { stripeCustomerId: customerId },
+            data: { subscriptionStatus: 'past_due' },
+          });
+        }
+        break;
+      }
+
+      default:
+        // Unhandled event types — ignore
+        break;
+    }
+  } catch (err) {
+    console.error('Stripe event processing error:', err);
+    return NextResponse.json({ error: 'Processing error' }, { status: 500 });
+  }
+
+  return NextResponse.json({ received: true });
+}
+
 export async function POST(req: NextRequest) {
+  // If this has a Stripe-Signature header, it's a real Stripe webhook
+  if (req.headers.get('stripe-signature')) {
+    return handleStripeEvent(req);
+  }
+
+  // Otherwise, it's the manual success-page callback
   try {
     const { sessionId } = await req.json();
 

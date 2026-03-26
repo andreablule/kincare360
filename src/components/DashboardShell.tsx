@@ -91,10 +91,10 @@ export default function DashboardShell({ children, user }: { children: React.Rea
         </div>
       </main>
 
-      {/* Mobile bottom nav */}
+      {/* Mobile bottom nav — show key 5: Overview, Medical, Family, History, Plan */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-50">
         <div className="flex justify-around py-2">
-          {navItems.slice(0, 5).map((item) => {
+          {[navItems[0], navItems[2], navItems[3], navItems[5], navItems[6]].map((item) => {
             const active = pathname === item.href;
             return (
               <Link

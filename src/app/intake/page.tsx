@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 const steps = ["Patient Info", "Medical Info", "Family & Services", "Review & Pay"];
 
@@ -59,7 +60,22 @@ function AddressAutocomplete({ value, onChange, onSelect, className, placeholder
 
 export default function IntakePage() {
   const router = useRouter();
+  const { status } = useSession();
   const [step, setStep] = useState(0);
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [status, router]);
+
+  if (status === "loading" || status === "unauthenticated") {
+    return (
+      <main className="min-h-screen flex items-center justify-center">
+        <div className="text-gray-400">Loading...</div>
+      </main>
+    );
+  }
   const [submitting, setSubmitting] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [form, setForm] = useState({

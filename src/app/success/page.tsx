@@ -1,15 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense } from "react";
+import { useSession } from "next-auth/react";
 
 function SuccessContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const { status } = useSession();
   const sessionId = searchParams.get("session_id");
   const [confirmed, setConfirmed] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [trialEnd, setTrialEnd] = useState("");
+  const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
     if (sessionId && !confirmed) {
@@ -30,6 +34,29 @@ function SuccessContent() {
     }
   }, [sessionId, confirmed]);
 
+  // After confirmation, redirect to intake if logged in
+  useEffect(() => {
+    if (confirmed && status === "authenticated" && !redirecting) {
+      setRedirecting(true);
+      // Check if patient profile exists
+      fetch("/api/patient")
+        .then((r) => r.json())
+        .then((data) => {
+          const hasProfile =
+            data.patient &&
+            (data.patient.phone || data.patient.address || data.patient.dob);
+          setTimeout(() => {
+            router.push(hasProfile ? "/dashboard" : "/intake");
+          }, 3000);
+        })
+        .catch(() => {
+          setTimeout(() => {
+            router.push("/intake");
+          }, 3000);
+        });
+    }
+  }, [confirmed, status, redirecting, router]);
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 bg-white">
       <div className="text-center max-w-md">
@@ -49,18 +76,32 @@ function SuccessContent() {
             Trial ends: {trialEnd}
           </p>
         )}
-        <p className="text-gray-500 text-sm mb-8">
-          Lily will call you within 24 hours to set up your care plan and get you started.
-          {confirmed && " A confirmation has been sent to your phone."}
+        <p className="text-gray-500 text-sm mb-6">
+          {confirmed
+            ? "A confirmation has been sent to your phone. Setting up your care profile now…"
+            : "Finalizing your account…"}
           {" "}Questions? Call or text{" "}
           <a href="tel:+18125155252" className="text-teal font-medium">(812) 515-5252</a>
         </p>
+
+        {confirmed && (
+          <div className="bg-teal/10 text-teal text-sm rounded-xl px-4 py-3 mb-6 font-medium">
+            ✓ Redirecting you to set up your care plan…
+          </div>
+        )}
+
         <div className="space-y-3">
-          <a href="/" className="block bg-teal text-white px-8 py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors">
-            Back to Home
+          <a
+            href="/intake"
+            className="block bg-teal text-white px-8 py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors"
+          >
+            Set Up Care Plan →
           </a>
-          <a href="tel:+18125155252" className="block border-2 border-teal text-teal px-8 py-3 rounded-full font-semibold hover:bg-teal hover:text-white transition-colors">
-            Call Lily: (812) 515-5252
+          <a
+            href="/dashboard"
+            className="block border-2 border-teal text-teal px-8 py-3 rounded-full font-semibold hover:bg-teal hover:text-white transition-colors"
+          >
+            Go to Dashboard
           </a>
         </div>
       </div>

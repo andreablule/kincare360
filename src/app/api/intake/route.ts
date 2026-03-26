@@ -32,27 +32,37 @@ export async function POST(req: NextRequest) {
     const firstName = nameParts[0] || '';
     const lastName = nameParts.slice(1).join(' ') || '';
 
-    // Create patient record linked to the logged-in user
-    const patient = await prisma.patient.create({
-      data: {
-        userId,
-        firstName,
-        lastName,
-        dob: data.dob || null,
-        phone: data.phone || null,
-        address: data.address || null,
-        city: data.city || null,
-        state: data.state || null,
-        zip: data.zip || null,
-        preferredCallTime: data.checkInTime || null,
-        medicationReminderTime: data.medicationReminders?.[0]?.time || null,
-        checkInDays: Array.isArray(data.checkInDays) ? data.checkInDays.join(',') : data.checkInDays || null,
-        insuranceCompany: data.insurances?.[0]?.company || null,
-        insuranceMemberId: data.insurances?.[0]?.memberId || null,
-        insuranceGroupNumber: data.insurances?.[0]?.groupNumber || null,
-        insurancePolicyHolder: data.insurances?.[0]?.policyHolder || null,
-      },
-    });
+    // Upsert patient — update existing record if one already exists (from registration), otherwise create
+    const existingPatient = await prisma.patient.findFirst({ where: { userId } });
+
+    const patientData = {
+      userId,
+      firstName,
+      lastName,
+      dob: data.dob || null,
+      phone: data.phone || null,
+      address: data.address || null,
+      city: data.city || null,
+      state: data.state || null,
+      zip: data.zip || null,
+      preferredCallTime: data.checkInTime || null,
+      medicationReminderTime: data.medicationReminders?.[0]?.time || null,
+      checkInDays: Array.isArray(data.checkInDays) ? data.checkInDays.join(',') : data.checkInDays || null,
+      insuranceCompany: data.insurances?.[0]?.company || null,
+      insuranceMemberId: data.insurances?.[0]?.memberId || null,
+      insuranceGroupNumber: data.insurances?.[0]?.groupNumber || null,
+      insurancePolicyHolder: data.insurances?.[0]?.policyHolder || null,
+    };
+
+    let patient;
+    if (existingPatient) {
+      patient = await prisma.patient.update({
+        where: { id: existingPatient.id },
+        data: patientData,
+      });
+    } else {
+      patient = await prisma.patient.create({ data: patientData });
+    }
 
     // Create doctor if provided
     if (data.primaryDoctor) {
