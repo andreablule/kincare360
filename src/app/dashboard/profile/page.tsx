@@ -35,6 +35,7 @@ export default function ProfilePage() {
     medicationReminderTime: "",
     checkInDays: "",
     preferredLanguage: "English",
+    gender: "",
   });
   const [medTimes, setMedTimes] = useState<string[]>([""]);
 
@@ -56,6 +57,7 @@ export default function ProfilePage() {
             medicationReminderTime: data.patient.medicationReminderTime || "",
             checkInDays: data.patient.checkInDays || "",
             preferredLanguage: data.patient.preferredLanguage || "English",
+            gender: data.patient.gender || "",
           });
           // Split comma-separated med times into array
           const times = data.patient.medicationReminderTime
@@ -82,6 +84,7 @@ export default function ProfilePage() {
     const payload = {
       ...form,
       medicationReminderTime: medTimes.filter(Boolean).join(','),
+      gender: form.gender || null,
     };
     await fetch("/api/patient", {
       method: "PATCH",
@@ -133,6 +136,18 @@ export default function ProfilePage() {
             <label className="block text-sm font-medium text-navy mb-1">Phone</label>
             <input type="tel" className={inputClass} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
           </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-navy mb-1">Gender</label>
+          <select className={inputClass} value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })}>
+            <option value="">Prefer not to say</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="non-binary">Non-binary</option>
+            <option value="other">Other</option>
+          </select>
+          <p className="text-xs text-gray-400 mt-1">Helps Lily address your loved one naturally</p>
         </div>
 
         <div>

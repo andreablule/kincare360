@@ -68,7 +68,7 @@ export default function IntakePage() {
   const [step2Error, setStep2Error] = useState("");
   const [step3Error, setStep3Error] = useState("");
   const [form, setForm] = useState({
-    firstName: "", lastName: "", patientName: "", dob: "", phone: "", email: "", address: "", city: "", state: "", zip: "",
+    firstName: "", lastName: "", patientName: "", dob: "", phone: "", email: "", gender: "", address: "", city: "", state: "", zip: "",
     primaryDoctor: "", doctorPhone: "", doctorAddress: "",
     pharmacy: "", pharmacyPhone: "", pharmacyAddress: "",
     medications: "", conditions: "", allergies: "",
@@ -244,6 +244,18 @@ export default function IntakePage() {
                   <label className={labelClass}>Phone Number *</label>
                   <input type="tel" className={inputClass} value={form.phone} onChange={e => update('phone', e.target.value)} placeholder="(215) 555-0123" />
                 </div>
+              </div>
+
+              <div>
+                <label className={labelClass}>Gender</label>
+                <select className={inputClass} value={form.gender} onChange={e => update('gender', e.target.value)}>
+                  <option value="">Prefer not to say</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="non-binary">Non-binary</option>
+                  <option value="other">Other</option>
+                </select>
+                <p className="text-xs text-gray-400 mt-1">Helps Lily address your loved one naturally</p>
               </div>
               <div>
                 <label className={labelClass}>Email Address (optional)</label>

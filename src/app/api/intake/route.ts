@@ -50,6 +50,7 @@ export async function POST(req: NextRequest) {
         ? data.medicationReminders.map((r: any) => r.time).filter(Boolean).join(',')
         : null,
       checkInDays: Array.isArray(data.checkInDays) ? data.checkInDays.join(',') : data.checkInDays || null,
+      gender: data.gender || null,
       insuranceCompany: data.insurances?.[0]?.company || null,
       insuranceMemberId: data.insurances?.[0]?.memberId || null,
       insuranceGroupNumber: data.insurances?.[0]?.groupNumber || null,

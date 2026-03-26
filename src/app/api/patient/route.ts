@@ -34,6 +34,7 @@ export async function PATCH(req: NextRequest) {
     medicationReminderTime: body.medicationReminderTime,
     checkInDays: body.checkInDays,
     preferredLanguage: body.preferredLanguage,
+    gender: body.gender ?? undefined,
   };
 
   if (patientId) {
