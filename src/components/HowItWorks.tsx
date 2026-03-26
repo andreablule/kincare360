@@ -9,7 +9,7 @@ const steps = [
     number: "2",
     title: "Set Up Your Care Plan",
     description:
-      "Choose your plan, fill out the intake form, pick your call times, and select your language.",
+      "Choose your plan, fill out the intake form, and pick your preferred call times. Lily handles the rest.",
   },
   {
     number: "3",

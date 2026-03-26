@@ -145,6 +145,7 @@ export default function Pricing() {
                 "Monthly care summary report",
                 "Priority 24/7 access to Lily",
                 "Doctor & pharmacy coordination",
+                "Local service concierge — Lily finds & calls plumbers, electricians, restaurants, pharmacies, and more on your loved one's behalf",
               ].map((item) => (
                 <li key={item} className="flex items-start gap-2 text-sm">
                   <svg className="w-4 h-4 text-teal flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
