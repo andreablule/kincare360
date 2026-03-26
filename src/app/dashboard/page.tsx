@@ -3,6 +3,10 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 
+export const metadata = {
+  title: "Dashboard | KinCare360",
+};
+
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
   const userId = (session?.user as any)?.id;
@@ -14,6 +18,9 @@ export default async function DashboardPage() {
         orderBy: { callDate: "desc" },
       })
     : null;
+  const callCount = patient
+    ? await prisma.callLog.count({ where: { patientId: patient.id } })
+    : 0;
   const user = await prisma.user.findUnique({ where: { id: userId } });
   const pendingRequests = patient
     ? await prisma.serviceRequest.count({
@@ -24,8 +31,42 @@ export default async function DashboardPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold text-navy mb-6">
-        Welcome, {session?.user?.name?.split(" ")[0] || "there"}
+        Welcome back, {session?.user?.name?.split(" ")[0] || "there"} 👋
       </h1>
+
+      {/* Onboarding card — shown when no patient record exists */}
+      {!patient && (
+        <div className="bg-teal/5 border-2 border-teal/30 rounded-2xl p-6 mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div className="w-12 h-12 bg-teal/10 rounded-xl flex items-center justify-center flex-shrink-0">
+            <svg className="w-6 h-6 text-teal" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div className="flex-1">
+            <h2 className="text-lg font-bold text-navy">Complete your care profile to get started</h2>
+            <p className="text-sm text-gray-500 mt-1">Set up your loved one&apos;s information so Lily can begin daily check-ins and medication reminders.</p>
+          </div>
+          <Link
+            href="/intake"
+            className="bg-teal text-white px-6 py-2.5 rounded-full font-semibold hover:bg-teal-dark transition-colors text-sm whitespace-nowrap"
+          >
+            Set Up Profile →
+          </Link>
+        </div>
+      )}
+
+      {/* No preferred call time reminder */}
+      {patient && !patient.preferredCallTime && (
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-6 flex items-center gap-3">
+          <svg className="w-5 h-5 text-amber-500 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p className="text-sm text-amber-700 flex-1">
+            Set your check-in time so Lily knows when to call.{" "}
+            <Link href="/dashboard/profile" className="font-semibold underline">Update in your profile →</Link>
+          </p>
+        </div>
+      )}
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         {/* Plan card */}
@@ -36,7 +77,7 @@ export default async function DashboardPage() {
             Status: <span className="text-teal font-medium">{user?.subscriptionStatus || "N/A"}</span>
           </div>
           <Link href="/dashboard/plan" className="text-sm text-teal font-medium mt-3 inline-block hover:underline">
-            Manage Plan
+            Manage Plan →
           </Link>
         </div>
 
@@ -46,9 +87,9 @@ export default async function DashboardPage() {
           <div className="text-lg font-bold text-navy">
             {patient?.preferredCallTime || "Not set"}
           </div>
-          <div className="text-sm text-gray-500 mt-1">Daily wellness call</div>
+          <div className="text-sm text-gray-500 mt-1">Daily wellness call with Lily</div>
           <Link href="/dashboard/profile" className="text-sm text-teal font-medium mt-3 inline-block hover:underline">
-            Update Time
+            {patient?.preferredCallTime ? "Update Time →" : "Set Time →"}
           </Link>
         </div>
 
@@ -58,7 +99,7 @@ export default async function DashboardPage() {
           <div className="text-lg font-bold text-navy">{pendingRequests}</div>
           <div className="text-sm text-gray-500 mt-1">Service requests open</div>
           <Link href="/dashboard/requests" className="text-sm text-teal font-medium mt-3 inline-block hover:underline">
-            View Requests
+            View Requests →
           </Link>
         </div>
       </div>
@@ -79,7 +120,7 @@ export default async function DashboardPage() {
             <div className="flex justify-between">
               <span className="text-gray-500">Medications Taken</span>
               <span className={`font-medium ${recentCall.medicationsTaken ? "text-teal" : "text-red-500"}`}>
-                {recentCall.medicationsTaken ? "Yes" : "No"}
+                {recentCall.medicationsTaken ? "Yes ✓" : "No ✗"}
               </span>
             </div>
             {recentCall.summary && (
@@ -90,16 +131,24 @@ export default async function DashboardPage() {
             )}
             {recentCall.urgent && (
               <div className="bg-red-50 text-red-600 rounded-xl px-3 py-2 text-xs font-medium">
-                Urgent concern flagged
+                ⚠️ Urgent concern flagged in this call
               </div>
             )}
           </div>
+        ) : patient ? (
+          <p className="text-gray-400 text-sm">
+            Lily will begin your daily check-ins soon. You&apos;ll see call summaries here.
+          </p>
         ) : (
-          <p className="text-gray-400 text-sm">No call logs yet. Lily will begin check-ins soon.</p>
+          <p className="text-gray-400 text-sm">
+            Complete your care profile to begin check-ins with Lily.
+          </p>
         )}
-        <Link href="/dashboard/history" className="text-sm text-teal font-medium mt-3 inline-block hover:underline">
-          View All Call History
-        </Link>
+        {callCount > 0 && (
+          <Link href="/dashboard/history" className="text-sm text-teal font-medium mt-3 inline-block hover:underline">
+            View All {callCount} Calls →
+          </Link>
+        )}
       </div>
 
       {/* Quick actions */}

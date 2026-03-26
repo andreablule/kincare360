@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 
-const STARTER_PRICE_ID = 'price_1TEPOcJlUr03cRD7vm4xB09U';
-const ESSENTIAL_PRICE_ID = 'price_1TEPOcJlUr03cRD7ypzyYYif';
+const BASIC_PRICE_ID = 'price_1TEPOcJlUr03cRD7vm4xB09U';
+const STANDARD_PRICE_ID = 'price_1TEPOcJlUr03cRD7ypzyYYif';
 const PREMIUM_PRICE_ID = 'price_1TEPOcJlUr03cRD7tVv6DDjY';
 
 function CheckoutButton({ priceId, className, children }: { priceId: string; className: string; children: React.ReactNode }) {
@@ -44,23 +44,29 @@ export default function Pricing() {
         <h2 className="text-3xl md:text-4xl font-bold text-navy text-center mb-4">
           Simple, transparent pricing
         </h2>
-        <p className="text-gray-500 text-center mb-4">
+        <p className="text-gray-500 text-center mb-2">
           Cancel anytime. No contracts.
         </p>
-        <div className="flex justify-center mb-12">
+        <div className="flex flex-wrap justify-center gap-3 mb-12">
           <span className="bg-teal/10 text-teal text-sm font-semibold px-4 py-2 rounded-full">
-            🎉 7-Day Free Trial on all plans — No charge until day 8
+            🎉 7-day free trial on all plans — No charge until day 8
+          </span>
+          <span className="bg-gray-100 text-gray-600 text-sm font-semibold px-4 py-2 rounded-full">
+            ✅ Cancel anytime
+          </span>
+          <span className="bg-gray-100 text-gray-600 text-sm font-semibold px-4 py-2 rounded-full">
+            🚫 No contracts
           </span>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
 
-          {/* Starter */}
+          {/* Basic */}
           <div className="animate-on-scroll rounded-2xl border-2 border-gray-200 bg-white p-7 flex flex-col">
             <div className="mb-4">
-              <span className="text-xs font-bold uppercase tracking-wide text-teal bg-teal/10 px-3 py-1 rounded-full">Launch Special</span>
+              <span className="text-xs font-bold uppercase tracking-wide text-teal bg-teal/10 px-3 py-1 rounded-full">Getting Started</span>
             </div>
-            <h3 className="text-xl font-bold text-navy">Starter</h3>
+            <h3 className="text-xl font-bold text-navy">Basic</h3>
             <div className="mt-3 flex items-baseline gap-1">
               <span className="text-4xl font-extrabold text-navy">$99</span>
               <span className="text-gray-500">/month</span>
@@ -82,10 +88,10 @@ export default function Pricing() {
                 </li>
               ))}
             </ul>
-            <a href="/signup" className="mt-7 block w-full text-center bg-white border-2 border-teal text-teal px-6 py-3 rounded-full font-semibold hover:bg-teal hover:text-white transition-colors disabled:opacity-60 text-sm block text-center">Start Free Trial ?</a>
+            <a href="/register" className="mt-7 block w-full text-center bg-white border-2 border-teal text-teal px-6 py-3 rounded-full font-semibold hover:bg-teal hover:text-white transition-colors text-sm">Start Free Trial</a>
           </div>
 
-          {/* Essential */}
+          {/* Standard */}
           <div className="animate-on-scroll rounded-2xl border-2 border-teal bg-white p-7 flex flex-col relative shadow-lg">
             <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-teal text-white text-xs font-bold px-4 py-1.5 rounded-full whitespace-nowrap">
               Most Popular
@@ -93,7 +99,7 @@ export default function Pricing() {
             <div className="mb-4 mt-2">
               <span className="text-xs font-bold uppercase tracking-wide text-navy bg-navy/10 px-3 py-1 rounded-full">Best Value</span>
             </div>
-            <h3 className="text-xl font-bold text-navy">Essential</h3>
+            <h3 className="text-xl font-bold text-navy">Standard</h3>
             <div className="mt-3 flex items-baseline gap-1">
               <span className="text-4xl font-extrabold text-navy">$199</span>
               <span className="text-gray-500">/month</span>
@@ -102,7 +108,7 @@ export default function Pricing() {
             <p className="text-xs text-gray-400 mt-1">Full care coordination for your family</p>
             <ul className="mt-6 space-y-3 flex-1">
               {[
-                "Everything in Starter",
+                "Everything in Basic",
                 "Appointment scheduling & coordination",
                 "Prescription refill reminders",
                 "Family reporting dashboard",
@@ -116,7 +122,7 @@ export default function Pricing() {
                 </li>
               ))}
             </ul>
-            <a href="/signup" className="mt-7 block w-full text-center bg-teal text-white px-6 py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors disabled:opacity-60 text-sm block text-center">Start Free Trial ?</a>
+            <a href="/register" className="mt-7 block w-full text-center bg-teal text-white px-6 py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors text-sm">Start Free Trial</a>
           </div>
 
           {/* Premium */}
@@ -133,7 +139,7 @@ export default function Pricing() {
             <p className="text-xs text-white/50 mt-1">Priority care for complex needs</p>
             <ul className="mt-6 space-y-3 flex-1">
               {[
-                "Everything in Essential",
+                "Everything in Standard",
                 "Priority same-day response",
                 "Full family dashboard (all members)",
                 "Monthly care summary report",
@@ -148,7 +154,7 @@ export default function Pricing() {
                 </li>
               ))}
             </ul>
-            <a href="/signup" className="mt-7 block w-full text-center bg-teal text-white px-6 py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors disabled:opacity-60 text-sm block text-center">Start Free Trial ?</a>
+            <a href="/register" className="mt-7 block w-full text-center bg-teal text-white px-6 py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors text-sm">Start Free Trial</a>
           </div>
         </div>
 
@@ -161,6 +167,3 @@ export default function Pricing() {
     </section>
   );
 }
-
-
-

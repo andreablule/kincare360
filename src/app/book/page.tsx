@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+// Metadata: Book an Appointment | KinCare360
 
 const services = [
   "Care Consultation (Free)",
@@ -35,10 +35,11 @@ function getNext14Days() {
 }
 
 export default function BookPage() {
-  const router = useRouter();
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [form, setForm] = useState({
     name: '', phone: '', email: '',
     date: '', time: '', service: services[0], message: '',
@@ -51,6 +52,10 @@ export default function BookPage() {
   }
 
   async function handleSubmit() {
+    if (!agreedToTerms) {
+      setError('Please agree to the Terms of Service to continue.');
+      return;
+    }
     setSubmitting(true);
     setError('');
     try {
@@ -61,9 +66,9 @@ export default function BookPage() {
       });
       const data = await res.json();
       if (data.success) {
-        router.push('/thank-you?booked=true');
+        setSuccess(true);
       } else {
-        setError('Something went wrong. Please try again or call us directly.');
+        setError('Something went wrong. Please try again or call us directly at (812) 515-5252.');
         setSubmitting(false);
       }
     } catch {
@@ -96,7 +101,31 @@ export default function BookPage() {
           ))}
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        {/* Success state */}
+        {success && (
+          <div className="bg-white rounded-2xl shadow-sm border border-green-200 p-8 text-center">
+            <div className="w-16 h-16 bg-teal/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-teal" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h2 className="text-xl font-bold text-navy mb-2">Booking Confirmed! 🎉</h2>
+            <p className="text-gray-500 mb-1">
+              Hi <strong>{form.name}</strong>, your appointment is confirmed for:
+            </p>
+            <p className="text-navy font-semibold text-lg">{form.date} at {form.time}</p>
+            <p className="text-gray-500 text-sm mt-1">{form.service}</p>
+            <div className="bg-teal/5 rounded-xl p-4 mt-4 text-sm text-gray-600">
+              A confirmation text has been sent to <strong>{form.phone}</strong>.
+              <br />Questions? Call us at <a href="tel:+18125155252" className="text-teal font-medium">(812) 515-5252</a>
+            </div>
+            <a href="/" className="mt-6 inline-block bg-teal text-white px-6 py-2.5 rounded-full font-semibold hover:bg-teal-dark transition-colors text-sm">
+              Back to Home
+            </a>
+          </div>
+        )}
+
+        {!success && <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
 
           {/* Step 1 — Personal Info */}
           {step === 1 && (
@@ -202,13 +231,18 @@ export default function BookPage() {
               {error && <p className="text-red-500 text-sm">{error}</p>}
 
               <label className="flex items-start gap-3 cursor-pointer">
-                <input type="checkbox" required className="w-4 h-4 mt-0.5 accent-teal flex-shrink-0" />
+                <input
+                  type="checkbox"
+                  checked={agreedToTerms}
+                  onChange={e => setAgreedToTerms(e.target.checked)}
+                  className="w-4 h-4 mt-0.5 accent-teal flex-shrink-0"
+                />
                 <span className="text-xs text-gray-500">
-                  I agree to KinCare360's{' '}
+                  I agree to KinCare360&apos;s{' '}
                   <a href="/terms" target="_blank" className="text-teal underline">Terms of Service</a>
                   {' '}and{' '}
                   <a href="/privacy" target="_blank" className="text-teal underline">Privacy Policy</a>,
-                  and consent to receive SMS confirmations. Reply STOP to opt out.
+                  and consent to receive SMS confirmations from KinCare360. Reply STOP to opt out.
                 </span>
               </label>
 
@@ -217,14 +251,22 @@ export default function BookPage() {
                   className="flex-1 border border-gray-200 text-navy py-3 rounded-full font-semibold hover:bg-gray-50 transition-colors">
                   ← Back
                 </button>
-                <button onClick={handleSubmit} disabled={submitting}
-                  className="flex-1 bg-teal text-white py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors disabled:opacity-60">
-                  {submitting ? 'Booking...' : 'Confirm Booking ✓'}
+                <button onClick={handleSubmit} disabled={submitting || !agreedToTerms}
+                  className="flex-1 bg-teal text-white py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors disabled:opacity-60 flex items-center justify-center gap-2">
+                  {submitting ? (
+                    <>
+                      <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                      </svg>
+                      Booking...
+                    </>
+                  ) : 'Confirm Booking ✓'}
                 </button>
               </div>
             </div>
           )}
-        </div>
+        </div>}
 
         <p className="text-center text-sm text-gray-400 mt-6">
           Questions? Call or text <a href="tel:+18125155252" className="text-teal font-medium">(812) 515-5252</a>

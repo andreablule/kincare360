@@ -58,14 +58,24 @@ export default function HistoryPage() {
 
       {filtered.length === 0 ? (
         <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center">
-          <p className="text-gray-400">
-            {logs.length === 0 ? "No call logs yet. Lily will begin check-ins soon." : "No matching calls found."}
-          </p>
+          {logs.length === 0 ? (
+            <>
+              <div className="w-12 h-12 bg-teal/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                <svg className="w-6 h-6 text-teal" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                </svg>
+              </div>
+              <p className="text-gray-500 font-medium">No call history yet.</p>
+              <p className="text-gray-400 text-sm mt-1">Lily will log every check-in and medication reminder here.</p>
+            </>
+          ) : (
+            <p className="text-gray-400">No matching calls found.</p>
+          )}
         </div>
       ) : (
         <div className="space-y-3">
           {filtered.map((log) => (
-            <div key={log.id} className={`bg-white rounded-2xl border ${log.urgent ? "border-red-300 bg-red-50/30" : "border-gray-100"} p-5`}>
+            <div key={log.id} className={`rounded-2xl border p-5 ${log.urgent ? "border-red-300 bg-red-50" : "bg-white border-gray-100"}`}>
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-sm font-semibold text-navy">

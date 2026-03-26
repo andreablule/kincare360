@@ -14,18 +14,19 @@ export default function Hero() {
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
               <a
-                href="tel:+18125155252"
-                className="bg-teal text-white px-8 py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors"
+                href="/register"
+                className="bg-teal text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-teal-dark transition-colors shadow-lg"
               >
-                Call Us Free &rarr; (812) 515-5252
+                Start Your Free Trial &rarr;
               </a>
               <a
                 href="#how-it-works"
-                className="border-2 border-teal text-teal px-8 py-3 rounded-full font-semibold hover:bg-teal hover:text-white transition-colors"
+                className="border-2 border-teal text-teal px-8 py-4 rounded-full font-semibold text-lg hover:bg-teal hover:text-white transition-colors"
               >
                 See How It Works
               </a>
             </div>
+            <p className="mt-3 text-sm text-gray-400">7-day free trial · No contracts · Cancel anytime</p>
           </div>
 
           {/* Hero image */}

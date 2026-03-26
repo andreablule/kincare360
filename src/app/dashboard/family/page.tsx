@@ -68,9 +68,15 @@ export default function FamilyPage() {
 
       {members.length === 0 && (
         <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center">
-          <p className="text-gray-400 mb-4">No family members added yet.</p>
-          <button onClick={addMember} className="text-teal font-medium hover:underline text-sm">
-            Add your first family member
+          <div className="w-12 h-12 bg-teal/10 rounded-full flex items-center justify-center mx-auto mb-3">
+            <svg className="w-6 h-6 text-teal" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </div>
+          <p className="text-gray-500 font-medium mb-1">No family members added.</p>
+          <p className="text-gray-400 text-sm mb-4">Add family members to receive updates and alerts about your loved one.</p>
+          <button onClick={addMember} className="bg-teal text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-teal-dark">
+            Add Family Member
           </button>
         </div>
       )}
@@ -117,15 +123,20 @@ export default function FamilyPage() {
             </div>
 
             <div className="flex items-center justify-between">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={member.notifyUpdates}
-                  onChange={(e) => { const u = [...members]; u[i] = { ...u[i], notifyUpdates: e.target.checked }; setMembers(u); }}
-                  className="w-4 h-4 accent-teal"
-                />
-                <span className="text-sm text-gray-600">Receive update notifications</span>
-              </label>
+              <button
+                type="button"
+                onClick={() => { const u = [...members]; u[i] = { ...u[i], notifyUpdates: !u[i].notifyUpdates }; setMembers(u); }}
+                className={`flex items-center gap-2.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                  member.notifyUpdates
+                    ? "bg-teal/10 text-teal border border-teal/30"
+                    : "bg-gray-100 text-gray-400 border border-gray-200"
+                }`}
+              >
+                <div className={`w-4 h-4 rounded-full flex-shrink-0 border-2 transition-colors ${
+                  member.notifyUpdates ? "bg-teal border-teal" : "bg-white border-gray-300"
+                }`} />
+                Notifications {member.notifyUpdates ? "ON" : "OFF"}
+              </button>
               <div className="flex gap-2">
                 <button
                   onClick={() => saveMember(member, i)}

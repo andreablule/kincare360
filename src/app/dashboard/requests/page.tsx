@@ -20,7 +20,15 @@ const requestTypes = [
 const statusColors: Record<string, string> = {
   PENDING: "bg-yellow-100 text-yellow-700",
   IN_PROGRESS: "bg-blue-100 text-blue-700",
+  COMPLETED: "bg-green-100 text-green-700",
   DONE: "bg-green-100 text-green-700",
+};
+
+const statusLabels: Record<string, string> = {
+  PENDING: "Pending",
+  IN_PROGRESS: "In Progress",
+  COMPLETED: "Completed",
+  DONE: "Completed",
 };
 
 export default function RequestsPage() {
@@ -107,7 +115,10 @@ export default function RequestsPage() {
         <h2 className="text-sm font-semibold text-navy mb-3">Your Requests</h2>
 
         {requests.length === 0 ? (
-          <p className="text-sm text-gray-400">No requests yet.</p>
+          <div className="text-center py-4">
+            <p className="text-sm text-gray-500 font-medium">No requests yet.</p>
+            <p className="text-xs text-gray-400 mt-1">Submit a request for appointment scheduling or prescription refills.</p>
+          </div>
         ) : (
           <div className="space-y-3">
             {requests.map((req) => (
@@ -122,7 +133,7 @@ export default function RequestsPage() {
                     </span>
                   </div>
                   <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${statusColors[req.status] || "bg-gray-100 text-gray-600"}`}>
-                    {req.status.replace("_", " ")}
+                    {statusLabels[req.status] || req.status.replace("_", " ")}
                   </span>
                 </div>
                 <p className="text-sm text-gray-600">{req.description}</p>

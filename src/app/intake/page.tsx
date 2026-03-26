@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-const steps = ["Patient Info", "Medical Info", "Family & Services", "Review & Pay"];
+const steps = ["Patient Info", "Medical Info", "Family & Contacts", "Review & Submit"];
 
 const timeOptions = Array.from({length: 48}, (_, i) => {
   const hour = Math.floor(i / 2);
@@ -78,8 +78,11 @@ export default function IntakePage() {
   }
   const [submitting, setSubmitting] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [step1Error, setStep1Error] = useState("");
+  const [step2Error, setStep2Error] = useState("");
+  const [step3Error, setStep3Error] = useState("");
   const [form, setForm] = useState({
-    patientName: "", dob: "", phone: "", email: "", address: "", city: "", state: "", zip: "",
+    firstName: "", lastName: "", patientName: "", dob: "", phone: "", email: "", address: "", city: "", state: "", zip: "",
     primaryDoctor: "", doctorPhone: "", doctorAddress: "",
     pharmacy: "", pharmacyPhone: "", pharmacyAddress: "",
     medications: "", conditions: "", allergies: "",
@@ -94,7 +97,16 @@ export default function IntakePage() {
   });
 
   function update(field: string, value: any) {
-    setForm(prev => ({ ...prev, [field]: value }));
+    setForm(prev => {
+      const updated = { ...prev, [field]: value };
+      // Keep patientName in sync with first/last
+      if (field === "firstName" || field === "lastName") {
+        const first = field === "firstName" ? value : prev.firstName;
+        const last = field === "lastName" ? value : prev.lastName;
+        updated.patientName = `${first} ${last}`.trim();
+      }
+      return updated;
+    });
   }
 
   function toggleService(service: string) {
@@ -140,29 +152,20 @@ export default function IntakePage() {
   async function handleSubmit() {
     setSubmitting(true);
     try {
-      // Save intake data first
-      await fetch('/api/intake', {
+      // Save intake data
+      const res = await fetch('/api/intake', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       });
-      
-      // Redirect to Stripe checkout via server-side API (handles price mapping)
-      const res = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          plan: form.selectedPlan,
-          email: form.email || form.familyContacts[0]?.email || '',
-        }),
-      });
       const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        alert('Something went wrong with payment setup. Please call (812) 515-5252 for help.');
+      if (!res.ok) {
+        alert(data.error || 'Something went wrong. Please try again.');
         setSubmitting(false);
+        return;
       }
+      // Redirect to dashboard
+      router.push('/dashboard');
     } catch {
       alert('Network error. Please try again.');
       setSubmitting(false);
@@ -200,36 +203,43 @@ export default function IntakePage() {
           {step === 0 && (
             <div className="space-y-4">
               <h2 className="text-lg font-semibold text-navy mb-4">Patient Information</h2>
+              {step1Error && (
+                <div className="bg-red-50 text-red-600 text-sm rounded-xl px-4 py-3">{step1Error}</div>
+              )}
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className={labelClass}>Patient Full Name *</label>
-                  <input className={inputClass} value={form.patientName} onChange={e => update('patientName', e.target.value)} placeholder="Full name" />
+                  <label className={labelClass}>First Name *</label>
+                  <input className={inputClass} value={form.firstName} onChange={e => update('firstName', e.target.value)} placeholder="First name" />
                 </div>
+                <div>
+                  <label className={labelClass}>Last Name *</label>
+                  <input className={inputClass} value={form.lastName} onChange={e => update('lastName', e.target.value)} placeholder="Last name" />
+                </div>
+              </div>
+              <div className="grid sm:grid-cols-2 gap-4">
                 <div>
                   <label className={labelClass}>Date of Birth *</label>
                   <input type="date" className={inputClass} value={form.dob} onChange={e => update('dob', e.target.value)} />
                 </div>
-              </div>
-              <div className="grid sm:grid-cols-2 gap-4">
                 <div>
                   <label className={labelClass}>Phone Number *</label>
                   <input type="tel" className={inputClass} value={form.phone} onChange={e => update('phone', e.target.value)} placeholder="(215) 555-0123" />
                 </div>
-                <div>
-                  <label className={labelClass}>Email Address *</label>
-                  <input type="email" className={inputClass} value={form.email} onChange={e => update('email', e.target.value)} placeholder="email@example.com" />
-                </div>
               </div>
               <div>
-                <label className={labelClass}>Home Address *</label>
+                <label className={labelClass}>Email Address (optional)</label>
+                <input type="email" className={inputClass} value={form.email} onChange={e => update('email', e.target.value)} placeholder="email@example.com" />
+              </div>
+              <div>
+                <label className={labelClass}>Home Address <span className="text-gray-400 font-normal">(optional)</span></label>
                 <AddressAutocomplete className={inputClass} value={form.address} placeholder="Start typing address..."
                   onChange={v => update('address', v)}
                   onSelect={(address, city, state, zip) => setForm(prev => ({ ...prev, address, city, state, zip }))} />
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                <div><label className={labelClass}>City *</label><input className={inputClass} value={form.city} onChange={e => update('city', e.target.value)} placeholder="City" /></div>
-                <div><label className={labelClass}>State *</label><input className={inputClass} value={form.state} onChange={e => update('state', e.target.value)} placeholder="PA" maxLength={2} /></div>
-                <div><label className={labelClass}>ZIP *</label><input className={inputClass} value={form.zip} onChange={e => update('zip', e.target.value)} placeholder="19103" /></div>
+                <div><label className={labelClass}>City</label><input className={inputClass} value={form.city} onChange={e => update('city', e.target.value)} placeholder="City" /></div>
+                <div><label className={labelClass}>State</label><input className={inputClass} value={form.state} onChange={e => update('state', e.target.value)} placeholder="PA" maxLength={2} /></div>
+                <div><label className={labelClass}>ZIP</label><input className={inputClass} value={form.zip} onChange={e => update('zip', e.target.value)} placeholder="19103" /></div>
               </div>
 
               {/* Call Preferences */}
@@ -275,9 +285,15 @@ export default function IntakePage() {
                 </div>
               </div>
 
-              <button onClick={() => { if (form.patientName && form.phone && form.email && form.address) setStep(1); }}
-                disabled={!form.patientName || !form.phone || !form.email || !form.address}
-                className="w-full bg-teal text-white py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors disabled:opacity-40 mt-2">
+              <button onClick={() => {
+                setStep1Error("");
+                if (!form.firstName) { setStep1Error("First name is required."); return; }
+                if (!form.lastName) { setStep1Error("Last name is required."); return; }
+                if (!form.dob) { setStep1Error("Date of birth is required."); return; }
+                if (!form.phone) { setStep1Error("Phone number is required."); return; }
+                setStep(1);
+              }}
+                className="w-full bg-teal text-white py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors mt-2">
                 Next →
               </button>
             </div>
@@ -373,66 +389,62 @@ export default function IntakePage() {
 
               <div><label className={labelClass}>Additional Notes</label><textarea className={inputClass + " resize-none"} rows={3} value={form.notes} onChange={e => update('notes', e.target.value)} placeholder="Anything else we should know..." /></div>
 
+              {step3Error && (
+                <div className="bg-red-50 text-red-600 text-sm rounded-xl px-4 py-3">{step3Error}</div>
+              )}
               <div className="flex gap-3">
                 <button onClick={() => setStep(1)} className="flex-1 border border-gray-200 text-navy py-3 rounded-full font-semibold hover:bg-gray-50">← Back</button>
-                <button onClick={() => setStep(3)} disabled={!form.familyContacts[0]?.name || !form.familyContacts[0]?.phone}
-                  className="flex-1 bg-teal text-white py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors disabled:opacity-40">
+                <button onClick={() => {
+                  setStep3Error("");
+                  if (!form.familyContacts[0]?.name) { setStep3Error("At least one family contact name is required."); return; }
+                  if (!form.familyContacts[0]?.phone) { setStep3Error("Emergency contact phone number is required."); return; }
+                  setStep(3);
+                }}
+                  className="flex-1 bg-teal text-white py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors">
                   Review →
                 </button>
               </div>
             </div>
           )}
 
-          {/* Step 3 — Review + Select Plan + Pay */}
+          {/* Step 3 — Review + Submit */}
           {step === 3 && (
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-navy mb-4">Review & Select Your Plan</h2>
+              <h2 className="text-lg font-semibold text-navy mb-4">Review & Submit</h2>
 
               <div className="bg-gray-50 rounded-xl p-4 space-y-2 text-sm">
                 <div className="flex justify-between"><span className="text-gray-500">Patient</span><span className="font-medium text-navy">{form.patientName}</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">Date of Birth</span><span className="font-medium text-navy">{form.dob}</span></div>
                 <div className="flex justify-between"><span className="text-gray-500">Phone</span><span className="font-medium text-navy">{form.phone}</span></div>
-                <div className="flex justify-between"><span className="text-gray-500">Email</span><span className="font-medium text-navy">{form.email}</span></div>
-                <div className="flex justify-between"><span className="text-gray-500">Check-In</span><span className="font-medium text-navy">{form.checkInTime} ({form.checkInDays.join(', ')})</span></div>
+                {form.email && <div className="flex justify-between"><span className="text-gray-500">Email</span><span className="font-medium text-navy">{form.email}</span></div>}
+                <div className="flex justify-between"><span className="text-gray-500">Check-In Time</span><span className="font-medium text-navy">{form.checkInTime} ({form.checkInDays.join(', ')})</span></div>
                 <div className="flex justify-between"><span className="text-gray-500">Med Reminders</span><span className="font-medium text-navy">{form.medicationReminders.map(r => timeOptions.find(t => t.value === r.time)?.label).join(', ')}</span></div>
                 <div className="flex justify-between"><span className="text-gray-500">Family Contacts</span><span className="font-medium text-navy">{form.familyContacts.filter(c => c.name).length}</span></div>
+                {form.primaryDoctor && <div className="flex justify-between"><span className="text-gray-500">Doctor</span><span className="font-medium text-navy">{form.primaryDoctor}</span></div>}
+                {form.pharmacy && <div className="flex justify-between"><span className="text-gray-500">Pharmacy</span><span className="font-medium text-navy">{form.pharmacy}</span></div>}
               </div>
-
-              {/* Plan Selection */}
-              <h3 className="text-sm font-semibold text-navy mt-4">Choose Your Plan</h3>
-              <div className="space-y-3">
-                {[
-                  { id: "starter", name: "Starter", price: "$99/mo", features: "Daily check-ins, medication reminders, emergency alerts" },
-                  { id: "essential", name: "Essential", price: "$199/mo", features: "Everything in Starter + appointments, refills, family dashboard", popular: true },
-                  { id: "premium", name: "Premium", price: "$299/mo", features: "Everything in Essential + priority 24/7 access, appointment booking, refill management" },
-                ].map(plan => (
-                  <button key={plan.id} type="button" onClick={() => update('selectedPlan', plan.id)}
-                    className={`w-full text-left p-4 rounded-xl border-2 transition-colors ${form.selectedPlan === plan.id ? 'border-teal bg-teal/5' : 'border-gray-200 hover:border-teal/50'}`}>
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <span className="font-semibold text-navy">{plan.name}</span>
-                        {plan.popular && <span className="ml-2 text-xs bg-teal text-white px-2 py-0.5 rounded-full">Most Popular</span>}
-                      </div>
-                      <span className="font-bold text-navy">{plan.price}</span>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-1">{plan.features}</p>
-                  </button>
-                ))}
-              </div>
-              <p className="text-xs text-teal font-medium text-center">🎉 7-day free trial — no charge until day 8</p>
 
               {/* Terms */}
               <label className="flex items-start gap-3 cursor-pointer p-4 rounded-xl border-2 border-gray-200 hover:border-teal transition-colors">
                 <input type="checkbox" checked={agreedToTerms} onChange={e => setAgreedToTerms(e.target.checked)} className="w-5 h-5 mt-0.5 accent-teal flex-shrink-0" />
                 <span className="text-xs text-gray-600">
-                  I agree to KinCare360&apos;s <a href="/terms" target="_blank" className="text-teal underline">Terms of Service</a> and <a href="/privacy" target="_blank" className="text-teal underline">Privacy Policy</a>. I understand KinCare360 is a non-medical care coordination service, not a substitute for emergency care (call 911), and my 7-day trial auto-converts to a paid subscription unless cancelled.
+                  I agree to KinCare360&apos;s <a href="/terms" target="_blank" className="text-teal underline">Terms of Service</a> and <a href="/privacy" target="_blank" className="text-teal underline">Privacy Policy</a>. I understand KinCare360 is a non-medical care coordination service, not a substitute for emergency care (call 911).
                 </span>
               </label>
 
               <div className="flex gap-3">
                 <button onClick={() => setStep(2)} className="flex-1 border border-gray-200 text-navy py-3 rounded-full font-semibold hover:bg-gray-50">← Back</button>
-                <button onClick={handleSubmit} disabled={submitting || !agreedToTerms || !form.selectedPlan}
-                  className="flex-1 bg-teal text-white py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors disabled:opacity-40">
-                  {submitting ? 'Processing...' : 'Start Free Trial →'}
+                <button onClick={handleSubmit} disabled={submitting || !agreedToTerms}
+                  className="flex-1 bg-teal text-white py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors disabled:opacity-40 flex items-center justify-center gap-2">
+                  {submitting ? (
+                    <>
+                      <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                      </svg>
+                      Saving...
+                    </>
+                  ) : 'Complete Setup →'}
                 </button>
               </div>
             </div>

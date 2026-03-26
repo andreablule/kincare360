@@ -62,7 +62,14 @@ function Section<T extends { id?: string }>({
         </button>
       </div>
 
-      {items.length === 0 && <p className="text-sm text-gray-400">None added yet.</p>}
+      {items.length === 0 && (
+        <p className="text-sm text-gray-400 py-2">
+          {title === "Medications" ? "No medications added yet. Add one to help Lily remind your loved one." :
+           title === "Doctors" ? "No doctors added yet. Add your loved one's care team." :
+           title === "Conditions" ? "No conditions added yet. Add known medical conditions." :
+           "No pharmacies added yet. Add your preferred pharmacy."}
+        </p>
+      )}
 
       <div className="space-y-4">
         {items.map((item, i) => (
