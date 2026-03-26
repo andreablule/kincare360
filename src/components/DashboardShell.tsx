@@ -80,7 +80,7 @@ export default function DashboardShell({ children, user }: { children: React.Rea
           {(userRole === "MANAGER" || userRole === "FAMILY") && (
             <div className="mb-2"><RoleBadge role={userRole} /></div>
           )}
-          <button onClick={() => signOut({ callbackUrl: "/login" })} className="text-sm text-red-500 hover:text-red-700 font-medium">Sign Out</button>
+          <button onClick={() => signOut({ callbackUrl: "/" })} className="text-sm text-red-500 hover:text-red-700 font-medium">Sign Out</button>
         </div>
       </aside>
 
@@ -136,7 +136,7 @@ export default function DashboardShell({ children, user }: { children: React.Rea
             <div className="mb-2"><RoleBadge role={userRole} /></div>
           )}
           <button
-            onClick={() => signOut({ callbackUrl: "/login" })}
+            onClick={() => signOut({ callbackUrl: "/" })}
             className="text-sm text-red-500 hover:text-red-700 font-medium"
           >
             Sign Out
