@@ -28,6 +28,7 @@ export default function ProfilePage() {
     checkInDays: "",
     preferredLanguage: "English",
   });
+  const [medTimes, setMedTimes] = useState<string[]>([""]);
 
   useEffect(() => {
     fetch("/api/patient")
@@ -48,6 +49,11 @@ export default function ProfilePage() {
             checkInDays: data.patient.checkInDays || "",
             preferredLanguage: data.patient.preferredLanguage || "English",
           });
+          // Split comma-separated med times into array
+          const times = data.patient.medicationReminderTime
+            ? data.patient.medicationReminderTime.split(',').map((t: string) => t.trim()).filter(Boolean)
+            : [""];
+          setMedTimes(times);
         }
         setLoading(false);
       });
@@ -65,10 +71,14 @@ export default function ProfilePage() {
     e.preventDefault();
     setSaving(true);
     setSuccess(false);
+    const payload = {
+      ...form,
+      medicationReminderTime: medTimes.filter(Boolean).join(','),
+    };
     await fetch("/api/patient", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+      body: JSON.stringify(payload),
     });
     setSaving(false);
     setSuccess(true);
@@ -144,9 +154,31 @@ export default function ProfilePage() {
             <p className="text-xs text-gray-400 mt-1">When should Lily call for the daily check-in?</p>
           </div>
           <div>
-            <label className="block text-sm font-medium text-navy mb-1">Medication Reminder Time</label>
-            <input type="time" className={inputClass} value={form.medicationReminderTime} onChange={(e) => setForm({ ...form, medicationReminderTime: e.target.value })} step="60" />
-            <p className="text-xs text-gray-400 mt-1">When should Lily remind about medications? (e.g. 8:00 AM)</p>
+            <label className="block text-sm font-medium text-navy mb-1">Medication Reminder Times</label>
+            {medTimes.map((t, i) => (
+              <div key={i} className="flex items-center gap-2 mb-2">
+                <input
+                  type="time"
+                  className={inputClass}
+                  value={t}
+                  onChange={e => {
+                    const updated = [...medTimes];
+                    updated[i] = e.target.value;
+                    setMedTimes(updated);
+                  }}
+                  step="60"
+                />
+                {medTimes.length > 1 && (
+                  <button type="button" onClick={() => setMedTimes(medTimes.filter((_, idx) => idx !== i))}
+                    className="text-red-400 hover:text-red-600 text-lg font-bold px-1 flex-shrink-0">✕</button>
+                )}
+              </div>
+            ))}
+            <button type="button" onClick={() => setMedTimes([...medTimes, ""])}
+              className="text-teal text-sm font-medium hover:underline mt-1">
+              + Add another reminder time
+            </button>
+            <p className="text-xs text-gray-400 mt-1">Lily will call at each time to remind about medications</p>
           </div>
         </div>
 

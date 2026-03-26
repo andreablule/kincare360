@@ -46,7 +46,9 @@ export async function POST(req: NextRequest) {
       state: data.state || null,
       zip: data.zip || null,
       preferredCallTime: data.checkInTime || null,
-      medicationReminderTime: data.medicationReminders?.[0]?.time || null,
+      medicationReminderTime: Array.isArray(data.medicationReminders) && data.medicationReminders.length > 0
+        ? data.medicationReminders.map((r: any) => r.time).filter(Boolean).join(',')
+        : null,
       checkInDays: Array.isArray(data.checkInDays) ? data.checkInDays.join(',') : data.checkInDays || null,
       insuranceCompany: data.insurances?.[0]?.company || null,
       insuranceMemberId: data.insurances?.[0]?.memberId || null,

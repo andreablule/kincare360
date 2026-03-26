@@ -139,13 +139,19 @@ export default async function DashboardPage() {
 
         {/* Medication reminders */}
         <div className="bg-white rounded-2xl border border-gray-100 p-5">
-          <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Medication Reminder</div>
-          <div className="text-lg font-bold text-navy">
-            {patient?.medicationReminderTime || "Not set"}
-          </div>
-          <div className="text-sm text-gray-500 mt-1">Daily medication reminder call</div>
+          <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Medication Reminders</div>
+          {patient?.medicationReminderTime ? (
+            <div className="flex flex-wrap gap-1.5 mt-1">
+              {patient.medicationReminderTime.split(',').map((t, i) => (
+                <span key={i} className="text-sm font-bold text-navy bg-teal/5 border border-teal/20 rounded-lg px-2.5 py-1">{t.trim()}</span>
+              ))}
+            </div>
+          ) : (
+            <div className="text-lg font-bold text-navy">Not set</div>
+          )}
+          <div className="text-sm text-gray-500 mt-1">Daily medication reminder calls</div>
           <Link href="/dashboard/profile" className="text-sm text-teal font-medium mt-3 inline-block hover:underline">
-            {patient?.medicationReminderTime ? "Update Time →" : "Set Time →"}
+            {patient?.medicationReminderTime ? "Manage Times →" : "Set Time →"}
           </Link>
         </div>
 
