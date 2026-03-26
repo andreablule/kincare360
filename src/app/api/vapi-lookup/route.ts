@@ -146,11 +146,6 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string) {
       voice: {
         provider: "11labs",
         voiceId: "paula",
-        inputPreprocessingEnabled: true,
-        inputReformattingEnabled: true,
-        inputMinCharacters: 30,
-        inputPunctuationBoundaries: [".", "?", "!", ",", ";"],
-        denoising: true,
       },
       backgroundSound: "off",
       backgroundDenoisingEnabled: true,
