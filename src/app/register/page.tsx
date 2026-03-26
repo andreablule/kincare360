@@ -99,7 +99,7 @@ function RegisterForm() {
         setError("Account created but login failed. Please sign in manually.");
         setLoading(false);
       } else {
-        router.push("/dashboard");
+        router.push("/intake");
       }
     } catch {
       setError("Something went wrong. Please try again.");
@@ -112,7 +112,7 @@ function RegisterForm() {
       {/* Google Sign Up — top */}
       <button
         type="button"
-        onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+        onClick={() => signIn("google", { callbackUrl: "/intake" })}
         className="w-full flex items-center justify-center gap-3 border border-gray-300 bg-white text-navy py-3 rounded-xl font-semibold hover:bg-gray-50 transition-colors text-sm"
       >
         <svg className="w-5 h-5" viewBox="0 0 24 24">

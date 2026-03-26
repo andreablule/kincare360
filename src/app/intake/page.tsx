@@ -164,8 +164,27 @@ export default function IntakePage() {
         setSubmitting(false);
         return;
       }
-      // Redirect to dashboard
-      router.push('/dashboard');
+
+      // Redirect to Stripe checkout for selected plan
+      const planMap: Record<string, string> = {
+        basic: 'starter',
+        standard: 'essential',
+        premium: 'premium',
+      };
+      const stripePlan = planMap[form.selectedPlan] || 'essential';
+
+      const checkoutRes = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan: stripePlan }),
+      });
+      const checkoutData = await checkoutRes.json();
+      if (checkoutData.url) {
+        window.location.href = checkoutData.url;
+      } else {
+        alert('Could not start checkout. Please try again.');
+        setSubmitting(false);
+      }
     } catch {
       alert('Network error. Please try again.');
       setSubmitting(false);
@@ -424,6 +443,31 @@ export default function IntakePage() {
                 {form.pharmacy && <div className="flex justify-between"><span className="text-gray-500">Pharmacy</span><span className="font-medium text-navy">{form.pharmacy}</span></div>}
               </div>
 
+              {/* Plan Selection */}
+              <div>
+                <h3 className="text-sm font-semibold text-navy mb-3">Choose Your Plan</h3>
+                <div className="grid gap-3">
+                  {[
+                    { id: 'basic', name: 'Basic', price: '$99/mo', desc: 'Daily check-in calls + medication reminders' },
+                    { id: 'standard', name: 'Standard', price: '$199/mo', desc: 'Basic + appointment coordination + family dashboard', popular: true },
+                    { id: 'premium', name: 'Premium', price: '$299/mo', desc: 'Standard + priority support + all services' },
+                  ].map(plan => (
+                    <label key={plan.id} className={`flex items-center gap-4 cursor-pointer p-4 rounded-xl border-2 transition-colors ${form.selectedPlan === plan.id ? 'border-teal bg-teal/5' : 'border-gray-200 hover:border-teal/50'}`}>
+                      <input type="radio" name="plan" value={plan.id} checked={form.selectedPlan === plan.id} onChange={() => update('selectedPlan', plan.id)} className="w-4 h-4 accent-teal flex-shrink-0" />
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-navy text-sm">{plan.name}</span>
+                          {plan.popular && <span className="text-xs bg-teal text-white px-2 py-0.5 rounded-full">Most Popular</span>}
+                        </div>
+                        <p className="text-xs text-gray-500 mt-0.5">{plan.desc}</p>
+                      </div>
+                      <span className="font-bold text-teal text-sm">{plan.price}</span>
+                    </label>
+                  ))}
+                </div>
+                <p className="text-xs text-gray-400 mt-2 text-center">7-day free trial • No charge until day 8 • Cancel anytime</p>
+              </div>
+
               {/* Terms */}
               <label className="flex items-start gap-3 cursor-pointer p-4 rounded-xl border-2 border-gray-200 hover:border-teal transition-colors">
                 <input type="checkbox" checked={agreedToTerms} onChange={e => setAgreedToTerms(e.target.checked)} className="w-5 h-5 mt-0.5 accent-teal flex-shrink-0" />
@@ -434,7 +478,7 @@ export default function IntakePage() {
 
               <div className="flex gap-3">
                 <button onClick={() => setStep(2)} className="flex-1 border border-gray-200 text-navy py-3 rounded-full font-semibold hover:bg-gray-50">← Back</button>
-                <button onClick={handleSubmit} disabled={submitting || !agreedToTerms}
+                <button onClick={handleSubmit} disabled={submitting || !agreedToTerms || !form.selectedPlan}
                   className="flex-1 bg-teal text-white py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors disabled:opacity-40 flex items-center justify-center gap-2">
                   {submitting ? (
                     <>
@@ -444,7 +488,7 @@ export default function IntakePage() {
                       </svg>
                       Saving...
                     </>
-                  ) : 'Complete Setup →'}
+                  ) : 'Continue to Payment →'}
                 </button>
               </div>
             </div>
