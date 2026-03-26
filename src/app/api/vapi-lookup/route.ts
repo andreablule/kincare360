@@ -118,8 +118,12 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string) {
       name: "Lily",
       voice: {
         provider: "11labs",
-        voiceId: "EXAVITQu4vr4xnSDxMaL", // paula
+        voiceId: "paula",
       },
+      backgroundSound: "off",
+      backgroundDenoisingEnabled: true,
+      backchannelingEnabled: true,
+      silenceTimeoutSeconds: 30,
       model: {
         provider: "openai",
         model: "gpt-4o-mini",
