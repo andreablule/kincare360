@@ -258,7 +258,7 @@ export async function POST(req: NextRequest) {
     if (patient) {
       const context = buildPatientContext(patient);
       const prompt = buildLilySystemPrompt(context);
-      const firstMessage = `Good ${greeting}, ${patient.firstName}! This is Lily from KinCare360. How are you doing today?`;
+      const firstMessage = `Hello! Good ${greeting}, ${patient.firstName}. This is Lily calling from KinCare360. How are you doing today, ${patient.firstName}?`;
       console.log(`[vapi-lookup] Known patient: ${patient.firstName} ${patient.lastName} (${digits})`);
       return NextResponse.json(buildAssistantConfig(prompt, firstMessage));
     }
@@ -289,7 +289,7 @@ ${buildPatientContext(p)}
 
 INSTRUCTION: Greet ${familyMember.name} by name. They are calling about their loved one ${p.firstName}. Share relevant care updates and answer their questions.`;
       const prompt = buildLilySystemPrompt(context);
-      const firstMessage = `Good ${greeting}, ${familyMember.name}! This is Lily from KinCare360. I see you're registered as ${p.firstName}'s ${familyMember.relationship || "family member"}. How can I help you today?`;
+      const firstMessage = `Hello! Good ${greeting}, ${familyMember.name}. This is Lily from KinCare360. How are you doing today, ${familyMember.name}?`;
       console.log(`[vapi-lookup] Known family member: ${familyMember.name} calling about ${p.firstName} (${digits})`);
       return NextResponse.json(buildAssistantConfig(prompt, firstMessage));
     }
