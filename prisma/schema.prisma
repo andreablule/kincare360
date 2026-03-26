@@ -123,5 +123,7 @@ model CallLog {
   medicationsTaken Boolean @default(false)
   concerns        String?
   urgent          Boolean  @default(false)
+  transcript      String?
+  callType        String?
   createdAt       DateTime @default(now())
 }

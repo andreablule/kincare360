@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 
 const twilioSid = process.env.TWILIO_ACCOUNT_SID!;
@@ -9,7 +11,7 @@ const alertPhone = process.env.ALERT_PHONE_NUMBER!;
 async function sendSMS(to: string, body: string) {
   const auth = Buffer.from(`${twilioSid}:${twilioToken}`).toString('base64');
   const params = new URLSearchParams({ To: to, From: twilioPhone, Body: body });
-  
+
   try {
     await fetch(`https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`, {
       method: 'POST',
@@ -25,15 +27,17 @@ async function sendSMS(to: string, body: string) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    
+
     // Extract structured data from VAPI end-of-call report
     const analysis = body.message?.analysis || body.analysis || {};
     const structuredData = analysis.structuredData || {};
     const summary = analysis.summary || body.summary || '';
     const callId = body.message?.call?.id || body.callId || '';
     const customerPhone = body.message?.call?.customer?.number || body.customerPhone || '';
-    
-    const urgent = structuredData.urgent === true || 
+    const transcript = body.message?.transcript || body.transcript || null;
+    const callType = body.message?.call?.type || body.callType || structuredData.callType || null;
+
+    const urgent = structuredData.urgent === true ||
                    summary.toLowerCase().includes('urgent') ||
                    summary.toLowerCase().includes('911') ||
                    summary.toLowerCase().includes('chest pain') ||
@@ -61,6 +65,8 @@ export async function POST(req: NextRequest) {
           medicationsTaken: structuredData.medications_taken === true,
           concerns: structuredData.concerns || null,
           urgent: urgent,
+          transcript: transcript,
+          callType: callType,
         },
       });
     }
@@ -91,13 +97,26 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// GET: Fetch call logs for dashboard
+// GET: Fetch call logs for dashboard (supports patientId param or session-based lookup)
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const patientId = searchParams.get('patientId');
+  let patientId = searchParams.get('patientId');
 
+  // If no patientId provided, look up from session
   if (!patientId) {
-    return NextResponse.json({ error: 'patientId required' }, { status: 400 });
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const userId = (session.user as any).id;
+    const patient = await prisma.patient.findFirst({
+      where: { userId },
+      select: { id: true },
+    });
+    if (!patient) {
+      return NextResponse.json([]);
+    }
+    patientId = patient.id;
   }
 
   const logs = await prisma.callLog.findMany({

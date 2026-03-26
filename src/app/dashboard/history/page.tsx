@@ -10,6 +10,8 @@ interface CallLog {
   medicationsTaken: boolean;
   concerns: string;
   urgent: boolean;
+  transcript: string | null;
+  callType: string | null;
 }
 
 export default function HistoryPage() {
@@ -21,7 +23,7 @@ export default function HistoryPage() {
     fetch("/api/call-logs")
       .then((r) => r.json())
       .then((data) => {
-        setLogs(data.items || []);
+        setLogs(Array.isArray(data) ? data : data.items || []);
         setLoading(false);
       });
   }, []);
@@ -33,6 +35,7 @@ export default function HistoryPage() {
       log.summary?.toLowerCase().includes(q) ||
       log.mood?.toLowerCase().includes(q) ||
       log.concerns?.toLowerCase().includes(q) ||
+      log.callType?.toLowerCase().includes(q) ||
       new Date(log.callDate).toLocaleDateString().includes(q)
     );
   });
@@ -48,7 +51,7 @@ export default function HistoryPage() {
           type="text"
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          placeholder="Search calls by date, mood, or keywords..."
+          placeholder="Search calls by date, mood, type, or keywords..."
           className="w-full max-w-md border border-gray-300 rounded-xl px-4 py-2.5 text-sm text-navy focus:outline-none focus:ring-2 focus:ring-teal"
         />
       </div>
@@ -62,9 +65,9 @@ export default function HistoryPage() {
       ) : (
         <div className="space-y-3">
           {filtered.map((log) => (
-            <div key={log.id} className={`bg-white rounded-2xl border ${log.urgent ? "border-red-200" : "border-gray-100"} p-5`}>
+            <div key={log.id} className={`bg-white rounded-2xl border ${log.urgent ? "border-red-300 bg-red-50/30" : "border-gray-100"} p-5`}>
               <div className="flex items-start justify-between mb-3">
-                <div>
+                <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-sm font-semibold text-navy">
                     {new Date(log.callDate).toLocaleDateString("en-US", {
                       weekday: "long",
@@ -74,8 +77,13 @@ export default function HistoryPage() {
                     })}
                   </span>
                   {log.urgent && (
-                    <span className="ml-2 text-xs bg-red-100 text-red-600 font-medium px-2 py-0.5 rounded-full">
-                      Urgent
+                    <span className="text-xs bg-red-500 text-white font-bold px-2.5 py-0.5 rounded-full">
+                      URGENT
+                    </span>
+                  )}
+                  {log.callType && (
+                    <span className="text-xs bg-blue-100 text-blue-700 font-medium px-2 py-0.5 rounded-full">
+                      {log.callType}
                     </span>
                   )}
                 </div>
@@ -104,8 +112,19 @@ export default function HistoryPage() {
                 {log.concerns && (
                   <div>
                     <span className="text-gray-500">Concerns:</span>
-                    <p className="text-navy mt-0.5">{log.concerns}</p>
+                    <p className={`mt-0.5 ${log.urgent ? "text-red-600 font-medium" : "text-navy"}`}>{log.concerns}</p>
                   </div>
+                )}
+
+                {log.transcript && (
+                  <details className="mt-2 border border-gray-100 rounded-xl">
+                    <summary className="cursor-pointer px-4 py-2 text-sm font-medium text-teal hover:bg-teal/5 rounded-xl">
+                      View Transcript
+                    </summary>
+                    <div className="px-4 py-3 text-sm text-gray-700 whitespace-pre-wrap border-t border-gray-100 max-h-64 overflow-y-auto">
+                      {log.transcript}
+                    </div>
+                  </details>
                 )}
               </div>
             </div>

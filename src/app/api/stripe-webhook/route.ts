@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
+import { prisma } from '@/lib/prisma';
 
 const twilioSid = process.env.TWILIO_ACCOUNT_SID!;
 const twilioToken = process.env.TWILIO_AUTH_TOKEN!;
@@ -41,42 +42,42 @@ async function sendWelcomeEmail(to: string, customerName: string, trialEnd: stri
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <img src="https://kincare360.com/kincare360-logo.png" alt="KinCare360" style="height: 60px; margin-bottom: 20px;" />
-          
+
           <h1 style="color: #0F2147; font-size: 24px;">Welcome to KinCare360, ${firstName}!</h1>
-          
+
           <p style="color: #555; font-size: 16px; line-height: 1.6;">
             Your 7-day free trial is now active. Here's what happens next:
           </p>
-          
+
           <div style="background: #f0faf9; border-left: 4px solid #0EA5A0; padding: 16px; margin: 20px 0; border-radius: 0 8px 8px 0;">
             <p style="margin: 0; color: #0F2147;"><strong>📞 Lily will start calling</strong> your loved one at their preferred time for daily wellness check-ins.</p>
           </div>
-          
+
           <div style="background: #f0faf9; border-left: 4px solid #0EA5A0; padding: 16px; margin: 20px 0; border-radius: 0 8px 8px 0;">
             <p style="margin: 0; color: #0F2147;"><strong>💊 Medication reminders</strong> will be sent at the times you selected during setup.</p>
           </div>
-          
+
           <div style="background: #f0faf9; border-left: 4px solid #0EA5A0; padding: 16px; margin: 20px 0; border-radius: 0 8px 8px 0;">
             <p style="margin: 0; color: #0F2147;"><strong>👨‍👩‍👧 Family dashboard</strong> — log in anytime at <a href="https://kincare360.com/login" style="color: #0EA5A0;">kincare360.com/login</a> to see daily summaries and care updates.</p>
           </div>
-          
+
           <div style="background: #fff3cd; padding: 16px; margin: 20px 0; border-radius: 8px;">
             <p style="margin: 0; color: #856404;"><strong>📅 Your free trial ends:</strong> ${trialEnd}</p>
             <p style="margin: 8px 0 0 0; color: #856404; font-size: 14px;">No charge until then. Cancel anytime before this date and you won't be billed.</p>
           </div>
-          
+
           <h2 style="color: #0F2147; font-size: 18px; margin-top: 30px;">Need help?</h2>
           <p style="color: #555; font-size: 16px;">
             Call Lily anytime: <a href="tel:+18125155252" style="color: #0EA5A0; font-weight: bold;">(812) 515-5252</a><br/>
             Email us: <a href="mailto:hello@kincare360.com" style="color: #0EA5A0;">hello@kincare360.com</a><br/>
             Visit: <a href="https://kincare360.com" style="color: #0EA5A0;">kincare360.com</a>
           </p>
-          
+
           <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;" />
-          
+
           <p style="color: #999; font-size: 12px;">
             © 2026 Son Healthcare Services LLC, operating as KinCare360. All rights reserved.<br/>
-            <a href="https://kincare360.com/terms" style="color: #999;">Terms of Service</a> · 
+            <a href="https://kincare360.com/terms" style="color: #999;">Terms of Service</a> ·
             <a href="https://kincare360.com/privacy" style="color: #999;">Privacy Policy</a><br/>
             Reply STOP to unsubscribe from SMS notifications.
           </p>
@@ -92,14 +93,14 @@ async function sendWelcomeEmail(to: string, customerName: string, trialEnd: stri
 export async function POST(req: NextRequest) {
   try {
     const { sessionId } = await req.json();
-    
+
     if (!sessionId) {
       return NextResponse.json({ error: 'No session ID' }, { status: 400 });
     }
 
     const stripeKey = process.env.STRIPE_SECRET_KEY!;
     const auth = Buffer.from(`${stripeKey}:`).toString('base64');
-    
+
     const sessionRes = await fetch(`https://api.stripe.com/v1/checkout/sessions/${sessionId}?expand[]=customer&expand[]=subscription`, {
       headers: { 'Authorization': `Basic ${auth}` },
     });
@@ -113,9 +114,26 @@ export async function POST(req: NextRequest) {
     const customerName = session.customer_details?.name || session.customer?.name || 'there';
     const customerPhone = session.customer_details?.phone || '';
     const planAmount = session.amount_total ? `$${session.amount_total / 100}` : '';
-    const trialEnd = session.subscription?.trial_end 
-      ? new Date(session.subscription.trial_end * 1000).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) 
+    const trialEnd = session.subscription?.trial_end
+      ? new Date(session.subscription.trial_end * 1000).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
       : '7 days from now';
+
+    // Update user plan + subscription status in DB using metadata from checkout
+    const metadataUserId = session.metadata?.userId;
+    const metadataPlan = session.metadata?.plan;
+    const stripeCustomerId = typeof session.customer === 'string' ? session.customer : session.customer?.id;
+    const subscriptionStatus = session.subscription?.status || 'trialing';
+
+    if (metadataUserId) {
+      await prisma.user.update({
+        where: { id: metadataUserId },
+        data: {
+          plan: metadataPlan || 'BASIC',
+          subscriptionStatus,
+          stripeCustomerId: stripeCustomerId || undefined,
+        },
+      });
+    }
 
     // 1. SMS alert to Andrea
     await sendSMS(
@@ -139,10 +157,10 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       customer: { name: customerName, email: customerEmail },
-      trialEnd 
+      trialEnd
     });
   } catch (err) {
     console.error('Stripe webhook error:', err);
