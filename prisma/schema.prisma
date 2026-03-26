@@ -35,6 +35,7 @@ model Patient {
   preferredCallTime    String?
   medicationReminderTime String?
   checkInDays          String?   // comma-separated: "Mon,Tue,Wed,Thu,Fri"
+  gender               String?
   preferredLanguage    String?   @default("English")
   insuranceCompany     String?
   insuranceMemberId    String?
@@ -97,6 +98,7 @@ model FamilyMember {
   patientId     String
   patient       Patient @relation(fields: [patientId], references: [id])
   name          String
+  gender        String?
   relationship  String?
   phone         String?
   email         String?

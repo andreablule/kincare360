@@ -96,8 +96,13 @@ function buildPatientContext(patient: any): string {
     ? `Last call was on ${new Date(lastCall.callDate).toLocaleDateString()}: ${lastCall.summary || 'No summary'}. Mood: ${lastCall.mood || 'unknown'}. Medications taken: ${lastCall.medicationsTaken ? 'yes' : 'no/unknown'}.`
     : "No previous calls recorded.";
 
+  const genderLine = patient.gender
+    ? `- Gender: ${patient.gender}`
+    : `- Gender: unknown (use they/them until the caller self-identifies)`;
+
   return `Patient details:
 - Name: ${patient.firstName} ${patient.lastName}
+${genderLine}
 - Date of birth: ${patient.dob || 'unknown'}
 - Location: ${patient.city || ''}, ${patient.state || ''}
 - Preferred check-in time: ${patient.preferredCallTime || 'not set'}
@@ -127,7 +132,8 @@ IMPORTANT:
 - Greet ${patient.firstName} by name warmly.
 - Reference their specific medications and doctors when relevant.
 - This is a known client — give them VIP treatment.
-- SPEAK IN ${(patient.preferredLanguage || 'English').split(' / ')[0].toUpperCase()} for the entire call. Start the conversation in their preferred language immediately. Do not start in English and switch — begin in their language from the first word.`;
+- SPEAK IN ${(patient.preferredLanguage || 'English').split(' / ')[0].toUpperCase()} for the entire call. Start the conversation in their preferred language immediately. Do not start in English and switch — begin in their language from the first word.
+- IMPORTANT: Do NOT assume gender from the caller name. Use neutral language (they/them) unless you know their gender from their profile or they reveal it themselves.`;
 
   return {
     known: true,
@@ -149,7 +155,8 @@ IMPORTANT:
 - Share relevant updates about ${patient.firstName}'s recent check-ins, medications, and care status.
 - This is a known family member of a client — give them VIP treatment and be reassuring.
 - Answer their questions about ${patient.firstName}'s care plan and recent activity.
-- SPEAK IN ${(patient.preferredLanguage || 'English').split(' / ')[0].toUpperCase()} for the entire call. Start the conversation in their preferred language immediately. Do not start in English and switch — begin in their language from the first word.`;
+- SPEAK IN ${(patient.preferredLanguage || 'English').split(' / ')[0].toUpperCase()} for the entire call. Start the conversation in their preferred language immediately. Do not start in English and switch — begin in their language from the first word.
+- IMPORTANT: Do NOT assume gender from the caller name. Use neutral language (they/them) unless you know their gender from their profile or they reveal it themselves.`;
 
   return {
     known: true,

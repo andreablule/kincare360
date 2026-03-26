@@ -55,6 +55,24 @@ export default function DashboardShell({ children, user }: { children: React.Rea
           })}
         </nav>
 
+        {(user?.role === "ADMIN" || user?.email === "hello@kincare360.com") && (
+          <div className="px-4 pt-2">
+            <Link
+              href="/admin"
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                pathname === "/admin"
+                  ? "bg-teal/10 text-teal"
+                  : "text-gray-600 hover:bg-gray-50 hover:text-navy"
+              }`}
+            >
+              <svg className={`w-5 h-5 ${pathname === "/admin" ? "text-teal" : "text-gray-400"}`} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" />
+              </svg>
+              Admin
+            </Link>
+          </div>
+        )}
+
         <div className="p-4 border-t border-gray-100">
           <div className="text-sm text-gray-500 mb-2 truncate">{user?.name || user?.email}</div>
           <button
