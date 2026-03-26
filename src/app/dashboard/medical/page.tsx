@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 
 interface Doctor { id?: string; name: string; specialty: string; phone: string; address: string; notes: string; }
 interface Pharmacy { id?: string; name: string; phone: string; address: string; }
@@ -14,6 +15,7 @@ function Section<T extends { id?: string }>({
   endpoint,
   fields,
   emptyItem,
+  readOnly = false,
 }: {
   title: string;
   items: T[];
@@ -21,6 +23,7 @@ function Section<T extends { id?: string }>({
   endpoint: string;
   fields: { key: keyof T; label: string; type?: string }[];
   emptyItem: T;
+  readOnly?: boolean;
 }) {
   const [saving, setSaving] = useState(false);
 
@@ -54,12 +57,14 @@ function Section<T extends { id?: string }>({
     <div className="bg-white rounded-2xl border border-gray-100 p-5 mb-6">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-navy">{title}</h2>
-        <button
-          onClick={() => setItems([...items, { ...emptyItem }])}
-          className="text-sm text-teal font-medium hover:underline"
-        >
-          + Add
-        </button>
+        {!readOnly && (
+          <button
+            onClick={() => setItems([...items, { ...emptyItem }])}
+            className="text-sm text-teal font-medium hover:underline"
+          >
+            + Add
+          </button>
+        )}
       </div>
 
       {items.length === 0 && (
@@ -91,21 +96,23 @@ function Section<T extends { id?: string }>({
                 </div>
               ))}
             </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => handleSave(item, i)}
-                disabled={saving}
-                className="text-xs bg-teal text-white px-3 py-1.5 rounded-lg font-medium hover:bg-teal-dark disabled:opacity-40"
-              >
-                {item.id ? "Update" : "Save"}
-              </button>
-              <button
-                onClick={() => handleDelete(item, i)}
-                className="text-xs text-red-500 px-3 py-1.5 rounded-lg font-medium hover:bg-red-50"
-              >
-                Remove
-              </button>
-            </div>
+            {!readOnly && (
+              <div className="flex gap-2">
+                <button
+                  onClick={() => handleSave(item, i)}
+                  disabled={saving}
+                  className="text-xs bg-teal text-white px-3 py-1.5 rounded-lg font-medium hover:bg-teal-dark disabled:opacity-40"
+                >
+                  {item.id ? "Update" : "Save"}
+                </button>
+                <button
+                  onClick={() => handleDelete(item, i)}
+                  className="text-xs text-red-500 px-3 py-1.5 rounded-lg font-medium hover:bg-red-50"
+                >
+                  Remove
+                </button>
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -114,6 +121,10 @@ function Section<T extends { id?: string }>({
 }
 
 export default function MedicalPage() {
+  const { data: session } = useSession();
+  const userRole = (session?.user as any)?.role || "CLIENT";
+  const readOnly = userRole === "FAMILY";
+
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [pharmacies, setPharmacies] = useState<Pharmacy[]>([]);
   const [medications, setMedications] = useState<Medication[]>([]);
@@ -141,11 +152,19 @@ export default function MedicalPage() {
     <div>
       <h1 className="text-2xl font-bold text-navy mb-6">Medical Records</h1>
 
+      {readOnly && (
+        <div className="bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 mb-4 text-sm text-gray-500 flex items-center gap-2">
+          <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+          Read-only view. Only the account owner or a Manager can edit medical records.
+        </div>
+      )}
+
       <Section<Doctor>
         title="Doctors"
         items={doctors}
         setItems={setDoctors}
         endpoint="/api/doctors"
+        readOnly={readOnly}
         emptyItem={{ name: "", specialty: "", phone: "", address: "", notes: "" }}
         fields={[
           { key: "name", label: "Name" },
@@ -161,6 +180,7 @@ export default function MedicalPage() {
         items={pharmacies}
         setItems={setPharmacies}
         endpoint="/api/pharmacies"
+        readOnly={readOnly}
         emptyItem={{ name: "", phone: "", address: "" }}
         fields={[
           { key: "name", label: "Name" },
@@ -174,6 +194,7 @@ export default function MedicalPage() {
         items={medications}
         setItems={setMedications}
         endpoint="/api/medications"
+        readOnly={readOnly}
         emptyItem={{ name: "", dosage: "", frequency: "", instructions: "" }}
         fields={[
           { key: "name", label: "Medication Name" },
@@ -188,6 +209,7 @@ export default function MedicalPage() {
         items={conditions}
         setItems={setConditions}
         endpoint="/api/conditions"
+        readOnly={readOnly}
         emptyItem={{ name: "", notes: "" }}
         fields={[
           { key: "name", label: "Condition" },

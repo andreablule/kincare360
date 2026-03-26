@@ -1,13 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 
 export default function ProfilePage() {
   const { data: session } = useSession();
+  const userRole = (session?.user as any)?.role || "CLIENT";
+  const isOwner = userRole === "CLIENT" || userRole === "ADMIN";
+  const canEditProfile = userRole === "CLIENT" || userRole === "MANAGER" || userRole === "ADMIN";
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState("");
+  const [deleting, setDeleting] = useState(false);
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -47,6 +53,14 @@ export default function ProfilePage() {
       });
   }, []);
 
+  async function handleDelete() {
+    if (isOwner && deleteConfirm !== "DELETE") return;
+    setDeleting(true);
+    await fetch("/api/users/me", { method: "DELETE" });
+    setDeleting(false);
+    signOut({ callbackUrl: "/" });
+  }
+
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
@@ -68,6 +82,13 @@ export default function ProfilePage() {
   return (
     <div>
       <h1 className="text-2xl font-bold text-navy mb-6">Patient Profile</h1>
+
+      {!canEditProfile && (
+        <div className="bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 mb-4 text-sm text-gray-500 flex items-center gap-2">
+          <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+          Read-only view. Only the account owner or a Manager can edit the patient profile.
+        </div>
+      )}
 
       <form onSubmit={handleSave} className="bg-white rounded-2xl border border-gray-100 p-6 space-y-4 max-w-2xl">
         {success && (
@@ -157,10 +178,74 @@ export default function ProfilePage() {
 
         {/* Preferred Language removed — English only for now */}
 
-        <button type="submit" disabled={saving} className="bg-teal text-white px-6 py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors disabled:opacity-40">
-          {saving ? "Saving..." : "Save Changes"}
-        </button>
+        {canEditProfile && (
+          <button type="submit" disabled={saving} className="bg-teal text-white px-6 py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors disabled:opacity-40">
+            {saving ? "Saving..." : "Save Changes"}
+          </button>
+        )}
       </form>
+
+      {/* Delete section */}
+      <div className="bg-white rounded-2xl border border-red-100 p-6 max-w-2xl mt-6">
+        <h2 className="text-base font-semibold text-navy mb-1">
+          {isOwner ? "Delete Account" : "Remove My Access"}
+        </h2>
+        <p className="text-sm text-gray-500 mb-4">
+          {isOwner
+            ? "This will permanently delete your account, all patient data, and cancel your subscription. This cannot be undone."
+            : "This will remove your access to this care dashboard. You can be re-invited by the account owner."}
+        </p>
+        <button
+          type="button"
+          onClick={() => setShowDeleteModal(true)}
+          className="border border-red-300 text-red-500 hover:bg-red-50 px-5 py-2.5 rounded-full text-sm font-semibold transition-colors"
+        >
+          {isOwner ? "Delete My Account" : "Remove My Access"}
+        </button>
+      </div>
+
+      {/* Delete confirmation modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl">
+            <h3 className="text-lg font-bold text-navy mb-2">
+              {isOwner ? "Delete Account?" : "Remove Your Access?"}
+            </h3>
+            <p className="text-sm text-gray-500 mb-4">
+              {isOwner
+                ? "This will permanently delete all your data and cancel your KinCare360 subscription. There is no going back."
+                : "You'll lose access to this dashboard. The account owner can re-invite you later."}
+            </p>
+            {isOwner && (
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-navy mb-1">Type <span className="font-bold text-red-500">DELETE</span> to confirm</label>
+                <input
+                  type="text"
+                  value={deleteConfirm}
+                  onChange={(e) => setDeleteConfirm(e.target.value)}
+                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-400"
+                  placeholder="DELETE"
+                />
+              </div>
+            )}
+            <div className="flex gap-3">
+              <button
+                onClick={() => { setShowDeleteModal(false); setDeleteConfirm(""); }}
+                className="flex-1 border border-gray-300 text-gray-600 py-2.5 rounded-full text-sm font-semibold hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleting || (isOwner && deleteConfirm !== "DELETE")}
+                className="flex-1 bg-red-500 text-white py-2.5 rounded-full text-sm font-semibold hover:bg-red-600 disabled:opacity-40"
+              >
+                {deleting ? "Deleting..." : isOwner ? "Yes, Delete Everything" : "Remove My Access"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

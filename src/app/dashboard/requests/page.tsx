@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 
 interface ServiceRequest {
   id: string;
@@ -32,6 +33,10 @@ const statusLabels: Record<string, string> = {
 };
 
 export default function RequestsPage() {
+  const { data: session } = useSession();
+  const userRole = (session?.user as any)?.role || "CLIENT";
+  const canSubmit = userRole === "CLIENT" || userRole === "MANAGER" || userRole === "ADMIN";
+
   const [requests, setRequests] = useState<ServiceRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [type, setType] = useState("APPOINTMENT");
@@ -71,8 +76,13 @@ export default function RequestsPage() {
     <div>
       <h1 className="text-2xl font-bold text-navy mb-6">Service Requests</h1>
 
-      {/* New request form */}
-      <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-gray-100 p-5 mb-6">
+      {/* New request form — hidden for FAMILY role */}
+      {!canSubmit && (
+        <div className="bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 mb-4 text-sm text-gray-500">
+          Only the account owner or a Manager can submit service requests.
+        </div>
+      )}
+      {canSubmit && <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-gray-100 p-5 mb-6">
         <h2 className="text-sm font-semibold text-navy mb-3">Submit a New Request</h2>
 
         <div className="grid sm:grid-cols-2 gap-3 mb-3">
@@ -108,7 +118,7 @@ export default function RequestsPage() {
         >
           {submitting ? "Submitting..." : "Submit Request"}
         </button>
-      </form>
+      </form>}
 
       {/* Past requests */}
       <div className="bg-white rounded-2xl border border-gray-100 p-5">

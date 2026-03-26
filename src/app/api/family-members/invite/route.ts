@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { familyMemberId, name, email, phone, relationship } = body;
+  const { familyMemberId, name, email, phone, relationship, role: inviteRole } = body;
 
   if (!email) {
     return Response.json({ error: "Email is required to send an invitation" }, { status: 400 });
@@ -58,20 +58,23 @@ export async function POST(req: NextRequest) {
   const inviteToken = crypto.randomUUID();
   const inviteExpiry = new Date(Date.now() + 48 * 60 * 60 * 1000); // 48 hours
 
+  // Determine role — only CLIENT can grant MANAGER
+  const assignedRole = inviteRole === "MANAGER" ? "MANAGER" : "FAMILY";
+
   // Upsert User record for the invitee
   const invitedUser = await prisma.user.upsert({
     where: { email },
     update: {
       inviteToken,
       inviteExpiry,
-      role: "FAMILY",
+      role: assignedRole,
       patientId: patient.id,
     },
     create: {
       email,
       password: "", // will be set when invite is accepted
       name: name || "",
-      role: "FAMILY",
+      role: assignedRole,
       inviteToken,
       inviteExpiry,
       patientId: patient.id,
@@ -118,12 +121,20 @@ export async function POST(req: NextRequest) {
         KinCare360 is a personalized remote care service that keeps families connected. Our AI wellness assistant Lily checks in with ${patientFirstName} daily — tracking medications, mood, and health concerns — so you always know they're okay.
       </p>
 
+      ${assignedRole === "MANAGER" ? `
+      <div style="background:#fef3c7;border:1px solid #fde68a;border-radius:12px;padding:16px;margin:0 0 20px;">
+        <p style="color:#92400e;font-size:14px;font-weight:700;margin:0 0 4px;">⭐ You've been granted Manager access</p>
+        <p style="color:#78350f;font-size:14px;margin:0;">You can update care records and submit requests on behalf of ${patientFirstName}. The account owner will be notified of any changes you make.</p>
+      </div>
+      ` : ""}
+
       <div style="background:#f0fdfa;border:1px solid #ccfbf1;border-radius:12px;padding:20px;margin:0 0 28px;">
-        <p style="color:#0f766e;font-size:14px;font-weight:600;margin:0 0 10px;">With your family dashboard, you can:</p>
+        <p style="color:#0f766e;font-size:14px;font-weight:600;margin:0 0 10px;">With your ${assignedRole === "MANAGER" ? "Manager" : "family"} dashboard, you can:</p>
         <ul style="color:#475569;font-size:14px;line-height:1.8;margin:0;padding-left:20px;">
           <li>View daily check-in summaries from Lily</li>
           <li>Get urgent alerts if something needs your attention</li>
           <li>See ${patientFirstName}'s medications, doctors &amp; care plan</li>
+          ${assignedRole === "MANAGER" ? `<li>Edit care records and submit service requests</li>` : ""}
           <li>Update your contact info and notification preferences</li>
         </ul>
       </div>
@@ -156,7 +167,9 @@ export async function POST(req: NextRequest) {
     await transporter.sendMail({
       from: '"KinCare360" <hello@kincare360.com>',
       to: email,
-      subject: `You've been invited to KinCare360 — ${patientFirstName}'s care dashboard`,
+      subject: assignedRole === "MANAGER"
+        ? `You've been granted Manager access on KinCare360 — ${patientFirstName}'s care`
+        : `You've been invited to KinCare360 — ${patientFirstName}'s care dashboard`,
       html,
     });
   } catch (err) {

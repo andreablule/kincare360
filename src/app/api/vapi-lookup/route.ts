@@ -146,12 +146,12 @@ IMPORTANT:
 function buildFamilyMemberResponse(familyMember: any, patient: any) {
   const patientContext = buildPatientContext(patient);
 
-  const context = `This is ${familyMember.name}, a family member (${familyMember.relationship || 'relationship not specified'}) of ${patient.firstName} ${patient.lastName}, an existing KinCare360 client.
+  const context = `This caller is ${familyMember.name}, ${familyMember.relationship || 'family member'} of ${patient.firstName} ${patient.lastName}. They are a registered family contact. Greet them by name and offer updates on their loved one.
 
 ${patientContext}
 
 IMPORTANT:
-- Greet ${familyMember.name} by name warmly. They are calling about their loved one, ${patient.firstName} ${patient.lastName}.
+- Open with: "Hi ${familyMember.name}! This is Lily from KinCare360. I see you're calling about ${patient.firstName}. How can I help you today?"
 - Share relevant updates about ${patient.firstName}'s recent check-ins, medications, and care status.
 - This is a known family member of a client — give them VIP treatment and be reassuring.
 - Answer their questions about ${patient.firstName}'s care plan and recent activity.
