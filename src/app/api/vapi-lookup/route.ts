@@ -1,6 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
+// Format phone for natural TTS reading: 2674996927 → "267-499-6927"
+function fmtPhone(raw: string | null | undefined): string {
+  if (!raw) return "not on file";
+  const d = raw.replace(/\D/g, "").slice(-10);
+  if (d.length === 10) return `${d.slice(0,3)}-${d.slice(3,6)}-${d.slice(6)}`;
+  return raw;
+}
+
+// Format address for TTS: avoid long run-on strings
+function fmtAddress(parts: (string | null | undefined)[]): string {
+  return parts.filter(Boolean).join(", ") || "not on file";
+}
+
 // VAPI phone number serverUrl webhook
 // Fires when a call comes in — we return a full assistant config with caller context injected
 // https://docs.vapi.ai/customization/custom-llm/using-your-server
@@ -69,20 +82,25 @@ If caller mentions chest pain, difficulty breathing, fall, stroke, or any emerge
 function buildPatientContext(patient: any): string {
   const medList =
     patient.medications
-      .map((m: any) => `${m.name}${m.dosage ? ` (${m.dosage})` : ""}${m.frequency ? ` - ${m.frequency}` : ""}`)
-      .join("; ") || "None recorded";
-  const condList = patient.conditions.map((c: any) => c.name).join(", ") || "None recorded";
+      .map((m: any) => `${m.name}${m.dosage ? ` ${m.dosage}` : ""}${m.frequency ? `, ${m.frequency}` : ""}`)
+      .join("; ") || "none recorded";
+  const condList = patient.conditions.map((c: any) => c.name).join(", ") || "none recorded";
   const docList =
-    patient.doctors.map((d: any) => `${d.name}${d.specialty ? ` (${d.specialty})` : ""}${d.phone ? ` - ${d.phone}` : ""}`).join("; ") ||
-    "None recorded";
+    patient.doctors
+      .map((d: any) => `${d.name}${d.specialty ? ` (${d.specialty})` : ""}${d.phone ? `, phone ${fmtPhone(d.phone)}` : ""}`)
+      .join("; ") || "none recorded";
   const pharmList =
-    patient.pharmacies.map((p: any) => `${p.name}${p.phone ? ` - ${p.phone}` : ""}`).join("; ") || "None recorded";
+    patient.pharmacies
+      .map((p: any) => `${p.name}${p.phone ? `, phone ${fmtPhone(p.phone)}` : ""}`)
+      .join("; ") || "none recorded";
   const familyList =
-    patient.familyMembers.map((f: any) => `${f.name} (${f.relationship || "family"})`).join("; ") || "None recorded";
+    patient.familyMembers
+      .map((f: any) => `${f.name} (${f.relationship || "family"})${f.phone ? `, phone ${fmtPhone(f.phone)}` : ""}`)
+      .join("; ") || "none recorded";
 
   const lastCall = patient.callLogs[0];
   const lastCallSummary = lastCall
-    ? `Last call: ${new Date(lastCall.callDate).toLocaleDateString()} — ${lastCall.summary || "No summary"}. Mood: ${lastCall.mood || "unknown"}. Medications taken: ${lastCall.medicationsTaken ? "yes" : "no"}.`
+    ? `Last call: ${new Date(lastCall.callDate).toLocaleDateString()} — ${lastCall.summary || "no summary"}. Mood: ${lastCall.mood || "unknown"}. Medications taken: ${lastCall.medicationsTaken ? "yes" : "no"}.`
     : "No previous calls recorded.";
 
   const genderNote = patient.gender
@@ -92,8 +110,8 @@ function buildPatientContext(patient: any): string {
   return `KNOWN CLIENT — ${patient.firstName} ${patient.lastName}
 ${genderNote}
 DOB: ${patient.dob || "unknown"}
-Phone: ${patient.phone || "unknown"}
-Location: ${[patient.address, patient.city, patient.state, patient.zip].filter(Boolean).join(", ") || "unknown"}
+Phone: ${fmtPhone(patient.phone)}
+Home address: ${fmtAddress([patient.address, patient.city, patient.state, patient.zip])}
 Preferred check-in time: ${patient.preferredCallTime || "not set"}
 Medication reminder time: ${patient.medicationReminderTime || "not set"}
 Check-in days: ${patient.checkInDays || "not set"}
@@ -109,6 +127,8 @@ ${lastCallSummary}
 Plan: ${patient.user?.plan || "unknown"} (${patient.user?.subscriptionStatus || "unknown"})
 Insurance: ${patient.insuranceCompany || "not on file"}${patient.insuranceMemberId ? ` — Member ID: ${patient.insuranceMemberId}` : ""}
 
+IMPORTANT FOR SPEAKING: When reading phone numbers aloud, say each group separately with a natural pause — e.g. "two-six-seven, four-nine-nine, six-nine-two-seven". Do NOT read phone numbers as one continuous string of digits.
+
 INSTRUCTION: Greet ${patient.firstName} by name warmly. Reference their care details when relevant. This is a VIP client — make them feel known and cared for.`;
 }
 
@@ -119,6 +139,11 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string) {
       voice: {
         provider: "11labs",
         voiceId: "paula",
+        inputPreprocessingEnabled: true,
+        inputReformattingEnabled: true,
+        inputMinCharacters: 30,
+        inputPunctuationBoundaries: [".", "?", "!", ",", ";"],
+        denoising: true,
       },
       backgroundSound: "off",
       backgroundDenoisingEnabled: true,
