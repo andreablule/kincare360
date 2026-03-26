@@ -39,7 +39,7 @@ export default function InvitePage({ params }: { params: Promise<{ token: string
   const router = useRouter();
   const [token, setToken] = useState<string>("");
   const [status, setStatus] = useState<"loading" | "valid" | "invalid" | "submitting" | "done">("loading");
-  const [info, setInfo] = useState<{ name: string; patientFirstName: string } | null>(null);
+  const [info, setInfo] = useState<{ name: string; email: string; patientFirstName: string } | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -52,7 +52,7 @@ export default function InvitePage({ params }: { params: Promise<{ token: string
         .then((r) => r.json())
         .then((data) => {
           if (data.valid) {
-            setInfo({ name: data.name, patientFirstName: data.patientFirstName });
+            setInfo({ name: data.name, email: data.email, patientFirstName: data.patientFirstName });
             setStatus("valid");
           } else {
             setErrorMsg(data.reason || "This invitation is no longer valid.");
@@ -134,7 +134,13 @@ export default function InvitePage({ params }: { params: Promise<{ token: string
             </svg>
           </div>
           <h1 className="text-xl font-bold text-navy mb-2">You're all set! 🎉</h1>
-          <p className="text-gray-500 text-sm">Redirecting you to login…</p>
+          <p className="text-gray-500 text-sm mb-3">Redirecting you to login…</p>
+          {info?.email && (
+            <div className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm">
+              <p className="text-xs text-gray-400 mb-0.5">Sign in with</p>
+              <p className="font-bold text-navy">{info.email}</p>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -158,8 +164,16 @@ export default function InvitePage({ params }: { params: Promise<{ token: string
           )}
         </div>
 
+        {/* Show their email/username clearly */}
+        {info?.email && (
+          <div className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 mb-4">
+            <p className="text-xs text-gray-500 mb-0.5">Your login email (username)</p>
+            <p className="text-sm font-bold text-navy">{info.email}</p>
+          </div>
+        )}
+
         <div className="bg-teal/5 border border-teal/20 rounded-xl px-4 py-3 mb-6 text-sm text-teal">
-          Set a password to activate your account and start receiving care updates.
+          Create a password to activate your account. You'll use your email above to sign in.
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">

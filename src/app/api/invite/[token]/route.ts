@@ -26,6 +26,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ toke
   return Response.json({
     valid: true,
     name: user.name,
+    email: user.email,
     patientFirstName,
   });
 }
