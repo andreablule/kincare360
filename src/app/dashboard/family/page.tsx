@@ -327,18 +327,22 @@ export default function FamilyPage() {
                   </button>
                 )}
 
-                {/* Role toggle — owner only, only for members with accounts */}
-                {isOwner && member.id && member.inviteStatus === "active" && (
+                {/* Role toggle — owner only, for any saved member */}
+                {isOwner && member.id && (
                   <button
                     onClick={() => toggleRole(member)}
                     disabled={roleChanging === member.id}
-                    className="text-xs px-3 py-1.5 rounded-lg font-medium border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40"
+                    className={`text-xs px-3 py-1.5 rounded-lg font-medium transition-colors disabled:opacity-40 ${
+                      member.linkedRole === "MANAGER"
+                        ? "bg-teal/10 text-teal border border-teal/30 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
+                        : "border border-gray-200 text-gray-600 hover:bg-teal/5 hover:text-teal hover:border-teal/30"
+                    }`}
                     title={member.linkedRole === "MANAGER" ? "Remove Manager access" : "Grant Manager access"}
                   >
                     {roleChanging === member.id
                       ? "Updating…"
                       : member.linkedRole === "MANAGER"
-                      ? "Remove Manager"
+                      ? "✓ Manager — Remove"
                       : "Make Manager"}
                   </button>
                 )}
