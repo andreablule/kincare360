@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
 
     if (!providerPhone) {
       return NextResponse.json({
-        results: [{ toolCallId, result: `I don't have a phone number for ${providerName}. Would you like me to find a different option?` }]
+        results: [{ toolCallId, result: `I don't have a phone number for ${providerName}. Would you like me to find another option?` }]
       });
     }
 
@@ -31,22 +31,18 @@ export async function POST(req: NextRequest) {
     const digits = providerPhone.replace(/\D/g, '');
     const e164 = digits.length === 10 ? `+1${digits}` : digits.length === 11 ? `+${digits}` : `+1${digits}`;
 
-    // VAPI dynamic transfer — this is the correct way to transfer to a dynamic number
-    // Return a transfer action in the tool result
+    // VAPI transfer format — destination at top level
     return NextResponse.json({
       results: [{
         toolCallId,
-        result: `Connecting you to ${providerName} now. Please hold while I transfer your call.`
+        result: `Transferring you to ${providerName} now. Please hold.`
       }],
-      // VAPI reads this to execute the transfer
-      action: {
-        type: "transfer",
-        destination: {
-          type: "number",
-          number: e164,
-          callerId: "+18125155252",
-          message: `Transferring to ${providerName}.`
-        }
+      destination: {
+        type: "number",
+        number: e164,
+        callerId: "+18125155252",
+        message: `Please hold while I connect you to ${providerName}.`,
+        description: `Transfer to ${providerName}`
       }
     });
 
