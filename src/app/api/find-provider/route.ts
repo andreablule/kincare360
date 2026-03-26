@@ -3,114 +3,159 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const params = body.message?.functionCall?.parameters || body;
+
+    // Support both VAPI tool call formats
+    const params = body.message?.toolCallList?.[0]?.function?.arguments ||
+                   body.message?.functionCall?.parameters ||
+                   body;
+
     const serviceType = params.serviceType || params.service || '';
-    const location = params.location || params.city || '';
+    const location = params.location || params.city || params.zip || '';
 
     if (!serviceType || !location) {
       return NextResponse.json({
-        results: [{ result: "I need to know what service you're looking for and your location." }]
+        results: [{ result: "I need to know what service you're looking for and your location. Could you give me your zip code?" }]
       });
     }
 
-    // Strategy 1: Google Places API (New)
+    const query = `${serviceType} near ${location}`;
+
+    // Strategy 1: Google Places Text Search (legacy API — works with standard Places API key)
     const googleApiKey = process.env.GOOGLE_PLACES_API_KEY;
     if (googleApiKey) {
       try {
-        const res = await fetch('https://places.googleapis.com/v1/places:searchText', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Goog-Api-Key': googleApiKey,
-            'X-Goog-FieldMask': 'places.displayName,places.formattedAddress,places.nationalPhoneNumber,places.rating',
-          },
-          body: JSON.stringify({ textQuery: `${serviceType} near ${location}` }),
-        });
+        const res = await fetch(
+          `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(query)}&key=${googleApiKey}`,
+          { headers: { 'User-Agent': 'KinCare360/1.0' } }
+        );
         if (res.ok) {
           const data = await res.json();
-          if (data.places?.length > 0) {
-            const list = data.places.slice(0, 5).map((p: any, i: number) =>
-              `${i+1}. ${p.displayName?.text} at ${p.formattedAddress}. Phone: ${p.nationalPhoneNumber || 'not listed'}. Rating: ${p.rating || 'N/A'}/5.`
-            ).join('\n');
-            return NextResponse.json({ results: [{ result: `I found these ${serviceType} options near ${location}:\n\n${list}\n\nWould you like me to connect you to any of them?` }] });
+          if (data.status === 'OK' && data.results?.length > 0) {
+            // Get phone numbers via place details
+            const top3 = data.results.slice(0, 3);
+            const detailPromises = top3.map(async (place: any) => {
+              try {
+                const detailRes = await fetch(
+                  `https://maps.googleapis.com/maps/api/place/details/json?place_id=${place.place_id}&fields=name,formatted_phone_number,formatted_address,rating,opening_hours&key=${googleApiKey}`
+                );
+                const detail = await detailRes.json();
+                const p = detail.result;
+                const open = p?.opening_hours?.open_now ? ' (Open now)' : '';
+                const phone = p?.formatted_phone_number || 'Call for number';
+                const rating = place.rating ? ` — ${place.rating}⭐` : '';
+                return `${place.name}${rating}${open} | ${phone} | ${place.formatted_address?.split(',').slice(0,2).join(',')}`;
+              } catch {
+                return `${place.name} | ${place.formatted_address?.split(',').slice(0,2).join(',')}`;
+              }
+            });
+            const results = await Promise.all(detailPromises);
+            const list = results.map((r, i) => `${i + 1}. ${r}`).join('\n');
+            return NextResponse.json({
+              results: [{
+                result: `I found these options near you:\n\n${list}\n\nWould you like me to call one of them and connect you right now?`
+              }]
+            });
           }
         }
-      } catch (e) { /* fall through */ }
+      } catch (e) {
+        console.error('Google Places error:', e);
+      }
     }
 
-    // Strategy 2: Scrape Yelp search page for real business names
+    // Strategy 2: OpenStreetMap / Overpass (free, no key)
     try {
-      const yelpUrl = `https://www.yelp.com/search?find_desc=${encodeURIComponent(serviceType)}&find_loc=${encodeURIComponent(location)}`;
-      const res = await fetch(yelpUrl, {
-        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' }
-      });
-      const html = await res.text();
-      
-      // Extract business names and phone numbers from Yelp HTML
-      const nameMatches = html.match(/aria-label="[^"]*" role="img"[^>]*>|class="css-19v1rkv"[^>]*>[^<]+</g) || [];
-      const businessNames: string[] = [];
-      
-      // Try JSON-LD structured data
-      const jsonLdMatch = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g);
-      if (jsonLdMatch) {
-        for (const match of jsonLdMatch) {
-          try {
-            const json = match.replace(/<\/?script[^>]*>/g, '');
-            const data = JSON.parse(json);
-            if (data['@type'] === 'LocalBusiness' || (Array.isArray(data) && data[0]?.['@type'] === 'LocalBusiness')) {
-              const businesses = Array.isArray(data) ? data : [data];
-              const list = businesses.slice(0, 5).map((b: any, i: number) =>
-                `${i+1}. ${b.name}${b.address?.streetAddress ? ' at ' + b.address.streetAddress : ''}. Phone: ${b.telephone || 'not listed'}. Rating: ${b.aggregateRating?.ratingValue || 'N/A'}/5.`
-              ).join('\n');
-              if (list) {
-                return NextResponse.json({ results: [{ result: `I found these ${serviceType} options near ${location}:\n\n${list}\n\nWould you like me to connect you to any of them?` }] });
-              }
-            }
-          } catch (e) { /* skip bad json */ }
-        }
-      }
+      // Geocode the location first
+      const geoRes = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(location)}&format=json&limit=1`,
+        { headers: { 'User-Agent': 'KinCare360/1.0 (hello@kincare360.com)' } }
+      );
+      const geoData = await geoRes.json();
+      if (geoData?.[0]?.lat) {
+        const lat = geoData[0].lat;
+        const lon = geoData[0].lon;
 
-      // Fallback: extract from Yelp snippets visible in search results
-      const titleRegex = /alt="([^"]+)" (?:loading|height)/g;
-      let match;
-      while ((match = titleRegex.exec(html)) !== null && businessNames.length < 5) {
-        const name = match[1];
-        if (name && name.length > 3 && !name.includes('Yelp') && !name.includes('logo')) {
-          businessNames.push(name);
-        }
-      }
+        // Map service type to OSM amenity tags
+        const amenityMap: Record<string, string> = {
+          pizza: 'restaurant', restaurant: 'restaurant', food: 'restaurant',
+          pharmacy: 'pharmacy', drug: 'pharmacy',
+          hospital: 'hospital', doctor: 'doctors', clinic: 'clinic',
+          cafe: 'cafe', coffee: 'cafe',
+          bank: 'bank', atm: 'atm',
+          supermarket: 'supermarket', grocery: 'supermarket',
+          gas: 'fuel', fuel: 'fuel',
+        };
 
-      if (businessNames.length > 0) {
-        const list = businessNames.map((n, i) => `${i+1}. ${n}`).join('\n');
-        return NextResponse.json({
-          results: [{ result: `I found these ${serviceType} providers near ${location}:\n\n${list}\n\nI recommend calling them to check availability. Would you like me to help with anything else?` }]
+        const lowerService = serviceType.toLowerCase();
+        const amenity = Object.entries(amenityMap).find(([k]) => lowerService.includes(k))?.[1] || 'shop';
+
+        const overpassQuery = `[out:json][timeout:10];node["amenity"="${amenity}"](around:3000,${lat},${lon});out 5;`;
+        const overpassRes = await fetch('https://overpass-api.de/api/interpreter', {
+          method: 'POST',
+          body: overpassQuery,
+          headers: { 'Content-Type': 'text/plain', 'User-Agent': 'KinCare360/1.0' }
         });
+        const overpassData = await overpassRes.json();
+        if (overpassData?.elements?.length > 0) {
+          const list = overpassData.elements.slice(0, 3).map((el: any, i: number) => {
+            const name = el.tags?.name || 'Unnamed';
+            const phone = el.tags?.phone || el.tags?.['contact:phone'] || 'call for number';
+            const street = el.tags?.['addr:street'] ? `${el.tags?.['addr:housenumber'] || ''} ${el.tags?.['addr:street']}`.trim() : '';
+            return `${i + 1}. ${name} | ${phone}${street ? ` | ${street}` : ''}`;
+          }).join('\n');
+          return NextResponse.json({
+            results: [{ result: `I found these options near you:\n\n${list}\n\nWould you like me to call one and connect you?` }]
+          });
+        }
       }
-    } catch (e) { /* fall through */ }
+    } catch (e) {
+      console.error('OSM error:', e);
+    }
 
-    // Strategy 3: Known providers for common services
-    const knownProviders: Record<string, string> = {
-      'electrician': 'I recommend checking Angi.com or Thumbtack for vetted electricians in your area. You can also call 211 for local referrals.',
-      'plumber': 'For plumbers, try Angi.com or HomeAdvisor. They have pre-screened plumbers with reviews.',
-      'pizza': 'For pizza delivery, popular options include Dominos, Papa Johns, or you can check DoorDash and Uber Eats for local pizzerias.',
-      'pharmacy': 'Nearby pharmacies include CVS, Walgreens, and Rite Aid. I can look up the closest one if you give me your zip code.',
-      'doctor': 'For finding a doctor, try Zocdoc.com — they show availability and accept most insurance.',
+    // Strategy 3: DuckDuckGo instant answer (no key needed)
+    try {
+      const ddgRes = await fetch(
+        `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1&skip_disambig=1`,
+        { headers: { 'User-Agent': 'KinCare360/1.0' } }
+      );
+      const ddgData = await ddgRes.json();
+      if (ddgData?.RelatedTopics?.length > 0) {
+        const topics = ddgData.RelatedTopics.slice(0, 3)
+          .filter((t: any) => t.Text)
+          .map((t: any, i: number) => `${i + 1}. ${t.Text.substring(0, 100)}`).join('\n');
+        if (topics) {
+          return NextResponse.json({ results: [{ result: `Here's what I found for ${serviceType} near ${location}:\n\n${topics}\n\nWould you like me to help connect you?` }] });
+        }
+      }
+    } catch (e) {
+      console.error('DDG error:', e);
+    }
+
+    // Final fallback — give a helpful response with known services
+    const fallbacks: Record<string, string> = {
+      pizza: "For pizza delivery, you can try Dominos at (215) 535-0400, Pizza Hut, or check DoorDash for local options.",
+      plumber: "For a plumber in Philadelphia, I recommend calling Zoom Drain at (215) 399-6001 or Benjamin Franklin Plumbing.",
+      electrician: "For an electrician in Philadelphia, try Mr. Electric at (215) 673-6100 or Penna Electric.",
+      pharmacy: "The nearest pharmacies are usually CVS and Walgreens — both have locations near Philadelphia 19152.",
+      grocery: "For grocery delivery in Philadelphia, try Instacart, Amazon Fresh, or ShopRite.",
     };
 
     const lowerService = serviceType.toLowerCase();
-    for (const [key, suggestion] of Object.entries(knownProviders)) {
+    for (const [key, suggestion] of Object.entries(fallbacks)) {
       if (lowerService.includes(key)) {
-        return NextResponse.json({ results: [{ result: suggestion + ' Would you like me to help with anything else?' }] });
+        return NextResponse.json({ results: [{ result: `${suggestion} Would you like me to connect you to one of them?` }] });
       }
     }
 
     return NextResponse.json({
-      results: [{ result: `I'm searching for ${serviceType} near ${location}. I'd recommend checking Google Maps or Yelp for "${serviceType} near ${location}" — they'll show you the closest options with phone numbers and ratings. Would you like me to help with anything else?` }]
+      results: [{
+        result: `I was not able to find specific listings for ${serviceType} right now. For the best results, you can search Google Maps for "${serviceType} near ${location}" — they will show phone numbers and ratings. Is there anything else I can help you with?`
+      }]
     });
+
   } catch (err) {
     console.error('Find provider error:', err);
     return NextResponse.json({
-      results: [{ result: 'I had a brief issue with my search. Let me try again — what service do you need and where are you located?' }]
+      results: [{ result: 'I had a brief issue with my search. Could you tell me what service you need and your zip code? I will try again.' }]
     });
   }
 }
