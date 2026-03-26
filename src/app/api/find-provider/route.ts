@@ -1,11 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+function formatPhone(raw: string): string {
+  const digits = raw.replace(/\D/g, '');
+  if (digits.length === 10) return `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`;
+  if (digits.length === 11) return `(${digits.slice(1,4)}) ${digits.slice(4,7)}-${digits.slice(7)}`;
+  return raw;
+}
+
 async function searchPlaces(serviceType: string, location: string): Promise<string> {
   const googleApiKey = process.env.GOOGLE_PLACES_API_KEY;
 
   if (googleApiKey) {
     try {
-      const query = `${serviceType} near ${location}`;
+      // Be specific to avoid unrelated results
+      const serviceMap: Record<string, string> = {
+        pizza: 'pizza restaurant', pizzeria: 'pizzeria',
+        plumber: 'plumber plumbing', electrician: 'electrician electrical',
+        cardiologist: 'cardiologist cardiology', doctor: 'doctor physician',
+        pharmacy: 'pharmacy drug store', grocery: 'grocery supermarket',
+        chinese: 'chinese restaurant', italian: 'italian restaurant',
+        mexican: 'mexican restaurant', sushi: 'sushi restaurant',
+        ac: 'HVAC air conditioning repair', hvac: 'HVAC repair',
+        locksmith: 'locksmith', dentist: 'dentist dental',
+      };
+      const lower = serviceType.toLowerCase();
+      const mappedService = Object.entries(serviceMap).find(([k]) => lower.includes(k))?.[1] || serviceType;
+      const query = `${mappedService} near ${location}`;
       const res = await fetch(
         `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(query)}&key=${googleApiKey}`
       );
@@ -21,7 +41,7 @@ async function searchPlaces(serviceType: string, location: string): Promise<stri
             const detail = await detailRes.json();
             const p = detail.result;
             const open = p?.opening_hours?.open_now ? ' (Open now)' : '';
-            const phone = p?.formatted_phone_number || 'call for number';
+            const phone = p?.formatted_phone_number ? formatPhone(p.formatted_phone_number) : 'call for number';
             const rating = place.rating ? ` — ${place.rating}⭐` : '';
             const addr = place.formatted_address?.split(',').slice(0, 2).join(',') || '';
             return `${place.name}${rating}${open} | ${phone} | ${addr}`;
