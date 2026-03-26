@@ -62,20 +62,6 @@ export default function IntakePage() {
   const router = useRouter();
   const { status } = useSession();
   const [step, setStep] = useState(0);
-
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
-    }
-  }, [status, router]);
-
-  if (status === "loading" || status === "unauthenticated") {
-    return (
-      <main className="min-h-screen flex items-center justify-center">
-        <div className="text-gray-400">Loading...</div>
-      </main>
-    );
-  }
   const [submitting, setSubmitting] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [step1Error, setStep1Error] = useState("");
@@ -95,6 +81,20 @@ export default function IntakePage() {
     notes: "",
     selectedPlan: "",
   });
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [status, router]);
+
+  if (status === "loading" || status === "unauthenticated") {
+    return (
+      <main className="min-h-screen flex items-center justify-center">
+        <div className="text-gray-400">Loading...</div>
+      </main>
+    );
+  }
 
   function update(field: string, value: any) {
     setForm(prev => {
