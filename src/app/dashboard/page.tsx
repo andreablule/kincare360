@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getPatientIdForUser } from "@/lib/patient";
 import Link from "next/link";
 
 export const metadata = {
@@ -9,9 +10,13 @@ export const metadata = {
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
-  const userId = (session?.user as any)?.id;
+  const sessionUser = session?.user as any;
+  const userId = sessionUser?.id;
+  const userRole = sessionUser?.role || "CLIENT";
+  const userPatientId = sessionUser?.patientId ?? null;
 
-  const patient = await prisma.patient.findFirst({ where: { userId } });
+  const patientId = await getPatientIdForUser(userId, userRole, userPatientId);
+  const patient = patientId ? await prisma.patient.findUnique({ where: { id: patientId } }) : null;
   const recentCall = patient
     ? await prisma.callLog.findFirst({
         where: { patientId: patient.id },
@@ -21,7 +26,12 @@ export default async function DashboardPage() {
   const callCount = patient
     ? await prisma.callLog.count({ where: { patientId: patient.id } })
     : 0;
-  const user = await prisma.user.findUnique({ where: { id: userId } });
+  // For CLIENT/ADMIN, fetch their own user record for plan info.
+  // For FAMILY/MANAGER, fetch the patient owner's user record.
+  const ownerUserId = (userRole === "FAMILY" || userRole === "MANAGER")
+    ? (patient ? (await prisma.patient.findUnique({ where: { id: patient.id }, select: { userId: true } }))?.userId : null)
+    : userId;
+  const user = ownerUserId ? await prisma.user.findUnique({ where: { id: ownerUserId } }) : null;
   const pendingRequests = patient
     ? await prisma.serviceRequest.count({
         where: { patientId: patient.id, status: "PENDING" },
@@ -31,7 +41,9 @@ export default async function DashboardPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold text-navy mb-6">
-        Welcome back, {session?.user?.name?.split(" ")[0] || "there"} 👋
+        {(userRole === "FAMILY" || userRole === "MANAGER") && patient
+          ? `Viewing ${patient.firstName} ${patient.lastName}'s Care 💙`
+          : `Welcome back, ${session?.user?.name?.split(" ")[0] || "there"} 👋`}
       </h1>
 
       {/* Onboarding card — shown when no patient record exists */}

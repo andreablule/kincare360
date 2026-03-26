@@ -12,12 +12,16 @@ model User {
   email              String    @unique
   password           String
   name               String
-  role               String    @default("CLIENT") // CLIENT | ADMIN
+  role               String    @default("CLIENT") // CLIENT | MANAGER | FAMILY | ADMIN
   stripeCustomerId   String?
   subscriptionStatus String?
   plan               String?   // BASIC | STANDARD | PREMIUM
+  inviteToken        String?
+  inviteExpiry       DateTime?
+  patientId          String?   // For FAMILY users — direct link to their patient
   createdAt          DateTime  @default(now())
   patients           Patient[]
+  familyProfile      FamilyMember? @relation("UserFamilyProfile")
 }
 
 model Patient {
@@ -103,6 +107,8 @@ model FamilyMember {
   phone         String?
   email         String?
   notifyUpdates Boolean @default(true)
+  userId        String?  @unique
+  user          User?    @relation("UserFamilyProfile", fields: [userId], references: [id])
 }
 
 model ServiceRequest {

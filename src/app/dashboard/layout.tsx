@@ -14,7 +14,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
     redirect("/login");
   }
 
+  // Pass full user including role and patientId to shell
+  const fullUser = session.user as any;
+
   return (
-    <DashboardShell user={session.user}>{children}</DashboardShell>
+    <DashboardShell user={fullUser}>{children}</DashboardShell>
   );
 }

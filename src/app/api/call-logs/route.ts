@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getSessionUser, getSessionPatientId } from '@/lib/session';
 import prisma from '@/lib/prisma';
 
 const twilioSid = process.env.TWILIO_ACCOUNT_SID!;
@@ -71,16 +70,37 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // CHECK-IN SMS: If this is a check-in call, notify family members with updates enabled
+    if (!urgent && patient && (callType === 'check-in' || callType?.toLowerCase().includes('check'))) {
+      const moodText = structuredData.mood || structuredData.feeling || 'not recorded';
+      const medsText = structuredData.medications_taken === true ? 'Yes ✓' : 'No ✗';
+      const checkInMsg = `KinCare360 Update: ${patient.firstName} ${patient.lastName}'s check-in with Lily is complete.\nMood: ${moodText}. Medications taken: ${medsText}.\nView full report: kincare360.com/dashboard`;
+
+      for (const member of patient.familyMembers) {
+        if (member.notifyUpdates && member.phone) {
+          const memberDigits = member.phone.replace(/\D/g, '');
+          if (memberDigits.length >= 10) {
+            await sendSMS(`+1${memberDigits.slice(-10)}`, checkInMsg);
+          }
+        }
+      }
+    }
+
     // EMERGENCY ESCALATION: If urgent, SMS all family members + Andrea
     if (urgent && patient) {
       const patientName = `${patient.firstName} ${patient.lastName}`;
       const urgentMsg = `⚠️ URGENT — KinCare360 Alert\n\n${patientName} reported a possible emergency during their daily check-in.\n\nDetails: ${summary}\n\nPlease check on them immediately or call 911 if needed.\n\n— KinCare360 Automated Alert`;
+
+      // Also send check-in summary with urgent flag to family
+      const urgentCheckInMsg = `KinCare360 Update: ${patientName}'s check-in with Lily is complete.\n⚠️ URGENT CONCERN FLAGGED — please call them.\nView full report: kincare360.com/dashboard`;
 
       // SMS all family members with notifications enabled
       for (const member of patient.familyMembers) {
         if (member.notifyUpdates && member.phone) {
           const memberDigits = member.phone.replace(/\D/g, '');
           if (memberDigits.length >= 10) {
+            // Send both the summary and the full urgent alert
+            await sendSMS(`+1${memberDigits.slice(-10)}`, urgentCheckInMsg);
             await sendSMS(`+1${memberDigits.slice(-10)}`, urgentMsg);
           }
         }
@@ -102,21 +122,16 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   let patientId = searchParams.get('patientId');
 
-  // If no patientId provided, look up from session
+  // If no patientId provided, look up from session (supports FAMILY/MANAGER roles)
   if (!patientId) {
-    const session = await getServerSession(authOptions);
-    if (!session) {
+    const user = await getSessionUser();
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    const userId = (session.user as any).id;
-    const patient = await prisma.patient.findFirst({
-      where: { userId },
-      select: { id: true },
-    });
-    if (!patient) {
+    patientId = await getSessionPatientId(user);
+    if (!patientId) {
       return NextResponse.json([]);
     }
-    patientId = patient.id;
   }
 
   const logs = await prisma.callLog.findMany({

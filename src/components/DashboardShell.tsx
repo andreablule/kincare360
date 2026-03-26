@@ -5,14 +5,14 @@ import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 
-const navItems = [
-  { label: "Overview", href: "/dashboard", icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1" },
-  { label: "Profile", href: "/dashboard/profile", icon: "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" },
-  { label: "Medical", href: "/dashboard/medical", icon: "M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" },
-  { label: "Family", href: "/dashboard/family", icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" },
-  { label: "Requests", href: "/dashboard/requests", icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" },
-  { label: "Call History", href: "/dashboard/history", icon: "M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" },
-  { label: "Plan", href: "/dashboard/plan", icon: "M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" },
+const allNavItems = [
+  { label: "Overview", href: "/dashboard", icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1", roles: ["CLIENT","MANAGER","FAMILY","ADMIN"] },
+  { label: "Profile", href: "/dashboard/profile", icon: "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z", roles: ["CLIENT","MANAGER","FAMILY","ADMIN"] },
+  { label: "Medical", href: "/dashboard/medical", icon: "M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z", roles: ["CLIENT","MANAGER","FAMILY","ADMIN"] },
+  { label: "Family", href: "/dashboard/family", icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z", roles: ["CLIENT","MANAGER","ADMIN"] },
+  { label: "Requests", href: "/dashboard/requests", icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2", roles: ["CLIENT","MANAGER","ADMIN"] },
+  { label: "Call History", href: "/dashboard/history", icon: "M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z", roles: ["CLIENT","MANAGER","FAMILY","ADMIN"] },
+  { label: "Plan", href: "/dashboard/plan", icon: "M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z", roles: ["CLIENT","ADMIN"] },
 ];
 
 function NavIcon({ d, active }: { d: string; active: boolean }) {
@@ -23,9 +23,28 @@ function NavIcon({ d, active }: { d: string; active: boolean }) {
   );
 }
 
+function RoleBadge({ role }: { role: string }) {
+  if (role === "CLIENT" || role === "ADMIN") return null;
+  if (role === "MANAGER") {
+    return (
+      <span className="inline-flex items-center gap-1 bg-teal/10 text-teal text-xs font-semibold px-2.5 py-0.5 rounded-full">
+        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clipRule="evenodd" /></svg>
+        Manager
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-1 bg-gray-100 text-gray-500 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+      Family Member
+    </span>
+  );
+}
+
 export default function DashboardShell({ children, user }: { children: React.ReactNode; user: any }) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const userRole: string = (user as any)?.role || "CLIENT";
+  const navItems = allNavItems.filter((item) => item.roles.includes(userRole));
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -57,7 +76,10 @@ export default function DashboardShell({ children, user }: { children: React.Rea
           })}
         </nav>
         <div className="p-4 border-t border-gray-100">
-          <div className="text-sm text-gray-500 mb-2 truncate">{user?.name || user?.email}</div>
+          <div className="text-sm text-gray-500 mb-1 truncate">{user?.name || user?.email}</div>
+          {(userRole === "MANAGER" || userRole === "FAMILY") && (
+            <div className="mb-2"><RoleBadge role={userRole} /></div>
+          )}
           <button onClick={() => signOut({ callbackUrl: "/login" })} className="text-sm text-red-500 hover:text-red-700 font-medium">Sign Out</button>
         </div>
       </aside>
@@ -109,7 +131,10 @@ export default function DashboardShell({ children, user }: { children: React.Rea
         )}
 
         <div className="p-4 border-t border-gray-100">
-          <div className="text-sm text-gray-500 mb-2 truncate">{user?.name || user?.email}</div>
+          <div className="text-sm text-gray-500 mb-1 truncate">{user?.name || user?.email}</div>
+          {(userRole === "MANAGER" || userRole === "FAMILY") && (
+            <div className="mb-2"><RoleBadge role={userRole} /></div>
+          )}
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
             className="text-sm text-red-500 hover:text-red-700 font-medium"
@@ -132,15 +157,30 @@ export default function DashboardShell({ children, user }: { children: React.Rea
 
       {/* Main content */}
       <main className="flex-1 md:ml-64 pb-20 md:pb-0 pt-14 md:pt-0">
+        {/* Role banner for non-owners */}
+        {(userRole === "MANAGER" || userRole === "FAMILY") && (
+          <div className={`w-full px-4 py-2.5 text-center text-sm font-medium flex items-center justify-center gap-2 ${
+            userRole === "MANAGER"
+              ? "bg-teal/10 text-teal border-b border-teal/20"
+              : "bg-gray-100 text-gray-500 border-b border-gray-200"
+          }`}>
+            <RoleBadge role={userRole} />
+            <span>
+              {userRole === "MANAGER"
+                ? "You have Manager access — you can edit care records and submit requests."
+                : "You have read-only access to this care dashboard."}
+            </span>
+          </div>
+        )}
         <div className="max-w-5xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
           {children}
         </div>
       </main>
 
-      {/* Mobile bottom nav — show key 5: Overview, Medical, Family, History, Plan */}
+      {/* Mobile bottom nav — dynamically show up to 5 items */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-50">
         <div className="flex justify-around py-2">
-          {[navItems[0], navItems[2], navItems[3], navItems[5], navItems[6]].map((item) => {
+          {navItems.slice(0, 5).map((item) => {
             const active = pathname === item.href;
             return (
               <Link

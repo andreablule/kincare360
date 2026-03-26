@@ -69,9 +69,11 @@ export const authOptions: AuthOptions = {
         if (dbUser) {
           token.role = dbUser.role;
           token.id = dbUser.id;
+          token.patientId = dbUser.patientId ?? null;
         } else {
           token.role = (user as any).role;
           token.id = user.id;
+          token.patientId = null;
         }
       }
       return token;
@@ -80,6 +82,7 @@ export const authOptions: AuthOptions = {
       if (session.user) {
         (session.user as any).id = token.id;
         (session.user as any).role = token.role;
+        (session.user as any).patientId = token.patientId ?? null;
       }
       return session;
     },

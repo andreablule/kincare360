@@ -1,18 +1,12 @@
 import { NextRequest } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-
-async function getPatientId(userId: string) {
-  const patient = await prisma.patient.findFirst({ where: { userId } });
-  return patient?.id;
-}
+import { getSessionUser, getSessionPatientId, canEdit } from "@/lib/session";
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
-  if (!session) return Response.json({ error: "Unauthorized" }, { status: 401 });
+  const user = await getSessionUser();
+  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
-  const patientId = await getPatientId((session.user as any).id);
+  const patientId = await getSessionPatientId(user);
   if (!patientId) return Response.json({ items: [] });
 
   const items = await prisma.serviceRequest.findMany({
@@ -23,19 +17,16 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session) return Response.json({ error: "Unauthorized" }, { status: 401 });
+  const user = await getSessionUser();
+  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+  if (!canEdit(user.role)) return Response.json({ error: "Read-only access" }, { status: 403 });
 
-  const patientId = await getPatientId((session.user as any).id);
+  const patientId = await getSessionPatientId(user);
   if (!patientId) return Response.json({ error: "No patient profile" }, { status: 400 });
 
   const body = await req.json();
   const item = await prisma.serviceRequest.create({
-    data: {
-      patientId,
-      type: body.type,
-      description: body.description,
-    },
+    data: { patientId, type: body.type, description: body.description },
   });
   return Response.json({ item });
 }
