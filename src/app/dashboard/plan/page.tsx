@@ -62,7 +62,19 @@ export default function PlanPage() {
       });
   }, []);
 
+  const [showSwitchConfirm, setShowSwitchConfirm] = useState<string | null>(null);
+
   async function selectPlan(stripeKey: string) {
+    if (stripeKey !== "cancel" && status !== "trialing") {
+      // Show billing cycle notice before redirecting
+      setShowSwitchConfirm(stripeKey);
+      return;
+    }
+    await doSelectPlan(stripeKey);
+  }
+
+  async function doSelectPlan(stripeKey: string) {
+    setShowSwitchConfirm(null);
     setUpgrading(stripeKey);
     try {
       const res = await fetch("/api/plan/portal", {
@@ -90,8 +102,35 @@ export default function PlanPage() {
     ? new Date(trialEnd).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
     : null;
 
+  const confirmPlan = PLANS.find(p => p.stripeKey === showSwitchConfirm);
+
   return (
     <div>
+      {/* Plan switch confirmation modal */}
+      {showSwitchConfirm && confirmPlan && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl">
+            <h3 className="text-lg font-bold text-navy mb-2">Switch to {confirmPlan.name}?</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Your plan will change to <strong>{confirmPlan.name} ({confirmPlan.price})</strong>. The change takes effect at the start of your <strong>next billing cycle</strong> — you won't be charged more until then. Your current plan stays active until that date.
+            </p>
+            <div className="bg-blue-50 text-blue-700 rounded-xl px-4 py-3 text-sm mb-5">
+              💡 No immediate charge. Changes apply at next billing cycle.
+            </div>
+            <div className="flex gap-3">
+              <button onClick={() => setShowSwitchConfirm(null)}
+                className="flex-1 border border-gray-300 text-gray-600 py-2.5 rounded-full text-sm font-semibold hover:bg-gray-50">
+                Cancel
+              </button>
+              <button onClick={() => doSelectPlan(showSwitchConfirm)}
+                className="flex-1 bg-teal text-white py-2.5 rounded-full text-sm font-semibold hover:bg-teal-dark">
+                Confirm Switch
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <h1 className="text-2xl font-bold text-navy mb-2">Plan Management</h1>
 
       {/* Current plan status banner */}
