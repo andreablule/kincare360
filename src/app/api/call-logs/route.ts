@@ -36,6 +36,17 @@ export async function POST(req: NextRequest) {
     const transcript = body.message?.transcript || body.transcript || null;
     const callType = body.message?.call?.type || body.callType || structuredData.callType || null;
 
+    // Service concierge activity — capture what services Lily searched/called
+    let servicesRequested: string | null = null;
+    if (structuredData.service_requested || structuredData.providers_contacted) {
+      const serviceData = {
+        service: structuredData.service_requested || null,
+        providers: structuredData.providers_contacted || [],
+        outcome: structuredData.outcome || null,
+      };
+      servicesRequested = JSON.stringify(serviceData);
+    }
+
     const urgent = structuredData.urgent === true ||
                    summary.toLowerCase().includes('urgent') ||
                    summary.toLowerCase().includes('911') ||
@@ -66,6 +77,7 @@ export async function POST(req: NextRequest) {
           urgent: urgent,
           transcript: transcript,
           callType: callType,
+          servicesRequested: servicesRequested,
         },
       });
     }

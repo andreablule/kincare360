@@ -50,7 +50,7 @@ const services = [
   {
     title: "Local Service Concierge",
     description:
-      "Need a plumber? Pizza delivery? An electrician? Just call Lily. She searches, finds, and calls local businesses on your loved one's behalf — no need to ask the kids.",
+      "Need a plumber? Pizza? An electrician? Just call Lily. She searches, finds, and connects your loved one directly to local businesses — so they can speak to them, ask questions, and decide. No need to call the kids.",
     image: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=600&q=80&auto=format&fit=crop",
     alt: "Elderly person on phone getting help from AI assistant",
     icon: (
