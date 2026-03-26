@@ -27,6 +27,12 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
+    // ONLY process end-of-call-report events — ignore all other VAPI events
+    const messageType = body.message?.type || body.type || '';
+    if (messageType && messageType !== 'end-of-call-report') {
+      return NextResponse.json({ received: true, skipped: messageType });
+    }
+
     // Extract structured data from VAPI end-of-call report
     const analysis = body.message?.analysis || body.analysis || {};
     const structuredData = analysis.structuredData || {};
@@ -64,22 +70,28 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Save call log
+    // Save call log — deduplicate by callId if provided
     if (patient) {
-      await prisma.callLog.create({
-        data: {
-          patientId: patient.id,
-          callDate: new Date(),
-          summary: summary,
-          mood: structuredData.mood || structuredData.feeling || null,
-          medicationsTaken: structuredData.medications_taken === true,
-          concerns: structuredData.concerns || null,
-          urgent: urgent,
-          transcript: transcript,
-          callType: callType,
-          servicesRequested: servicesRequested,
-        },
-      });
+      const existingLog = callId
+        ? await prisma.callLog.findFirst({ where: { transcript: { contains: callId } } })
+        : null;
+
+      if (!existingLog) {
+        await prisma.callLog.create({
+          data: {
+            patientId: patient.id,
+            callDate: new Date(),
+            summary: summary,
+            mood: structuredData.mood || structuredData.feeling || null,
+            medicationsTaken: structuredData.medications_taken === true,
+            concerns: structuredData.concerns || null,
+            urgent: urgent,
+            transcript: transcript ? `[callId:${callId}]\n${transcript}` : `[callId:${callId}]`,
+            callType: callType,
+            servicesRequested: servicesRequested,
+          },
+        });
+      }
     }
 
     // CHECK-IN SMS: If this is a check-in call, notify family members with updates enabled
