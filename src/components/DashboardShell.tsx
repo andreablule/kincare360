@@ -57,8 +57,8 @@ export default function DashboardShell({ children, user }: { children: React.Rea
 
       {/* Mobile sidebar drawer */}
       <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-100 flex flex-col transform transition-transform duration-200 ease-in-out md:hidden ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-          <Link href="/"><img src="/kincare360-logo.png" alt="KinCare360" className="h-16 w-auto" /></Link>
+        <div className="px-4 py-5 border-b border-gray-100 flex items-center justify-between">
+          <Link href="/"><img src="/kincare360-logo.png" alt="KinCare360" className="h-20 w-auto" /></Link>
           <button onClick={() => setSidebarOpen(false)} className="text-gray-400 hover:text-gray-600 p-1">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
           </button>
@@ -76,7 +76,7 @@ export default function DashboardShell({ children, user }: { children: React.Rea
           })}
         </nav>
         <div className="p-4 border-t border-gray-100">
-          <div className="text-sm text-gray-500 mb-1 truncate">{user?.name || user?.email}</div>
+          <div className="text-sm text-gray-500 mb-1 truncate">{user?.email}</div>
           {(userRole === "MANAGER" || userRole === "FAMILY") && (
             <div className="mb-2"><RoleBadge role={userRole} /></div>
           )}
@@ -86,9 +86,9 @@ export default function DashboardShell({ children, user }: { children: React.Rea
 
       {/* Desktop sidebar */}
       <aside className="hidden md:flex md:flex-col md:w-64 bg-white border-r border-gray-100 fixed h-full">
-        <div className="p-4 border-b border-gray-100">
+        <div className="px-4 py-6 border-b border-gray-100">
           <Link href="/">
-            <img src="/kincare360-logo.png" alt="KinCare360" className="h-16 w-auto" />
+            <img src="/kincare360-logo.png" alt="KinCare360" className="h-24 w-auto" />
           </Link>
         </div>
 
@@ -131,7 +131,7 @@ export default function DashboardShell({ children, user }: { children: React.Rea
         )}
 
         <div className="p-4 border-t border-gray-100">
-          <div className="text-sm text-gray-500 mb-1 truncate">{user?.name || user?.email}</div>
+          <div className="text-sm text-gray-500 mb-1 truncate">{user?.email}</div>
           {(userRole === "MANAGER" || userRole === "FAMILY") && (
             <div className="mb-2"><RoleBadge role={userRole} /></div>
           )}
