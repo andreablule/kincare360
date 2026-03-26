@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getPatientIdForUser } from "@/lib/patient";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 async function getTrialDaysRemaining(stripeCustomerId: string | null | undefined): Promise<number | null> {
   if (!stripeCustomerId) return null;
@@ -32,6 +33,9 @@ export default async function DashboardPage() {
   const userId = sessionUser?.id;
   const userRole = sessionUser?.role || "CLIENT";
   const userPatientId = sessionUser?.patientId ?? null;
+
+  // ADMIN users go straight to admin dashboard — no client view
+  if (userRole === "ADMIN") redirect("/admin");
 
   const patientId = await getPatientIdForUser(userId, userRole, userPatientId);
   const patient = patientId ? await prisma.patient.findUnique({ where: { id: patientId } }) : null;
