@@ -156,7 +156,7 @@ export default function PlanPage() {
               <div className="mb-1">
                 <div className="text-xs font-medium text-gray-400 uppercase tracking-wide">{p.name}</div>
                 <div className="text-2xl font-bold text-navy mt-0.5">{p.price}</div>
-                <div className="text-xs text-gray-400">+ 7-day free trial</div>
+                {!plan && <div className="text-xs text-gray-400">+ 7-day free trial</div>}
               </div>
 
               <ul className="space-y-2 my-4 flex-1">
@@ -185,7 +185,7 @@ export default function PlanPage() {
                   ? "Redirecting..."
                   : isCurrent
                   ? "Current Plan"
-                  : plan
+                  : status === "trialing" || plan
                   ? "Switch to This Plan"
                   : "Start Free Trial"}
               </button>
