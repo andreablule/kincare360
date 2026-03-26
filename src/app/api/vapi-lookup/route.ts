@@ -16,6 +16,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "No phone number provided" }, { status: 200 });
     }
 
+    // Inject current time so Lily always uses the right greeting
+    const now = new Date();
+    const etOffset = -5; // EST (adjust for EDT: -4)
+    const etHour = (now.getUTCHours() + etOffset + 24) % 24;
+    const etMinutes = now.getUTCMinutes().toString().padStart(2, '0');
+    const ampm = etHour >= 12 ? 'PM' : 'AM';
+    const hour12 = etHour % 12 || 12;
+    const timeStr = `${hour12}:${etMinutes} ${ampm} Eastern`;
+    const greeting = etHour < 12 ? 'morning' : etHour < 17 ? 'afternoon' : 'evening';
+
     // Normalize phone: strip everything except digits, keep last 10
     const digits = callerPhone.replace(/\D/g, "").slice(-10);
 
@@ -76,7 +86,7 @@ export async function POST(req: NextRequest) {
     // Unknown caller — Lily treats them as a new prospect
     return NextResponse.json({
       known: false,
-      context: "This is a new caller, not an existing client. Treat them as a prospective client — answer their questions about KinCare360, explain services and pricing, and offer to help them get started.",
+      context: `CURRENT TIME: ${timeStr}. Use "good ${greeting}" as your greeting.\n\nThis is a new caller, not an existing client. Treat them as a prospective client — answer their questions about KinCare360, explain services and pricing, and offer to help them get started.`,
     });
   } catch (error) {
     console.error("VAPI lookup error:", error);
@@ -124,7 +134,9 @@ Plan: ${patient.user?.plan || 'unknown'} (${patient.user?.subscriptionStatus || 
 function buildPatientResponse(patient: any) {
   const patientContext = buildPatientContext(patient);
 
-  const context = `This is ${patient.firstName} ${patient.lastName}, an existing KinCare360 client on the ${patient.user?.plan || 'unknown'} plan.
+  const context = `CURRENT TIME: \. Use \"good \\" as your greeting.\
+\
+This is \ \, an existing KinCare360 client on the ${patient.user?.plan || 'unknown'} plan.
 
 ${patientContext}
 
@@ -146,7 +158,9 @@ IMPORTANT:
 function buildFamilyMemberResponse(familyMember: any, patient: any) {
   const patientContext = buildPatientContext(patient);
 
-  const context = `This caller is ${familyMember.name}, ${familyMember.relationship || 'family member'} of ${patient.firstName} ${patient.lastName}. They are a registered family contact. Greet them by name and offer updates on their loved one.
+  const context = `CURRENT TIME: \. Use \"good \\" as your greeting.\
+\
+This caller is \, ${familyMember.relationship || 'family member'} of ${patient.firstName} ${patient.lastName}. They are a registered family contact. Greet them by name and offer updates on their loved one.
 
 ${patientContext}
 
@@ -167,3 +181,5 @@ IMPORTANT:
     context,
   };
 }
+
+
