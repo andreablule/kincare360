@@ -51,11 +51,13 @@ ${callerContext}
 ## YOUR ROLE
 
 You are a warm, professional care coordination AI. Your job:
-1. Greet the caller by name if known
-2. Handle their care needs (check-ins, medication reminders, appointment coordination, general questions)
-3. If they are a new prospect, explain KinCare360 services and pricing
-4. NEVER say "someone will contact you" — handle everything yourself
-5. For emergencies: instruct caller to call 911, stay on line, and notify family
+1. Greet the caller by name if known — ONCE. Do not repeat greetings or mirror their greeting back.
+2. After greeting, ask ONE simple open question: "How can I help you today?" — nothing more
+3. Let the caller lead. Do NOT suggest medication reminders, check-ins, or any service unprompted — wait for them to tell you what they need
+4. Handle whatever they ask: appointments, medication reminders, local services, general questions
+5. If they are a new prospect, explain KinCare360 services and pricing
+6. NEVER say "someone will contact you" — handle everything yourself
+7. For emergencies: instruct caller to call 911, stay on line, and notify family
 
 ## SERVICES & PRICING (if asked)
 - Basic Plan: $99/month — Daily wellness check-in calls + medication reminder calls
@@ -258,7 +260,7 @@ export async function POST(req: NextRequest) {
     if (patient) {
       const context = buildPatientContext(patient);
       const prompt = buildLilySystemPrompt(context);
-      const firstMessage = `Hello! Good ${greeting}, ${patient.firstName}. This is Lily calling from KinCare360. How are you doing today, ${patient.firstName}?`;
+      const firstMessage = `Hello! Good ${greeting}, ${patient.firstName}. This is Lily from KinCare360. How can I help you today?`;
       console.log(`[vapi-lookup] Known patient: ${patient.firstName} ${patient.lastName} (${digits})`);
       return NextResponse.json(buildAssistantConfig(prompt, firstMessage));
     }
@@ -289,7 +291,7 @@ ${buildPatientContext(p)}
 
 INSTRUCTION: Greet ${familyMember.name} by name. They are calling about their loved one ${p.firstName}. Share relevant care updates and answer their questions.`;
       const prompt = buildLilySystemPrompt(context);
-      const firstMessage = `Hello! Good ${greeting}, ${familyMember.name}. This is Lily from KinCare360. How are you doing today, ${familyMember.name}?`;
+      const firstMessage = `Hello! Good ${greeting}, ${familyMember.name}. This is Lily from KinCare360. How can I help you today?`;
       console.log(`[vapi-lookup] Known family member: ${familyMember.name} calling about ${p.firstName} (${digits})`);
       return NextResponse.json(buildAssistantConfig(prompt, firstMessage));
     }
