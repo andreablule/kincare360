@@ -3,6 +3,14 @@
 import { useEffect, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 
+const timeOptions = Array.from({ length: 48 }, (_, i) => {
+  const hour = Math.floor(i / 2);
+  const min = i % 2 === 0 ? "00" : "30";
+  const h12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+  const ampm = hour >= 12 ? "PM" : "AM";
+  return { value: `${String(hour).padStart(2, "0")}:${min}`, label: `${h12}:${min} ${ampm}` };
+});
+
 export default function ProfilePage() {
   const { data: session } = useSession();
   const userRole = (session?.user as any)?.role || "CLIENT";
@@ -150,15 +158,17 @@ export default function ProfilePage() {
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-navy mb-1">Preferred Call Time</label>
-            <input type="time" className={inputClass} value={form.preferredCallTime} onChange={(e) => setForm({ ...form, preferredCallTime: e.target.value })} />
+            <select className={inputClass} value={form.preferredCallTime} onChange={(e) => setForm({ ...form, preferredCallTime: e.target.value })}>
+              <option value="">Select a time</option>
+              {timeOptions.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+            </select>
             <p className="text-xs text-gray-400 mt-1">When should Lily call for the daily check-in?</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-navy mb-1">Medication Reminder Times</label>
             {medTimes.map((t, i) => (
               <div key={i} className="flex items-center gap-2 mb-2">
-                <input
-                  type="time"
+                <select
                   className={inputClass}
                   value={t}
                   onChange={e => {
@@ -166,8 +176,10 @@ export default function ProfilePage() {
                     updated[i] = e.target.value;
                     setMedTimes(updated);
                   }}
-                  step="60"
-                />
+                >
+                  <option value="">Select a time</option>
+                  {timeOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                </select>
                 {medTimes.length > 1 && (
                   <button type="button" onClick={() => setMedTimes(medTimes.filter((_, idx) => idx !== i))}
                     className="text-red-400 hover:text-red-600 text-lg font-bold px-1 flex-shrink-0">✕</button>
