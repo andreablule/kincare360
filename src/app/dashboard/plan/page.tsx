@@ -114,9 +114,9 @@ export default function PlanPage() {
           )}
         </div>
 
-        {status === "trialing" && trialEndDate && (
+        {status === "trialing" && trialEnd && (
           <div className="mt-3 bg-blue-50 text-blue-700 rounded-xl px-4 py-2.5 text-sm">
-            🎁 Your 7-day free trial ends on <strong>{trialEndDate}</strong>. You won&apos;t be charged until then — cancel anytime before.
+            🎁 Free trial — <strong>{Math.max(0, Math.ceil((new Date(trialEnd).getTime() - Date.now()) / 86400000))} days remaining</strong> (ends {new Date(trialEnd).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}). No charge until then — cancel anytime.
           </div>
         )}
 

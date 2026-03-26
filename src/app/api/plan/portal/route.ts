@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
 
 const SK = process.env.STRIPE_SECRET_KEY!;
 
@@ -59,33 +60,65 @@ export async function POST(req: Request) {
     }
   }
 
-  // Check if user already has an active or trialing subscription (no new trial)
-  let hasActiveSub = false;
+  // Check if user already has an active or trialing subscription
+  let existingSub: { id: string; status: string } | null = null;
   if (user?.stripeCustomerId) {
     const auth = Buffer.from(`${SK}:`).toString("base64");
     const subCheck = await fetch(
       `https://api.stripe.com/v1/subscriptions?customer=${user.stripeCustomerId}&limit=1`,
       { headers: { Authorization: `Basic ${auth}` } }
     ).then((r) => r.json());
-    hasActiveSub = subCheck?.data?.length > 0 &&
-      ["active", "trialing"].includes(subCheck.data[0].status);
+    if (subCheck?.data?.length > 0 && ["active", "trialing"].includes(subCheck.data[0].status)) {
+      existingSub = subCheck.data[0];
+    }
   }
 
-  // Plan change → always create a new checkout session for the specific plan
+  // If already subscribed → UPDATE the existing subscription (trial carries over, no double charge)
+  if (existingSub) {
+    const auth = Buffer.from(`${SK}:`).toString("base64");
+
+    // Get the subscription item ID to update
+    const subDetails = await fetch(`https://api.stripe.com/v1/subscriptions/${existingSub.id}`, {
+      headers: { Authorization: `Basic ${auth}` },
+    }).then((r) => r.json());
+
+    const itemId = subDetails.items?.data?.[0]?.id;
+    if (itemId) {
+      const updateBody = new URLSearchParams({
+        [`items[0][id]`]: itemId,
+        [`items[0][price]`]: priceId,
+        "proration_behavior": "create_prorations",
+        [`metadata[plan]`]: planKey,
+      });
+
+      const updated = await fetch(`https://api.stripe.com/v1/subscriptions/${existingSub.id}`, {
+        method: "POST",
+        headers: { Authorization: `Basic ${auth}`, "Content-Type": "application/x-www-form-urlencoded" },
+        body: updateBody.toString(),
+      }).then((r) => r.json());
+
+      if (updated.id) {
+        // Update DB
+        await prisma.user.update({
+          where: { id: userId },
+          data: { plan: planKey },
+        });
+        return Response.json({ url: `${baseUrl}/dashboard/plan?upgraded=1` });
+      }
+    }
+  }
+
+  // New subscriber → create checkout session with 7-day trial
   const checkoutParams: Record<string, string> = {
     mode: "subscription",
     "line_items[0][price]": priceId,
     "line_items[0][quantity]": "1",
+    "subscription_data[trial_period_days]": "7",
     success_url: `${baseUrl}/dashboard/plan?upgraded=1`,
     cancel_url: `${baseUrl}/dashboard/plan`,
     "metadata[userId]": userId,
     "metadata[plan]": planKey,
   };
-
-  // Only add trial if they don't already have one
-  if (!hasActiveSub) {
-    checkoutParams["subscription_data[trial_period_days]"] = "7";
-  }
 
   if (user?.email) {
     checkoutParams["customer_email"] = user.email;
