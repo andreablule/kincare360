@@ -169,7 +169,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ u
                   { label: "Address", value: patient.address || "—" },
                   { label: "City/State/ZIP", value: [patient.city, patient.state, patient.zip].filter(Boolean).join(", ") || "—" },
                   { label: "Preferred Call Time", value: (patient as any).preferredCallTime || "—" },
-                  { label: "Medication Reminder Times", value: (patient as any).medicationReminderTimes || "—" },
+                  { label: "Medication Reminder Times", value: (patient as any).medicationReminderTime || "—" },
                   { label: "Check-in Days", value: (patient as any).checkInDays || "—" },
                 ].map((field) => (
                   <div key={field.label}>
