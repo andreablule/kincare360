@@ -4,6 +4,24 @@ import { prisma } from "@/lib/prisma";
 import { getPatientIdForUser } from "@/lib/patient";
 import Link from "next/link";
 
+async function getTrialDaysRemaining(stripeCustomerId: string | null | undefined): Promise<number | null> {
+  if (!stripeCustomerId) return null;
+  try {
+    const SK = process.env.STRIPE_SECRET_KEY!;
+    const auth = Buffer.from(`${SK}:`).toString("base64");
+    const res = await fetch(
+      `https://api.stripe.com/v1/subscriptions?customer=${stripeCustomerId}&status=trialing&limit=1`,
+      { headers: { Authorization: `Basic ${auth}` }, cache: "no-store" }
+    );
+    const data = await res.json();
+    if (data?.data?.[0]?.trial_end) {
+      const msLeft = data.data[0].trial_end * 1000 - Date.now();
+      return Math.max(0, Math.ceil(msLeft / (1000 * 60 * 60 * 24)));
+    }
+  } catch {}
+  return null;
+}
+
 export const metadata = {
   title: "Dashboard | KinCare360",
 };
@@ -32,6 +50,9 @@ export default async function DashboardPage() {
     ? (patient ? (await prisma.patient.findUnique({ where: { id: patient.id }, select: { userId: true } }))?.userId : null)
     : userId;
   const user = ownerUserId ? await prisma.user.findUnique({ where: { id: ownerUserId } }) : null;
+  const trialDaysRemaining = user?.subscriptionStatus === "trialing"
+    ? await getTrialDaysRemaining(user.stripeCustomerId)
+    : null;
   const pendingRequests = patient
     ? await prisma.serviceRequest.count({
         where: { patientId: patient.id, status: "PENDING" },
@@ -85,9 +106,20 @@ export default async function DashboardPage() {
         <div className="bg-white rounded-2xl border border-gray-100 p-5">
           <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Current Plan</div>
           <div className="text-lg font-bold text-navy">{user?.plan || "No plan"}</div>
-          <div className="text-sm text-gray-500 mt-1">
-            Status: <span className="text-teal font-medium">{user?.subscriptionStatus || "N/A"}</span>
-          </div>
+          {user?.subscriptionStatus === "trialing" ? (
+            <div className="mt-1">
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full">
+                🎁 Free Trial
+                {trialDaysRemaining !== null && (
+                  <span>— {trialDaysRemaining} day{trialDaysRemaining !== 1 ? "s" : ""} left</span>
+                )}
+              </span>
+            </div>
+          ) : (
+            <div className="text-sm text-gray-500 mt-1">
+              Status: <span className="text-teal font-medium">{user?.subscriptionStatus || "N/A"}</span>
+            </div>
+          )}
           <Link href="/dashboard/plan" className="text-sm text-teal font-medium mt-3 inline-block hover:underline">
             Manage Plan →
           </Link>
