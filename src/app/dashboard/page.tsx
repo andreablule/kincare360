@@ -127,13 +127,25 @@ export default async function DashboardPage() {
 
         {/* Next check-in */}
         <div className="bg-white rounded-2xl border border-gray-100 p-5">
-          <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Next Check-In</div>
+          <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Daily Check-In</div>
           <div className="text-lg font-bold text-navy">
             {patient?.preferredCallTime || "Not set"}
           </div>
           <div className="text-sm text-gray-500 mt-1">Daily wellness call with Lily</div>
           <Link href="/dashboard/profile" className="text-sm text-teal font-medium mt-3 inline-block hover:underline">
             {patient?.preferredCallTime ? "Update Time →" : "Set Time →"}
+          </Link>
+        </div>
+
+        {/* Medication reminders */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-5">
+          <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Medication Reminder</div>
+          <div className="text-lg font-bold text-navy">
+            {patient?.medicationReminderTime || "Not set"}
+          </div>
+          <div className="text-sm text-gray-500 mt-1">Daily medication reminder call</div>
+          <Link href="/dashboard/profile" className="text-sm text-teal font-medium mt-3 inline-block hover:underline">
+            {patient?.medicationReminderTime ? "Update Time →" : "Set Time →"}
           </Link>
         </div>
 
