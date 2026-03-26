@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Format phone for natural TTS speech: 2155556840 → "215-555-6840"
 function formatPhone(raw: string): string {
   const digits = raw.replace(/\D/g, '');
-  if (digits.length === 10) return `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`;
-  if (digits.length === 11) return `(${digits.slice(1,4)}) ${digits.slice(4,7)}-${digits.slice(7)}`;
+  if (digits.length === 10) return `${digits.slice(0,3)}-${digits.slice(3,6)}-${digits.slice(6)}`;
+  if (digits.length === 11) return `${digits.slice(1,4)}-${digits.slice(4,7)}-${digits.slice(7)}`;
   return raw;
+}
+
+// Shorten address to just street + city, drop zip/country
+function shortAddress(addr: string): string {
+  return addr.split(',').slice(0, 2).map(s => s.trim()).join(', ');
 }
 
 async function searchPlaces(serviceType: string, location: string): Promise<string> {
@@ -40,18 +46,20 @@ async function searchPlaces(serviceType: string, location: string): Promise<stri
             );
             const detail = await detailRes.json();
             const p = detail.result;
-            const open = p?.opening_hours?.open_now ? ' (Open now)' : '';
-            const phone = p?.formatted_phone_number ? formatPhone(p.formatted_phone_number) : 'call for number';
-            const rating = place.rating ? ` — ${place.rating}⭐` : '';
-            const addr = place.formatted_address?.split(',').slice(0, 2).join(',') || '';
-            return `${place.name}${rating}${open}, ${phone}, ${addr}`;
+            const open = p?.opening_hours?.open_now ? ', open right now' : '';
+            const phone = p?.formatted_phone_number ? formatPhone(p.formatted_phone_number) : '';
+            const rating = place.rating ? `, rated ${place.rating} stars` : '';
+            const addr = place.formatted_address ? shortAddress(place.formatted_address) : '';
+            const phoneStr = phone ? `, their number is ${phone}` : '';
+            const addrStr = addr ? `, located at ${addr}` : '';
+            return `${place.name}${rating}${open}${addrStr}${phoneStr}`;
           } catch {
-            return `${place.name}, ${place.formatted_address?.split(',').slice(0, 2).join(',')}`;
+            return `${place.name}, located at ${shortAddress(place.formatted_address || '')}`;
           }
         });
         const results = await Promise.all(detailPromises);
-        const list = results.map((r, i) => `${i + 1}. ${r}`).join('\n');
-        return `I found these options near you:\n\n${list}\n\nWhich one would you like me to call for you?`;
+        const lines = results.map((r, i) => `Option ${i + 1}: ${r}`).join('. ');
+        return `I found ${results.length} options near you. ${lines}. Which one would you like me to call to schedule your appointment?`;
       }
     } catch (e) {
       console.error('Google Places error:', e);
@@ -60,11 +68,11 @@ async function searchPlaces(serviceType: string, location: string): Promise<stri
 
   // Fallback for common services in Philadelphia
   const fallbacks: Record<string, string> = {
-    pizza: "I found a few pizza options near you:\n\n1. Dolce Pizza — 4.8⭐, (215) 352-0370, 1619 Grant Ave, Philadelphia\n2. Marcello's Pizza — 4.8⭐, (215) 969-7900, 10849 Bustleton Ave\n3. Pizza Roma — 4.1⭐, (215) 725-6599, 7300 Bustleton Ave\n\nWould you like me to call one of them for you?",
-    plumber: "Here are some plumbers near Philadelphia:\n\n1. Zoom Drain, (215) 399-6001\n2. Benjamin Franklin Plumbing, (215) 607-5999\n3. Roto-Rooter, (215) 333-5100\n\nWould you like me to call one?",
-    electrician: "Here are electricians near Philadelphia:\n\n1. Mr. Electric, (215) 673-6100\n2. Penna Electric, (215) 728-0440\n3. All American Electric, (215) 467-4600\n\nWould you like me to call one?",
-    pharmacy: "Nearby pharmacies:\n\n1. CVS Pharmacy, (215) 333-7600, 9501 Roosevelt Blvd\n2. Walgreens, (215) 332-3043, 7834 Bustleton Ave\n3. Rite Aid, (215) 338-5400, 9650 Bustleton Ave\n\nWould you like me to call one?",
-    cardiologist: "Here are cardiologists near Philadelphia:\n\n1. Penn Heart & Vascular, (800) 789-7366\n2. Jefferson Heart Institute, (215) 955-6840\n3. Temple Heart & Vascular, (800) 836-7536\n\nWould you like me to call one to schedule an appointment?",
+    pizza: "I found a few pizza places near you. Option 1: Dolce Pizza, rated 4.8 stars, located at 1619 Grant Avenue in Philadelphia, their number is 215-352-0370. Option 2: Marcello's Pizza, rated 4.8 stars, located at 10849 Bustleton Avenue, their number is 215-969-7900. Option 3: Pizza Roma, rated 4.1 stars, located at 7300 Bustleton Avenue, their number is 215-725-6599. Which one would you like me to call?",
+    plumber: "I found a few plumbers near you. Option 1: Zoom Drain, their number is 215-399-6001. Option 2: Benjamin Franklin Plumbing, their number is 215-607-5999. Option 3: Roto-Rooter, their number is 215-333-5100. Which one would you like me to call?",
+    electrician: "I found a few electricians near you. Option 1: Mister Electric, their number is 215-673-6100. Option 2: Penna Electric, their number is 215-728-0440. Option 3: All American Electric, their number is 215-467-4600. Which one would you like me to call?",
+    pharmacy: "Here are some pharmacies near you. Option 1: CVS Pharmacy at 9501 Roosevelt Boulevard, their number is 215-333-7600. Option 2: Walgreens at 7834 Bustleton Avenue, their number is 215-332-3043. Option 3: Rite Aid at 9650 Bustleton Avenue, their number is 215-338-5400. Which one would you like me to call?",
+    cardiologist: "I found a few cardiologists near Philadelphia. Option 1: Penn Heart and Vascular Center, their number is 800-789-7366. Option 2: Jefferson Heart Institute, their number is 215-955-6840. Option 3: Temple Heart and Vascular, their number is 800-836-7536. Which one would you like me to call to schedule your appointment?",
   };
 
   const lower = serviceType.toLowerCase();
