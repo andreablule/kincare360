@@ -48,21 +48,18 @@ export async function POST(req: Request) {
 
   const baseUrl = process.env.NEXTAUTH_URL || "https://kincare360.com";
 
-  // If user has a Stripe customer ID, try billing portal first
-  if (user?.stripeCustomerId) {
+  // Cancel action → send to billing portal (has cancel button built in)
+  if (action === "cancel" && user?.stripeCustomerId) {
     const portalSession = await stripeAPI("/v1/billing_portal/sessions", {
       customer: user.stripeCustomerId,
       return_url: `${baseUrl}/dashboard/plan`,
     });
-
     if (portalSession.url) {
       return Response.json({ url: portalSession.url });
     }
-    // Portal not configured — fall through to checkout
-    console.error("Billing portal failed, falling back to checkout:", portalSession.error?.message);
   }
 
-  // Fallback: new Stripe checkout session for the selected plan
+  // Plan change → always create a new checkout session for the specific plan
   const checkoutParams: Record<string, string> = {
     mode: "subscription",
     "line_items[0][price]": priceId,
