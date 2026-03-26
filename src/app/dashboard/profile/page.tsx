@@ -124,8 +124,8 @@ export default function ProfilePage() {
           </div>
           <div>
             <label className="block text-sm font-medium text-navy mb-1">Medication Reminder Time</label>
-            <input type="time" className={inputClass} value={form.medicationReminderTime} onChange={(e) => setForm({ ...form, medicationReminderTime: e.target.value })} />
-            <p className="text-xs text-gray-400 mt-1">When should Lily remind about medications?</p>
+            <input type="time" className={inputClass} value={form.medicationReminderTime} onChange={(e) => setForm({ ...form, medicationReminderTime: e.target.value })} step="60" />
+            <p className="text-xs text-gray-400 mt-1">When should Lily remind about medications? (e.g. 8:00 AM)</p>
           </div>
         </div>
 
@@ -155,19 +155,7 @@ export default function ProfilePage() {
           <p className="text-xs text-gray-400 mt-1">Which days should Lily check in?</p>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-navy mb-1">Preferred Language</label>
-          <select
-            className={inputClass}
-            value={form.preferredLanguage}
-            onChange={(e) => setForm({ ...form, preferredLanguage: e.target.value })}
-          >
-            {["English", "Spanish", "Albanian", "Ukrainian", "Romanian", "Russian", "Arabic", "Chinese (Mandarin)", "French", "German", "Greek", "Haitian Creole", "Hindi", "Italian", "Korean", "Polish", "Portuguese", "Tagalog", "Vietnamese"].map((lang) => (
-              <option key={lang} value={lang}>{lang}</option>
-            ))}
-          </select>
-          <p className="text-xs text-gray-400 mt-1">Lily will speak to your loved one in this language.</p>
-        </div>
+        {/* Preferred Language removed — English only for now */}
 
         <button type="submit" disabled={saving} className="bg-teal text-white px-6 py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors disabled:opacity-40">
           {saving ? "Saving..." : "Save Changes"}
