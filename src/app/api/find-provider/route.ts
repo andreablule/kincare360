@@ -59,11 +59,37 @@ async function searchPlaces(serviceType: string, location: string): Promise<stri
       };
       const lower = serviceType.toLowerCase();
       const mappedService = Object.entries(serviceMap).find(([k]) => lower.includes(k))?.[1] || serviceType;
-      const query = `${mappedService} near ${location}`;
-      const res = await fetch(
-        `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(query)}&key=${googleApiKey}`
-      );
-      const data = await res.json();
+
+      // If location looks like a street address (has digits), geocode it first for precise nearby search
+      let searchData: any = null;
+      if (/\d/.test(location)) {
+        try {
+          const geoRes = await fetch(
+            `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(location)}&key=${googleApiKey}`
+          );
+          const geoData = await geoRes.json();
+          if (geoData.status === 'OK' && geoData.results?.[0]) {
+            const { lat, lng } = geoData.results[0].geometry.location;
+            const nearbyRes = await fetch(
+              `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=5000&keyword=${encodeURIComponent(mappedService)}&key=${googleApiKey}`
+            );
+            searchData = await nearbyRes.json();
+          }
+        } catch (e) {
+          console.error('Geocode error, falling back to textsearch:', e);
+        }
+      }
+
+      // Fallback to textsearch if geocoding failed or location is just a city
+      if (!searchData || searchData.status !== 'OK') {
+        const query = `${mappedService} near ${location}`;
+        const res = await fetch(
+          `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(query)}&key=${googleApiKey}`
+        );
+        searchData = await res.json();
+      }
+
+      const data = searchData;
 
       if (data.status === 'OK' && data.results?.length > 0) {
         const top3 = data.results.slice(0, 3);

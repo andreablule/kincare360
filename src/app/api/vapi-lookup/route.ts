@@ -191,13 +191,13 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string) {
             server: { url: "https://kincare360.com/api/find-provider" },
             function: {
               name: "findLocalService",
-              description: "Search for local services near the client's location. Always use their address from profile.",
+              description: "Search for local services near the client's home. ALWAYS pass their full home address as location.",
               parameters: {
                 type: "object",
-                required: ["serviceType"],
+                required: ["serviceType", "location"],
                 properties: {
                   serviceType: { type: "string", description: "Type of service (e.g. pizza, plumber, cardiologist)" },
-                  location: { type: "string", description: "Client address. Default: Philadelphia PA" },
+                  location: { type: "string", description: "Client full home address from their profile. NEVER use a generic city name. Example: '2630 Home Avenue, Philadelphia PA 19152'" },
                 },
               },
             },
