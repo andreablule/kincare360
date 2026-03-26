@@ -1,0 +1,153 @@
+Do two things in the KinCare360 Next.js 14 app:
+
+## TASK 1: Make Admin Client Rows Clickable → Full Client Detail Page
+
+### 1a. Update src/app/admin/page.tsx
+
+Find the clients table rows. Wrap each row's content in a Link component pointing to /admin/clients/[userId]. The row should look clickable (cursor-pointer, hover:bg-blue-50/50).
+
+Import Link from "next/link" if not already imported.
+
+Change each table row from a plain <tr> to wrap with a Link. Since tr cannot be wrapped in a Link directly, change the tr to have onClick behavior by wrapping the entire row content in an <a> tag styled as a table row, or better: make the CLIENT name cell a Link and add a "View →" button in the last column.
+
+Actually the cleanest approach: add a final column "Actions" with a Link button "View →" styled as:
+className="text-xs text-teal font-semibold hover:underline"
+href={`/admin/clients/${user.id}`}
+
+Also add the column header "Actions" to the thead.
+
+### 1b. Create src/app/admin/clients/[userId]/page.tsx
+
+Server component. Fetch full client data by userId param.
+
+Layout:
+- Back button: "← Back to Admin" link to /admin
+- Header: client name + email + role badge + status badge + plan badge
+- 4 tabs displayed as static sections (not interactive tabs since server component) with section headers:
+
+SECTION: Overview
+- Subscription card: Plan, Status, Trial end (fetch from Stripe), Stripe customer ID, MRR contribution
+- Account card: Email, Role, Joined date, Last login (createdAt as proxy)
+- Quick stats: Total calls, Urgent calls, Pending requests
+
+SECTION: Patient Profile
+Show all patient fields in a clean read-only grid:
+- Name, DOB, Phone, Address, City/State/ZIP, Gender, Preferred call time, Medication reminder times (split by comma), Check-in days
+- Doctors list (name, specialty, phone, address)
+- Pharmacies list (name, phone, address)  
+- Medications list (name, dosage, frequency)
+- Conditions list
+- Insurance info
+- Family members list (name, relationship, phone, email, role)
+
+SECTION: Call History
+All call logs for this patient, most recent first. Show as cards:
+- Date + time
+- Call type badge
+- Urgent badge (if urgent)
+- Mood chip
+- Medications taken: yes/no
+- Summary text
+- Transcript (collapsed, show first 200 chars + "... [full transcript available]")
+
+SECTION: Service Requests
+All service requests for this patient. Table: type, status, created date, full description (parse the structured lines: DATE, DOCTOR, DOCTOR PHONE, NOTES)
+
+Style everything with the same Tailwind classes as the rest of the admin: bg-white rounded-2xl border border-gray-100 p-6 shadow-sm, text-navy, etc.
+
+Add a header bar matching the admin dashboard (dark navy with "KinCare360 Admin" and back button).
+
+Fetch pattern:
+const { userId } = await params;
+const user = await prisma.user.findUnique({ where: { id: userId }, select: { id, email, name, role, plan, subscriptionStatus, stripeCustomerId, createdAt } });
+if (!user) redirect('/admin');
+const patient = await prisma.patient.findFirst({ where: { userId: user.id }, include: { doctors: true, pharmacies: true, medications: true, conditions: true, familyMembers: true, callLogs: { orderBy: { callDate: 'desc' } }, serviceRequests: { orderBy: { createdAt: 'desc' } } } });
+
+For Stripe trial end (if trialing):
+const SK = process.env.STRIPE_SECRET_KEY;
+const auth = Buffer.from(SK + ':').toString('base64');
+fetch Stripe subscription as before.
+
+---
+
+## TASK 2: Add Social Media & Marketing Section to Admin Dashboard
+
+Add a new section to src/app/admin/page.tsx AFTER the quick actions footer and BEFORE the closing div.
+
+Section title: "Marketing & Growth" with a megaphone icon
+
+### Row 1: Platform Links (4 cards)
+These are direct links to the actual platforms where Andrea manages KinCare360:
+
+Card 1: Facebook Business
+- Icon: Facebook logo (blue F in circle, use a simple SVG or emoji 📘)
+- Title: "Facebook Page"
+- Subtitle: "Posts, followers, reach"
+- Link: https://www.facebook.com/ (opens in new tab)
+- Badge: "Open Dashboard →"
+
+Card 2: Instagram
+- Icon: Instagram gradient camera emoji 📸
+- Title: "Instagram"  
+- Subtitle: "Stories, reels, engagement"
+- Link: https://www.instagram.com/ (opens in new tab)
+- Badge: "Open Dashboard →"
+
+Card 3: Google Analytics
+- Icon: 📊
+- Title: "Google Analytics"
+- Subtitle: "Website traffic & conversions"
+- Link: https://analytics.google.com/ (opens in new tab)
+- Badge: "Open Dashboard →"
+
+Card 4: Google Business
+- Icon: 🗺️
+- Title: "Google Business"
+- Subtitle: "Reviews, local search"
+- Link: https://business.google.com/ (opens in new tab)
+- Badge: "Open Dashboard →"
+
+Style: bg-white rounded-2xl border border-gray-100 p-5 hover:border-teal/40 hover:shadow-md transition-all. Each card has the icon large (text-3xl), title font-bold text-navy, subtitle text-sm text-gray-500, link as a teal button at the bottom.
+
+### Row 2: KinCare360 Website Traffic (static metrics cards for now)
+Show 4 placeholder metric cards with a "Connect Google Analytics to see real data" notice at the top of this row.
+
+Cards (show "--" as value, grayed out):
+- Website Visitors (this month)
+- Signup Conversion Rate
+- Top Traffic Source  
+- Page Views
+
+Each card: same style but with opacity-60 and a "Requires setup" badge in corner.
+
+Add a small info box below: 
+"To connect real analytics: Add Google Analytics 4 to your site, then contact support to enable the API integration."
+
+### Row 3: Outreach Quick Actions
+3 action cards in a row:
+
+1. "Write a Facebook Post" 
+   - Icon: ✍️
+   - Subtitle: "Draft and schedule content"
+   - Link to https://www.facebook.com/ (new tab)
+   - Style: border-2 border-dashed border-gray-200 hover:border-blue-400 rounded-2xl p-5
+
+2. "View Call to Action Stats"
+   - Icon: 📈  
+   - Subtitle: "Track signups from campaigns"
+   - Shows total signups this week from DB (users created in last 7 days with role=CLIENT)
+   - Value displayed prominently
+   - Style: bg-teal/5 border border-teal/20 rounded-2xl p-5
+
+3. "SMS/Text Campaign"
+   - Icon: 💬
+   - Subtitle: "Coming soon via Twilio"
+   - Disabled style: opacity-60 cursor-not-allowed
+   - Style: border-2 border-dashed border-gray-200 rounded-2xl p-5
+
+---
+
+After building everything:
+1. Run: npx next build
+2. If passes: git add -A ; git commit -m "feat: client detail pages + marketing section in admin" ; git push
+3. Report what was built

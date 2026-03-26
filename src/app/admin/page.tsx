@@ -57,6 +57,7 @@ export default async function AdminPage() {
     clientUsers,
     recentCalls,
     recentRequests,
+    signupsThisWeek,
   ] = await Promise.all([
     prisma.user.findMany({ where: { subscriptionStatus: "active" }, select: { plan: true } }),
     prisma.user.findMany({ where: { subscriptionStatus: "trialing" }, select: { plan: true } }),
@@ -93,6 +94,7 @@ export default async function AdminPage() {
       take: 8,
       include: { patient: { select: { firstName: true, lastName: true } } },
     }),
+    prisma.user.count({ where: { role: "CLIENT", createdAt: { gte: weekStart } } }),
   ]);
 
   // MRR calculations
@@ -288,6 +290,7 @@ export default async function AdminPage() {
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Last Call</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Calls</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Joined</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -354,11 +357,16 @@ export default async function AdminPage() {
                         <td className="px-4 py-4 text-gray-500 text-sm">
                           {new Date(c.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                         </td>
+                        <td className="px-4 py-4">
+                          <Link href={`/admin/clients/${c.id}`} className="text-xs text-teal font-semibold hover:underline">
+                            View &rarr;
+                          </Link>
+                        </td>
                       </tr>
                     );
                   })}
                   {clientUsers.length === 0 && (
-                    <tr><td colSpan={9} className="px-4 py-8 text-center text-gray-400">No clients yet.</td></tr>
+                    <tr><td colSpan={10} className="px-4 py-8 text-center text-gray-400">No clients yet.</td></tr>
                   )}
                 </tbody>
               </table>
@@ -489,6 +497,90 @@ export default async function AdminPage() {
               <div className="text-xs text-gray-400">Open voice AI console</div>
             </div>
           </a>
+        </div>
+
+        {/* SECTION 7: Marketing & Growth */}
+        <div className="mt-8">
+          <div className="flex items-center gap-3 mb-6">
+            <span className="text-2xl">📣</span>
+            <h2 className="text-lg font-semibold text-[#0f172a]">Marketing & Growth</h2>
+          </div>
+
+          {/* Row 1: Platform Links */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+            {[
+              { icon: "📘", title: "Facebook Page", subtitle: "Posts, followers, reach", link: "https://www.facebook.com/" },
+              { icon: "📸", title: "Instagram", subtitle: "Stories, reels, engagement", link: "https://www.instagram.com/" },
+              { icon: "📊", title: "Google Analytics", subtitle: "Website traffic & conversions", link: "https://analytics.google.com/" },
+              { icon: "🗺️", title: "Google Business", subtitle: "Reviews, local search", link: "https://business.google.com/" },
+            ].map((platform) => (
+              <a
+                key={platform.title}
+                href={platform.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-white rounded-2xl border border-gray-100 p-5 hover:border-teal/40 hover:shadow-md transition-all flex flex-col"
+              >
+                <span className="text-3xl mb-3">{platform.icon}</span>
+                <div className="font-bold text-[#0f172a]">{platform.title}</div>
+                <div className="text-sm text-gray-500 mb-4">{platform.subtitle}</div>
+                <span className="mt-auto text-sm font-semibold text-teal hover:underline">Open Dashboard &rarr;</span>
+              </a>
+            ))}
+          </div>
+
+          {/* Row 2: Website Traffic Metrics (placeholder) */}
+          <div className="mb-6">
+            <div className="bg-blue-50 border border-blue-200 rounded-xl px-4 py-2.5 text-sm text-blue-700 font-medium mb-4 flex items-center gap-2">
+              <span>📡</span> Connect Google Analytics to see real data
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {[
+                { label: "Website Visitors", sub: "this month" },
+                { label: "Signup Conversion Rate", sub: "visitors → signups" },
+                { label: "Top Traffic Source", sub: "referrer" },
+                { label: "Page Views", sub: "this month" },
+              ].map((metric) => (
+                <div key={metric.label} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm opacity-60 relative">
+                  <span className="absolute top-3 right-3 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-gray-100 text-gray-400">Requires setup</span>
+                  <div className="text-xs text-gray-500 uppercase tracking-wide font-medium">{metric.label}</div>
+                  <div className="text-3xl font-bold text-gray-300 mt-2">--</div>
+                  <div className="text-xs text-gray-400 mt-1">{metric.sub}</div>
+                </div>
+              ))}
+            </div>
+            <div className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-xs text-gray-500 mt-4">
+              To connect real analytics: Add Google Analytics 4 to your site, then contact support to enable the API integration.
+            </div>
+          </div>
+
+          {/* Row 3: Outreach Quick Actions */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            <a
+              href="https://www.facebook.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="border-2 border-dashed border-gray-200 hover:border-blue-400 rounded-2xl p-5 transition-all flex flex-col items-start"
+            >
+              <span className="text-2xl mb-2">✍️</span>
+              <div className="font-bold text-[#0f172a]">Write a Facebook Post</div>
+              <div className="text-sm text-gray-500">Draft and schedule content</div>
+            </a>
+
+            <div className="bg-teal/5 border border-teal/20 rounded-2xl p-5 flex flex-col items-start">
+              <span className="text-2xl mb-2">📈</span>
+              <div className="font-bold text-[#0f172a]">View Call to Action Stats</div>
+              <div className="text-sm text-gray-500">Track signups from campaigns</div>
+              <div className="text-3xl font-bold text-teal mt-3">{signupsThisWeek}</div>
+              <div className="text-xs text-gray-500">new client signups this week</div>
+            </div>
+
+            <div className="border-2 border-dashed border-gray-200 rounded-2xl p-5 opacity-60 cursor-not-allowed flex flex-col items-start">
+              <span className="text-2xl mb-2">💬</span>
+              <div className="font-bold text-[#0f172a]">SMS/Text Campaign</div>
+              <div className="text-sm text-gray-500">Coming soon via Twilio</div>
+            </div>
+          </div>
         </div>
 
       </main>
