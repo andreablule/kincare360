@@ -59,17 +59,33 @@ export async function POST(req: Request) {
     }
   }
 
+  // Check if user already has an active or trialing subscription (no new trial)
+  let hasActiveSub = false;
+  if (user?.stripeCustomerId) {
+    const auth = Buffer.from(`${SK}:`).toString("base64");
+    const subCheck = await fetch(
+      `https://api.stripe.com/v1/subscriptions?customer=${user.stripeCustomerId}&limit=1`,
+      { headers: { Authorization: `Basic ${auth}` } }
+    ).then((r) => r.json());
+    hasActiveSub = subCheck?.data?.length > 0 &&
+      ["active", "trialing"].includes(subCheck.data[0].status);
+  }
+
   // Plan change → always create a new checkout session for the specific plan
   const checkoutParams: Record<string, string> = {
     mode: "subscription",
     "line_items[0][price]": priceId,
     "line_items[0][quantity]": "1",
-    "subscription_data[trial_period_days]": "7",
     success_url: `${baseUrl}/dashboard/plan?upgraded=1`,
     cancel_url: `${baseUrl}/dashboard/plan`,
     "metadata[userId]": userId,
     "metadata[plan]": planKey,
   };
+
+  // Only add trial if they don't already have one
+  if (!hasActiveSub) {
+    checkoutParams["subscription_data[trial_period_days]"] = "7";
+  }
 
   if (user?.email) {
     checkoutParams["customer_email"] = user.email;
