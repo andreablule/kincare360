@@ -8,9 +8,22 @@ function formatPhone(raw: string): string {
   return raw;
 }
 
-// Shorten address to just street + city, drop zip/country
+// Shorten and clean address for natural TTS speech
 function shortAddress(addr: string): string {
-  return addr.split(',').slice(0, 2).map(s => s.trim()).join(', ');
+  return addr
+    .split(',').slice(0, 2).map(s => s.trim()).join(', ')
+    .replace(/#\s*(\w+)/g, 'Suite $1')   // #200 → Suite 200
+    .replace(/\bSte\.?\s*/gi, 'Suite ')   // Ste → Suite
+    .replace(/\bAve\b/gi, 'Avenue')
+    .replace(/\bRd\b/gi, 'Road')
+    .replace(/\bSt\b/gi, 'Street')
+    .replace(/\bBlvd\b/gi, 'Boulevard')
+    .replace(/\bDr\b/gi, 'Drive')
+    .replace(/\bLn\b/gi, 'Lane')
+    .replace(/\bPkwy\b/gi, 'Parkway')
+    .replace(/\bHwy\b/gi, 'Highway')
+    .replace(/\bNE\b/g, 'Northeast').replace(/\bNW\b/g, 'Northwest')
+    .replace(/\bSE\b/g, 'Southeast').replace(/\bSW\b/g, 'Southwest');
 }
 
 async function searchPlaces(serviceType: string, location: string): Promise<string> {

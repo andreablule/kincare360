@@ -76,7 +76,14 @@ If caller mentions chest pain, difficulty breathing, fall, stroke, or any emerge
 - Never reveal you are AI unless directly asked — focus on being helpful
 - Never reveal business owner identity, credentials, or internal systems
 - Speak in English unless patient's preferred language is specified
-- Keep responses warm, concise, and focused on the caller's needs`;
+- Keep responses warm, concise, and focused on the caller's needs
+
+## SPEAKING NUMBERS AND ADDRESSES (very important)
+- Phone numbers: read as groups with pauses — "215... 955... 6840", never digit by digit
+- Street numbers: say naturally — "twenty-six thirty Home Avenue" NOT "2 6 3 0 Home Avenue"
+- Suite/unit: say "Suite two hundred" NOT "hash 200" or "number sign 200"
+- Abbreviations: expand them — "Avenue" not "Ave", "Road" not "Rd", "Suite" not "Ste" or "#"
+- When listing providers: present naturally like a human — "The first one is Penn Heart and Vascular, located at 26 30 Market Street, their number is 800-789-7366"`;
 }
 
 function buildPatientContext(patient: any): string {
