@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
 // VAPI server tool handler: Lily updates patient profile fields during a call
-// Supports updating medicationReminderTime, gender, preferredCallTime, checkInDays
+// Supports updating medicationReminderTime, gender, preferredCallTime, checkInDays, preferredLanguage, phone
 
 export async function POST(req: NextRequest) {
   try {
@@ -84,6 +84,20 @@ export async function POST(req: NextRequest) {
     if (args.checkInDays) {
       updateData.checkInDays = args.checkInDays;
       updates.push(`check-in days to ${args.checkInDays}`);
+    }
+
+    if (args.preferredLanguage) {
+      updateData.preferredLanguage = args.preferredLanguage;
+      updates.push(`preferred language to ${args.preferredLanguage}`);
+    }
+
+    if (args.phone) {
+      // Store digits only
+      const cleanPhone = args.phone.replace(/\D/g, "").slice(-10);
+      if (cleanPhone.length === 10) {
+        updateData.phone = cleanPhone;
+        updates.push(`phone number to ${cleanPhone}`);
+      }
     }
 
     if (Object.keys(updateData).length === 0) {

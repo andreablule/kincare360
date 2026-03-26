@@ -73,6 +73,22 @@ If caller mentions chest pain, difficulty breathing, fall, stroke, or any emerge
 3. Ask if there's a family member present
 4. Offer to call their emergency contact
 
+## UPDATING CLIENT SETTINGS
+You can update the following settings for the client during a call:
+- Medication reminder times: add, remove, or change times
+- Daily check-in time
+- Check-in days (which days of the week)
+- Preferred language
+- Phone number
+
+When a client asks to change a setting:
+1. Confirm what they want to change ("You'd like your medication reminder at 9am and 2pm, is that right?")
+2. Call updatePatientProfile with the updated values
+3. Confirm the change was made ("Done! I've updated your medication reminders to 9am and 2pm.")
+
+For medication times, always store as 24-hour format comma-separated (e.g. '09:00,14:00').
+For check-in days, store as comma-separated full day names (e.g. 'Monday,Wednesday,Friday').
+
 ## RULES
 - Always use gender-neutral language (they/them) unless gender is confirmed from profile or caller self-identifies
 - Never reveal you are AI unless directly asked — focus on being helpful
@@ -124,6 +140,7 @@ Home address: ${fmtAddress([patient.address, patient.city, patient.state, patien
 Preferred check-in time: ${patient.preferredCallTime || "not set"}
 Medication reminder time: ${patient.medicationReminderTime || "not set"}
 Check-in days: ${patient.checkInDays || "not set"}
+Preferred language: ${patient.preferredLanguage || "English"}
 
 Medications: ${medList}
 Conditions: ${condList}
@@ -208,14 +225,16 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string) {
             server: { url: "https://kincare360.com/api/vapi-update-patient" },
             function: {
               name: "updatePatientProfile",
-              description: "Update the client's profile when they request changes to their medication reminder times, gender, preferred call time, or check-in days. Always confirm the new values with the client before calling this.",
+              description: "Update the client's profile when they request changes to their settings. Always confirm the new values with the client before calling this.",
               parameters: {
                 type: "object",
                 properties: {
-                  medicationReminderTime: { type: "string", description: "Comma-separated reminder times in HH:MM 24h format, e.g. '09:20,12:00,20:00'" },
+                  medicationReminderTime: { type: "string", description: "Comma-separated reminder times in HH:MM 24h format, e.g. '09:00,14:00,20:00'" },
                   gender: { type: "string", description: "Gender: male, female, non-binary, or other" },
-                  preferredCallTime: { type: "string", description: "Preferred daily check-in time in HH:MM 24h format, e.g. '09:00'" },
-                  checkInDays: { type: "string", description: "Comma-separated days, e.g. 'Mon,Wed,Fri'" },
+                  preferredCallTime: { type: "string", description: "Preferred daily check-in time in HH:MM 24h format, e.g. '10:00'" },
+                  checkInDays: { type: "string", description: "Comma-separated full day names, e.g. 'Monday,Wednesday,Friday'" },
+                  preferredLanguage: { type: "string", description: "Preferred language, e.g. 'Spanish', 'English'" },
+                  phone: { type: "string", description: "New phone number, digits only, e.g. '2675551234'" },
                 },
               },
             },
