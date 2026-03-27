@@ -67,14 +67,31 @@ IMPORTANT: Times must be in 24-hour HH:MM format for the tool:
 - "8 AM" → "08:00", "noon" or "12 PM" → "12:00", "8 PM" → "20:00", "5 PM" → "17:00"
 - Multiple times comma-separated: "08:00,12:00,20:00"
 
-### One-time reminders:
-If a client says "remind me to..." or "call me at 6 PM to..." — use the setReminder tool.
+## PLAN-BASED ACCESS RULES
+
+Check the client's Plan in CALLER CONTEXT. Rules below apply AFTER the free trial ends. During the 7-day free trial, all clients get full COMPLETE-level access regardless of plan.
+
+### ESSENTIAL PLAN — inbound call gating:
+Essential clients should NOT be calling Lily inbound (they only get outbound check-ins and reminders). If an Essential client calls in, greet them warmly then say: "I love hearing from you! Did you know on our Plus plan you can call me anytime? It is just $80 a month. Would you like to hear more about upgrading?" Then answer their immediate question if it's quick, but remind them that calling Lily is a Plus feature.
+
+### PLUS PLAN — connect and transfer only:
+Plus clients can call Lily anytime. Lily can chat, find local services, and connect/transfer them to providers. But Lily does NOT schedule appointments on behalf of Plus clients and does NOT set one-time reminders.
+- If a Plus client asks Lily to schedule an appointment for them or call a provider on their behalf: "I can connect you directly to their office right now! If you would like me to schedule appointments on your behalf, that is available on our Complete plan for $110 a month. Want me to connect you now?"
+- If a Plus client asks for a one-time call-back reminder: "Call-back reminders are available on our Complete plan. Would you like to hear more?"
+
+### COMPLETE PLAN — full access:
+Complete clients get everything. Lily can schedule medical/health appointments on their behalf (call doctors, specialists, labs, pharmacies), set one-time call-back reminders, and full concierge.
+- IMPORTANT: For NON-medical services (restaurants, plumbers, groceries, transportation), Lily still ONLY finds and connects — does NOT call on behalf, even for Complete clients. Only medical/health providers get the on-behalf scheduling.
+- If a Complete client asks Lily to schedule a restaurant reservation or call a plumber FOR them: "I handle appointment scheduling for medical and healthcare providers. For other services, I can find one nearby and connect you right now!"
+
+### One-time reminders (COMPLETE plan only):
+If a COMPLETE client says "remind me to..." or "call me at 6 PM to..." — use the setReminder tool.
 Ask: what to remind them about, and when. Then call the tool.
 After the tool responds, say: "I'll call you at [time] to remind you to [message]. Have a wonderful day!" then END the call. Do NOT ask if they want to chat or if anything is on their mind.
 
-### MEDICAL providers — call on behalf of client (PLUS and COMPLETE plans):
+### MEDICAL providers — call on behalf of client (COMPLETE plan only):
 Use callProviderForClient for: scheduling doctor appointments, specialist visits, prescription refills, lab tests, medical exams, anything healthcare-related.
-Available for: clients on FREE TRIAL (any plan), PLUS plan, and COMPLETE plan subscribers. If an Essential plan client whose trial has ended asks you to schedule or call a provider on their behalf, say: "Appointment scheduling is included in our Plus plan starting at $80 per month. Would you like to upgrade? You can do that at kincare360.com or I can tell you more about the Plus plan." Trial users get full access to try everything.
+Available for: clients on FREE TRIAL (any plan) and COMPLETE plan subscribers only. Plus and Essential clients do NOT get this feature (see upsell messages above).
 
 BEFORE calling, you MUST have ALL of these — ask for each one separately and wait for the answer:
 1. Provider/doctor name — "What's the doctor's name?"
@@ -93,14 +110,14 @@ Once confirmed, IMMEDIATELY call the callProviderForClient tool
 CRITICAL: MUST call the tool BEFORE ending. Never just promise.
 Only share patient info (name, DOB, address, insurance) with MEDICAL providers. Never share patient info with non-medical services.
 
-### NON-MEDICAL services — just connect the client live:
+### NON-MEDICAL services — find and connect live (PLUS and COMPLETE plans):
 For restaurants, plumbers, transportation, groceries, or any non-healthcare service:
 - Use findLocalService to search
 - Present results naturally
 - Use transferCall to connect the client LIVE — do NOT call on their behalf
 - Do NOT share any patient personal information with non-medical services
 
-### Connect client LIVE to a provider on file:
+### Connect client LIVE to a provider on file (PLUS and COMPLETE plans):
 - Use transferCall when client says "connect me" or "put me through"
 - Client stays on the line
 
@@ -110,20 +127,17 @@ Explain plans warmly, invite to kincare360.com. Do NOT offer care services to no
 ### PLAN DETAILS (use when explaining to prospective clients):
 
 **Essential Plan — $50/month (Family: $75 for 2 parents):**
-Example: 'Every morning I'll call your mom to check in — ask how she slept, if she's eaten, how she's feeling. I'll remind her to take her medication twice a day. If she mentions pain or a fall, I immediately alert you and your family through the dashboard — up to 2 family members can see her check-in history and care notes.'
+Example: 'Every morning I call to check in — ask how she slept, if she has eaten, how she is feeling. I remind her to take her medication twice a day. Your family gets a dashboard to see how she is doing — up to 2 family members can see her check-in history and care notes. If she mentions a fall or pain, I immediately alert you.'
 
 **Plus Plan — $80/month (Family: $130 for 2 parents) — Most Popular:**
-Example: 'Everything in Essential, plus your mom can call me anytime — day or night — if she needs someone to talk to or has a question. I also become her appointment manager. If she needs to see Dr. Smith, she just tells me during our check-in — I'll call the doctor's office myself, schedule the appointment, and call her back with the date and time. You also get weekly care summaries so you always know how she's doing.'
+Example: 'Everything in Essential, plus your mom can call me anytime day or night. I can find services near her — a pharmacy, a doctor, a restaurant — and connect her directly. Need to reach her doctor? I transfer her right to the office. Up to 4 family members on the dashboard, and you get weekly care summaries so you always know how she is doing.'
 
 **Complete Plan — $110/month (Family: $180 for 2 parents):**
-Example: 'This is the full concierge experience. I handle everything for your mom. Need a prescription refill? I call the pharmacy. Want to order her favorite meal? I find the restaurant and place the call. Need a plumber because the sink is leaking? I find one nearby and connect her. Plus you get detailed weekly reports on her wellness, mood trends, medication adherence, and any concerns. It is like having a personal assistant dedicated to her care.'
+Example: 'The full experience. I schedule doctor appointments on her behalf — she just tells me and I handle it. I call the office, book the appointment, and call her back with the details. She can tell me to call her back at any time with a reminder. You get detailed weekly reports on her wellness, mood trends, medication adherence, and any concerns. It is like having a personal care assistant dedicated to her.'
 
 **Family Plan:** 'If both your parents need care, our family plan covers both of them under one account. Each parent gets their own personal check-ins and reminders — it is not shared. So your mom might get her call at 9 AM and your dad at 10 AM. Each one gets individualized care.'
 
 All plans include a 7-day free trial. No contracts, cancel anytime.
-
-### ESSENTIAL PLAN INBOUND CALL GATING:
-If the caller is on the ESSENTIAL plan (not a free trial) and they are calling Lily inbound (this is NOT a scheduled check-in or medication reminder — they called us), gently let them know: "I'd love to chat anytime! That feature is available on our Plus plan for just $80 a month. Would you like to hear more about upgrading?" Then answer their immediate question if it's quick, but remind them that unlimited inbound calling is a Plus feature.
 
 ## SPEAKING
 - Phone numbers: read with pauses — "two fifteen... six eighty-five... zero six oh three"
@@ -256,9 +270,150 @@ function buildTransferEnum(dests: any[]): string[] {
   return dests.map(d => d.number);
 }
 
+function getClientPlanTier(patient?: any): "essential" | "plus" | "complete" | "trial" | "unknown" {
+  if (!patient?.user) return "unknown";
+  const status = patient.user.subscriptionStatus?.toLowerCase() || "";
+  // Free trial users get full access
+  if (status === "trialing" || status === "trial") return "trial";
+  const plan = (patient.user.plan || "").toLowerCase();
+  if (plan.includes("complete")) return "complete";
+  if (plan.includes("plus")) return "plus";
+  if (plan.includes("essential")) return "essential";
+  return "unknown";
+}
+
 function buildAssistantConfig(systemPrompt: string, firstMessage: string, patient?: any) {
   const destinations = buildTransferDestinations(patient);
   const destEnum = buildTransferEnum(destinations);
+  const tier = getClientPlanTier(patient);
+
+  // Tools available to all known clients
+  const baseTools: any[] = [
+    {
+      type: "function",
+      server: { url: "https://www.kincare360.com/api/vapi-update-patient" },
+      function: {
+        name: "updatePatientProfile",
+        description: "Update the client's profile settings. Use this when they ask to change medication reminder times, check-in time, check-in days, gender, language, or phone number. Always confirm the new values with the client first, then call this tool to save them.",
+        parameters: {
+          type: "object",
+          properties: {
+            medicationReminderTime: { type: "string", description: "Comma-separated reminder times in HH:MM 24-hour format, e.g. '08:00,12:00,20:00'" },
+            preferredCallTime: { type: "string", description: "Daily check-in time in HH:MM 24-hour format, e.g. '17:00'" },
+            checkInDays: { type: "string", description: "Comma-separated days, e.g. 'Mon,Tue,Wed,Thu,Fri'" },
+            gender: { type: "string", description: "male, female, non-binary, or other" },
+            preferredLanguage: { type: "string", description: "e.g. English, Spanish" },
+          },
+        },
+      },
+    },
+    {
+      type: "function",
+      server: { url: "https://www.kincare360.com/api/emergency-alert" },
+      function: {
+        name: "sendEmergencyAlert",
+        description: "Send immediate SMS and email emergency alerts to ALL family members. Use when client reports a fall, injury, chest pain, difficulty breathing, or any emergency. Do this BEFORE or ALONGSIDE transferring the call.",
+        parameters: {
+          type: "object",
+          required: ["emergencyDescription"],
+          properties: {
+            emergencyDescription: { type: "string", description: "Brief description of the emergency, e.g. 'had a fall and cannot get up'" },
+          },
+        },
+      },
+    },
+  ];
+
+  // Plus and above: findLocalService, transferCall
+  const connectTools: any[] = [
+    {
+      type: "function",
+      server: { url: "https://www.kincare360.com/api/find-provider" },
+      function: {
+        name: "findLocalService",
+        description: "Search for local services near the client's location.",
+        parameters: {
+          type: "object",
+          required: ["serviceType"],
+          properties: {
+            serviceType: { type: "string", description: "Type of service (e.g. pizza, plumber, cardiologist)" },
+            location: { type: "string", description: "Client address. Default: Philadelphia PA" },
+          },
+        },
+      },
+    },
+    {
+      type: "transferCall",
+      function: {
+        name: "transferCall",
+        description: `Transfer the call LIVE to the selected provider (client stays on the line). Available: ${destinations.map(d => d.description).join(", ")}`,
+        parameters: {
+          type: "object",
+          required: ["destination"],
+          properties: {
+            destination: {
+              type: "string",
+              enum: destEnum,
+              description: "The phone number to transfer to",
+            },
+          },
+        },
+      },
+      destinations,
+    },
+  ];
+
+  // Complete only: callProviderForClient, setReminder
+  const completeTools: any[] = [
+    {
+      type: "function",
+      server: { url: "https://www.kincare360.com/api/set-reminder" },
+      function: {
+        name: "setReminder",
+        description: "Set a one-time reminder for the client. Lily will call them back at the specified time with the reminder message. Use for any reminder: take medication, call someone, do something, attend appointment, etc.",
+        parameters: {
+          type: "object",
+          required: ["reminderMessage", "reminderTime"],
+          properties: {
+            reminderMessage: { type: "string", description: "What to remind the client about, e.g. 'take your evening medication' or 'call your daughter'" },
+            reminderTime: { type: "string", description: "When to send the reminder, e.g. '6 PM', '3:30 PM', 'in 2 hours'" },
+          },
+        },
+      },
+    },
+    {
+      type: "function",
+      server: { url: "https://www.kincare360.com/api/schedule-appointment" },
+      function: {
+        name: "callProviderForClient",
+        description: "Call ANY medical provider (doctor, pharmacy, lab, specialist) ON BEHALF of the client. Use for: scheduling doctor appointments, requesting prescription refills, scheduling tests/labs, or any other medical call the client needs made. Lily calls the provider, handles the request, then calls the client back with results. ONLY for medical/health providers — NOT for restaurants, plumbers, or non-medical services.",
+        parameters: {
+          type: "object",
+          required: ["providerPhone"],
+          properties: {
+            providerName: { type: "string", description: "Name of the provider (doctor, pharmacy, lab)" },
+            providerPhone: { type: "string", description: "Phone number, digits only" },
+            preferredTime: { type: "string", description: "Preferred time/date if scheduling" },
+            reason: { type: "string", description: "What to request: appointment, refill, test, etc." },
+          },
+        },
+      },
+    },
+  ];
+
+  // Assemble tools based on plan tier
+  let tools: any[];
+  if (tier === "trial" || tier === "complete") {
+    // Full access
+    tools = [...baseTools, ...connectTools, ...completeTools];
+  } else if (tier === "plus") {
+    // Connect/transfer only — no scheduling on behalf, no reminders
+    tools = [...baseTools, ...connectTools];
+  } else {
+    // Essential or unknown — base tools only (emergency + profile updates)
+    // Essential is outbound-only so minimal tools, but keep emergency for safety
+    tools = [...baseTools];
+  }
 
   return {
     assistant: {
@@ -267,110 +422,7 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string, patien
         provider: "openai",
         model: "gpt-4o-mini",
         messages: [{ role: "system", content: systemPrompt }],
-        tools: [
-          {
-            type: "function",
-            server: { url: "https://www.kincare360.com/api/find-provider" },
-            function: {
-              name: "findLocalService",
-              description: "Search for local services near the client's location.",
-              parameters: {
-                type: "object",
-                required: ["serviceType"],
-                properties: {
-                  serviceType: { type: "string", description: "Type of service (e.g. pizza, plumber, cardiologist)" },
-                  location: { type: "string", description: "Client address. Default: Philadelphia PA" },
-                },
-              },
-            },
-          },
-          {
-            type: "transferCall",
-            function: {
-              name: "transferCall",
-              description: `Transfer the call LIVE to the selected provider (client stays on the line). Available: ${destinations.map(d => d.description).join(", ")}`,
-              parameters: {
-                type: "object",
-                required: ["destination"],
-                properties: {
-                  destination: {
-                    type: "string",
-                    enum: destEnum,
-                    description: "The phone number to transfer to",
-                  },
-                },
-              },
-            },
-            destinations,
-          },
-          {
-            type: "function",
-            server: { url: "https://www.kincare360.com/api/vapi-update-patient" },
-            function: {
-              name: "updatePatientProfile",
-              description: "Update the client's profile settings. Use this when they ask to change medication reminder times, check-in time, check-in days, gender, language, or phone number. Always confirm the new values with the client first, then call this tool to save them.",
-              parameters: {
-                type: "object",
-                properties: {
-                  medicationReminderTime: { type: "string", description: "Comma-separated reminder times in HH:MM 24-hour format, e.g. '08:00,12:00,20:00'" },
-                  preferredCallTime: { type: "string", description: "Daily check-in time in HH:MM 24-hour format, e.g. '17:00'" },
-                  checkInDays: { type: "string", description: "Comma-separated days, e.g. 'Mon,Tue,Wed,Thu,Fri'" },
-                  gender: { type: "string", description: "male, female, non-binary, or other" },
-                  preferredLanguage: { type: "string", description: "e.g. English, Spanish" },
-                },
-              },
-            },
-          },
-          {
-            type: "function",
-            server: { url: "https://www.kincare360.com/api/emergency-alert" },
-            function: {
-              name: "sendEmergencyAlert",
-              description: "Send immediate SMS and email emergency alerts to ALL family members. Use when client reports a fall, injury, chest pain, difficulty breathing, or any emergency. Do this BEFORE or ALONGSIDE transferring the call.",
-              parameters: {
-                type: "object",
-                required: ["emergencyDescription"],
-                properties: {
-                  emergencyDescription: { type: "string", description: "Brief description of the emergency, e.g. 'had a fall and cannot get up'" },
-                },
-              },
-            },
-          },
-          {
-            type: "function",
-            server: { url: "https://www.kincare360.com/api/set-reminder" },
-            function: {
-              name: "setReminder",
-              description: "Set a one-time reminder for the client. Lily will call them back at the specified time with the reminder message. Use for any reminder: take medication, call someone, do something, attend appointment, etc.",
-              parameters: {
-                type: "object",
-                required: ["reminderMessage", "reminderTime"],
-                properties: {
-                  reminderMessage: { type: "string", description: "What to remind the client about, e.g. 'take your evening medication' or 'call your daughter'" },
-                  reminderTime: { type: "string", description: "When to send the reminder, e.g. '6 PM', '3:30 PM', 'in 2 hours'" },
-                },
-              },
-            },
-          },
-          {
-            type: "function",
-            server: { url: "https://www.kincare360.com/api/schedule-appointment" },
-            function: {
-              name: "callProviderForClient",
-              description: "Call ANY provider (doctor, pharmacy, lab, specialist) ON BEHALF of the client. Use for: scheduling appointments, requesting prescription refills, scheduling tests/labs, or any other call the client needs made. Lily calls the provider, handles the request, then calls the client back with results.",
-              parameters: {
-                type: "object",
-                required: ["providerPhone"],
-                properties: {
-                  providerName: { type: "string", description: "Name of the provider (doctor, pharmacy, lab)" },
-                  providerPhone: { type: "string", description: "Phone number, digits only" },
-                  preferredTime: { type: "string", description: "Preferred time/date if scheduling" },
-                  reason: { type: "string", description: "What to request: appointment, refill, test, etc." },
-                },
-              },
-            },
-          },
-        ],
+        tools,
       },
       voice: { voiceId: "paula", provider: "11labs" },
       firstMessage,

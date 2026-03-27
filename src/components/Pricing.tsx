@@ -44,20 +44,28 @@ const individualPlans = [
         detail: "All daily check-in calls, medication reminders, family dashboard, and emergency alerts included.",
       },
       {
-        text: "Unlimited medication reminders",
-        detail: "No limit on daily medication reminders — Lily calls as many times as needed throughout the day to match your loved one's medication schedule.",
-      },
-      {
         text: "24/7 access to Lily (call anytime)",
         detail: "Your loved one can call Lily any time of day or night — whether they need someone to talk to, have a question, or need help.",
       },
       {
-        text: "Appointment scheduling (Lily calls providers)",
-        detail: "Your loved one or family can request a doctor appointment. Lily calls the provider's office, schedules it, and confirms the details back.",
+        text: "Unlimited medication reminders",
+        detail: "No limit on daily medication reminders — Lily calls as many times as needed throughout the day to match your loved one's medication schedule.",
+      },
+      {
+        text: "Family dashboard (up to 4 members)",
+        detail: "Up to 4 family members can view check-in history, medication status, and care notes through a shared dashboard — updated after every call.",
+      },
+      {
+        text: "Local service search & live connect",
+        detail: "Lily finds nearby services — pharmacies, restaurants, transportation — and connects your loved one directly to them on a live call.",
+      },
+      {
+        text: "Connect to your doctors & pharmacies",
+        detail: "Lily transfers your loved one directly to their doctors and pharmacies listed on the dashboard — no searching for numbers.",
       },
       {
         text: "Weekly care summaries",
-        detail: "Every week, family members receive an automated summary of how their loved one has been doing — mood trends, medications, appointments, and any concerns.",
+        detail: "Every week, family members receive an automated summary of how their loved one has been doing — mood trends, medications, and any concerns.",
       },
     ],
     dark: false,
@@ -74,11 +82,15 @@ const individualPlans = [
     features: [
       {
         text: "Everything in Plus",
-        detail: "All check-ins, unlimited reminders, scheduling, family dashboard, and weekly summaries included.",
+        detail: "All check-ins, unlimited reminders, 24/7 access, service search, live connect, family dashboard, and weekly summaries included.",
       },
       {
-        text: "Full concierge service (Lily handles ANY call)",
-        detail: "Need a plumber, pharmacy refill, restaurant reservation, or any service? Your loved one just asks Lily. She finds the provider, makes the call, and handles everything.",
+        text: "Medical appointment scheduling (Lily calls for you)",
+        detail: "Lily calls doctors, specialists, labs, and pharmacies on behalf of your loved one to schedule appointments and request refills — they just ask and Lily handles it.",
+      },
+      {
+        text: "One-time call-back reminders",
+        detail: "Your loved one tells Lily 'remind me to...' or 'call me at 6 PM to...' and Lily calls them back at the chosen time with the reminder.",
       },
       {
         text: "Detailed weekly care reports",
@@ -87,10 +99,6 @@ const individualPlans = [
       {
         text: "Priority support",
         detail: "Priority response times and dedicated support for any questions or issues with your loved one's care.",
-      },
-      {
-        text: "Custom check-in scheduling",
-        detail: "Fully customizable check-in schedule — choose specific days, times, and frequency that work best for your loved one's routine.",
       },
     ],
     dark: true,
@@ -139,19 +147,23 @@ const familyPlans = [
     features: [
       {
         text: "Everything in Plus — for 2 parents",
-        detail: "All Plus features for both parents: unlimited reminders, dashboard, appointment scheduling, and weekly summaries.",
+        detail: "All Plus features for both parents: 24/7 access, unlimited reminders, service search, live connect, and weekly summaries.",
       },
       {
-        text: "Unlimited medication reminders (each parent)",
-        detail: "No limits — each parent gets as many daily medication reminders as they need.",
+        text: "24/7 access to Lily (each parent)",
+        detail: "Both parents can call Lily anytime — day or night — for help, questions, or just to chat.",
       },
       {
-        text: "Family dashboard for both parents",
-        detail: "See check-in history, medication tracking, and care notes for both parents in one dashboard.",
+        text: "Family dashboard (up to 4 members)",
+        detail: "Up to 4 family members can view check-in history, medication tracking, and care notes for both parents.",
       },
       {
-        text: "Appointment scheduling + weekly summaries",
-        detail: "Lily schedules appointments for both parents and sends combined weekly care summaries to the family.",
+        text: "Local service search & live connect",
+        detail: "Lily finds nearby services for either parent and connects them directly on a live call.",
+      },
+      {
+        text: "Weekly care summaries",
+        detail: "Combined weekly care summaries for both parents delivered to the family.",
       },
     ],
     dark: false,
@@ -168,19 +180,23 @@ const familyPlans = [
     features: [
       {
         text: "Everything in Complete — for 2 parents",
-        detail: "Full concierge service for both parents. Each gets individualized care, detailed reports, and priority support.",
+        detail: "Full concierge for both parents. Each gets individualized care, medical scheduling, reminders, detailed reports, and priority support.",
       },
       {
-        text: "Full concierge for each parent",
-        detail: "Lily handles any call for either parent — doctors, pharmacies, restaurants, services, anything they need.",
+        text: "Medical appointment scheduling (each parent)",
+        detail: "Lily calls doctors, specialists, labs, and pharmacies on behalf of either parent to schedule appointments and handle refills.",
+      },
+      {
+        text: "One-time call-back reminders (each parent)",
+        detail: "Either parent can ask Lily to call them back at a specific time with a reminder.",
       },
       {
         text: "Detailed weekly reports (per parent)",
         detail: "Separate detailed weekly care reports for each parent, plus a combined family overview.",
       },
       {
-        text: "Priority support + custom scheduling",
-        detail: "Priority response and fully customizable check-in schedules for both parents.",
+        text: "Priority support",
+        detail: "Priority response and dedicated support for both parents.",
       },
     ],
     dark: true,
