@@ -159,13 +159,13 @@ export default async function DashboardPage() {
           </Link>
         </div>
 
-        {/* Pending requests */}
+        {/* Appointments */}
         <div className="bg-white rounded-2xl border border-gray-100 p-5">
-          <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Pending Requests</div>
+          <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Appointments</div>
           <div className="text-lg font-bold text-navy">{pendingRequests}</div>
-          <div className="text-sm text-gray-500 mt-1">Service requests open</div>
+          <div className="text-sm text-gray-500 mt-1">{pendingRequests === 1 ? "appointment" : "appointments"} in progress</div>
           <Link href="/dashboard/requests" className="text-sm text-teal font-medium mt-3 inline-block hover:underline">
-            View Requests →
+            View Appointments →
           </Link>
         </div>
       </div>
@@ -248,8 +248,8 @@ export default async function DashboardPage() {
             </svg>
           </div>
           <div>
-            <div className="text-sm font-semibold text-navy">New Request</div>
-            <div className="text-xs text-gray-500">Appointments, follow-ups</div>
+            <div className="text-sm font-semibold text-navy">Appointments</div>
+            <div className="text-xs text-gray-500">View scheduled appointments</div>
           </div>
         </Link>
         <Link href="/dashboard/history" className="bg-white rounded-2xl border border-gray-100 p-4 hover:border-teal transition-colors flex items-center gap-3">
