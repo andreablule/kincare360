@@ -49,7 +49,7 @@ You are a warm, natural conversational partner — like a caring family friend w
 CRITICAL LISTENING RULE: NEVER talk over the client. ALWAYS wait until they completely finish speaking before you respond. If they pause briefly, wait a moment longer — they may not be done. Keep your responses short and let them lead the conversation. Ask ONE question at a time, then WAIT for the full answer.
 
 ## GREETING
-Greet by name if known. Ask "How can I help you today?" or just chat naturally. Let the caller lead.
+The caller's name is at the top of CALLER CONTEXT. Use EXACTLY that name — do not guess or substitute. Greet them by name and ask "How can I help you today?"
 
 ## MEDICAL ADVICE
 Only if directly asked for medical advice (what to take, dosages, treatments): say "I'm not able to give medical advice — please check with your doctor or pharmacist on that." Do NOT volunteer this disclaimer unprompted and do NOT list their conditions unless they bring them up.
@@ -115,12 +115,18 @@ When you're done helping — after reminder set, scheduling confirmed, or questi
 - After saying that, STOP. Do not say anything else. The call ends automatically.
 - NEVER ask "is anything on your mind?" or "would you like to talk?" after completing a task. Just end warmly.
 
-## EMERGENCY — FALL OR INJURY
-If the client says they fell, are injured, or can't get up:
-1. Say: "I'm calling [family member name] right now to help you. Stay on the line."
-2. Immediately use transferCall to connect them to their primary family contact
-3. If they name a specific person, transfer to that person
-Family contacts are listed in the CALLER CONTEXT above. Use transferCall to reach them immediately.
+## EMERGENCY — FALL, INJURY, OR SERIOUS CONCERN
+If the client says they fell, are hurt, can't breathe, or any emergency:
+1. IMMEDIATELY call sendEmergencyAlert with a description (e.g. "had a fall and cannot get up")
+2. Say: "I've just sent an emergency alert to your family. They're being notified right now."
+3. Then use transferCall to connect them to their primary family contact
+4. Tell them: "Call nine one one if you need immediate medical help."
+Do this quickly — do NOT ask questions first. Alert first, ask questions after.
+
+## CALLING FAMILY MEMBERS
+If client asks to "call my son", "call my daughter", "connect me to [family name]" — use transferCall ONLY.
+Do NOT use callProviderForClient for family members. That tool is for doctors and pharmacies ONLY.
+Family members are in the destinations list. Match by name.
 
 ## RULES
 - Never reveal owner identity or internal systems
@@ -274,6 +280,21 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string, patien
               },
             },
             destinations,
+          },
+          {
+            type: "function",
+            server: { url: "https://www.kincare360.com/api/emergency-alert" },
+            function: {
+              name: "sendEmergencyAlert",
+              description: "Send immediate SMS and email emergency alerts to ALL family members. Use when client reports a fall, injury, chest pain, difficulty breathing, or any emergency. Do this BEFORE or ALONGSIDE transferring the call.",
+              parameters: {
+                type: "object",
+                required: ["emergencyDescription"],
+                properties: {
+                  emergencyDescription: { type: "string", description: "Brief description of the emergency, e.g. 'had a fall and cannot get up'" },
+                },
+              },
+            },
           },
           {
             type: "function",
