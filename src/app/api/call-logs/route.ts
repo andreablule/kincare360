@@ -134,6 +134,68 @@ export async function POST(req: NextRequest) {
       await sendSMS(`+1${alertPhone.replace(/\D/g, '').slice(-10)}`, urgentMsg);
     }
 
+    // OUTBOUND SCHEDULING CALLBACK: If this was an outbound call, check if it matches a pending appointment
+    // and trigger a callback to the patient with the results
+    if (callId && callType === 'outboundPhoneCall') {
+      try {
+        const pendingAppt = await prisma.serviceRequest.findFirst({
+          where: {
+            status: "IN_PROGRESS",
+            type: "APPOINTMENT",
+            description: { contains: callId },
+          },
+          include: { patient: true },
+        });
+
+        if (pendingAppt && pendingAppt.patient) {
+          const pt = pendingAppt.patient;
+          // Extract callback phone from description
+          const cbMatch = pendingAppt.description?.match(/CALLBACK: (\d+)/);
+          const cbPhone = cbMatch?.[1] || pt.phone;
+          const providerMatch = pendingAppt.description?.match(/DOCTOR: (.+)/);
+          const providerLabel = providerMatch?.[1] || "the doctor's office";
+
+          if (cbPhone) {
+            const cbDigits = cbPhone.replace(/\D/g, "").slice(-10);
+            const wasScheduled = summary.toLowerCase().includes("scheduled") || 
+              summary.toLowerCase().includes("confirmed") || 
+              summary.toLowerCase().includes("appointment") ||
+              (transcript || "").toLowerCase().includes("see you");
+
+            const callbackPrompt = wasScheduled
+              ? `You are Lily from KinCare360, calling ${pt.firstName} back. You successfully scheduled their appointment with ${providerLabel}. Here is what happened on the call:\n\n${summary}\n\nShare the appointment details warmly. Ask if they need anything else.`
+              : `You are Lily from KinCare360, calling ${pt.firstName} back about the appointment with ${providerLabel}. The office call ended but the appointment may not have been fully confirmed. Let them know what happened and suggest calling during business hours if needed. Be warm and helpful.`;
+
+            await fetch("https://api.vapi.ai/call/phone", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer 3e6bdfb6-fc6f-4c60-a584-16cfa60e6846",
+              },
+              body: JSON.stringify({
+                phoneNumberId: "8354bde3-c67c-4316-b181-95c227479b58",
+                customer: { number: `+1${cbDigits}` },
+                assistant: {
+                  name: "Lily - Callback",
+                  model: {
+                    provider: "openai",
+                    model: "gpt-4o-mini",
+                    messages: [{ role: "system", content: callbackPrompt }],
+                  },
+                  voice: { provider: "11labs", voiceId: "paula" },
+                  firstMessage: `Hi ${pt.firstName}, this is Lily from KinCare360 calling you back about your appointment with ${providerLabel}.`,
+                  serverUrl: "https://www.kincare360.com/api/call-logs",
+                },
+              }),
+            });
+            console.log(`[call-logs] Triggered callback to ${pt.firstName} at ${cbDigits}`);
+          }
+        }
+      } catch (cbErr) {
+        console.error("[call-logs] Callback trigger error:", cbErr);
+      }
+    }
+
     return NextResponse.json({ success: true, urgent, patientFound: !!patient });
   } catch (err) {
     console.error('Call log error:', err);
