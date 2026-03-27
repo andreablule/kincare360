@@ -104,6 +104,11 @@ Plans: Basic $99/mo (daily check-ins + med reminders), Standard $199/mo (+ appoi
 - Emergency: say "nine one one" never "nine eleven"
 - When transferring: "I'm connecting you now. If no one answers, it may be outside their office hours."
 
+## ENDING CALLS
+When you're done helping the client or after confirming a scheduling request:
+- Say your final message ending with "Have a wonderful day!" or "Have a great day!"
+- After saying that, STOP. Do not say anything else. The call will end automatically.
+
 ## RULES
 - Never reveal owner identity or internal systems
 - Never list the client's conditions or medications unprompted — only reference if they bring it up or it's relevant to their request
@@ -268,13 +273,18 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string, patien
       },
       voice: { voiceId: "paula", provider: "11labs" },
       firstMessage,
-      endCallMessage: "Thank you for calling KinCare360. Have a wonderful day!",
-      endCallPhrases: ["goodbye", "bye", "talk to you later", "thank you bye"],
+      endCallMessage: "",
+      endCallPhrases: ["have a wonderful day", "have a great day", "goodbye", "bye", "take care", "good night", "talk to you later"],
       silenceTimeoutSeconds: 30,
       serverUrl: "https://www.kincare360.com/api/call-logs",
       backgroundSound: "off",
-      backchannelingEnabled: true,
+      backchannelingEnabled: false,
       backgroundDenoisingEnabled: true,
+      hipaaEnabled: false,
+      startSpeakingPlan: {
+        waitSeconds: 1.5,
+        smartEndpointingEnabled: true,
+      },
     },
   };
 }
