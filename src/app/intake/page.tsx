@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-const steps = ["Patient Info", "Medical Info", "Family & Contacts", "Review & Submit"];
+const steps = ["Patient Info", "Medical Info", "Family & Contacts", "Review & Submit", "Second Parent"];
 
 const timeOptions = Array.from({length: 48}, (_, i) => {
   const hour = Math.floor(i / 2);
@@ -64,6 +64,7 @@ export default function IntakePage() {
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [planTab, setPlanTab] = useState<"individual" | "family">("individual");
   const [step1Error, setStep1Error] = useState("");
   const [step2Error, setStep2Error] = useState("");
   const [step3Error, setStep3Error] = useState("");
@@ -149,6 +150,8 @@ export default function IntakePage() {
     }));
   }
 
+  const isFamilyPlanSelected = planTab === "family" || form.selectedPlan.includes("_family");
+
   async function handleSubmit() {
     setSubmitting(true);
     try {
@@ -165,13 +168,24 @@ export default function IntakePage() {
         return;
       }
 
-      // Redirect to Stripe checkout for selected plan
-      const planMap: Record<string, string> = {
-        essential: 'essential',
-        plus: 'plus',
-        concierge: 'concierge',
-      };
-      const stripePlan = planMap[form.selectedPlan] || 'essential';
+      // If family plan, offer to add second parent before checkout
+      if (isFamilyPlanSelected) {
+        setSubmitting(false);
+        setStep(4);
+        return;
+      }
+
+      await goToCheckout();
+    } catch {
+      alert('Network error. Please try again.');
+      setSubmitting(false);
+    }
+  }
+
+  async function goToCheckout() {
+    setSubmitting(true);
+    try {
+      const stripePlan = form.selectedPlan || 'essential';
 
       const checkoutRes = await fetch('/api/checkout', {
         method: 'POST',
@@ -203,15 +217,15 @@ export default function IntakePage() {
           <p className="text-gray-500 mt-1">Complete the details below to start your 7-day free trial.</p>
         </div>
 
-        {/* Progress */}
+        {/* Progress — show first 4 steps only (step 5 is conditional) */}
         <div className="flex items-center justify-between mb-8">
-          {steps.map((s, i) => (
+          {steps.slice(0, 4).map((s, i) => (
             <div key={s} className="flex items-center gap-2 flex-1">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${step > i ? 'bg-teal text-white' : step === i ? 'bg-teal text-white' : 'bg-gray-200 text-gray-400'}`}>
                 {step > i ? '✓' : i + 1}
               </div>
               <span className={`text-xs hidden sm:block ${step === i ? 'text-teal font-medium' : 'text-gray-400'}`}>{s}</span>
-              {i < steps.length - 1 && <div className={`h-0.5 flex-1 mx-1 ${step > i ? 'bg-teal' : 'bg-gray-200'}`} />}
+              {i < 3 && <div className={`h-0.5 flex-1 mx-1 ${step > i ? 'bg-teal' : 'bg-gray-200'}`} />}
             </div>
           ))}
         </div>
@@ -221,7 +235,9 @@ export default function IntakePage() {
           {/* Step 0 — Patient Info */}
           {step === 0 && (
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-navy mb-4">Patient Information</h2>
+              <h2 className="text-lg font-semibold text-navy mb-4">
+                {isFamilyPlanSelected ? "First Parent — Patient Information" : "Patient Information"}
+              </h2>
               {step1Error && (
                 <div className="bg-red-50 text-red-600 text-sm rounded-xl px-4 py-3">{step1Error}</div>
               )}
@@ -458,12 +474,31 @@ export default function IntakePage() {
               {/* Plan Selection */}
               <div>
                 <h3 className="text-sm font-semibold text-navy mb-3">Choose Your Plan</h3>
+
+                {/* Individual / Family toggle */}
+                <div className="flex mb-4">
+                  <div className="inline-flex bg-gray-100 rounded-full p-1">
+                    <button type="button" onClick={() => { setPlanTab("individual"); update("selectedPlan", ""); }}
+                      className={`px-5 py-1.5 rounded-full text-sm font-semibold transition-colors ${planTab === "individual" ? "bg-white text-navy shadow-sm" : "text-gray-500 hover:text-navy"}`}>
+                      Individual
+                    </button>
+                    <button type="button" onClick={() => { setPlanTab("family"); update("selectedPlan", ""); }}
+                      className={`px-5 py-1.5 rounded-full text-sm font-semibold transition-colors ${planTab === "family" ? "bg-white text-navy shadow-sm" : "text-gray-500 hover:text-navy"}`}>
+                      Family (2 Parents)
+                    </button>
+                  </div>
+                </div>
+
                 <div className="grid gap-3">
-                  {[
+                  {(planTab === "family" ? [
+                    { id: 'essential_family', name: 'Essential Family', price: '$75/mo', desc: 'Daily check-ins + medication reminders for 2 parents + family dashboard' },
+                    { id: 'plus_family', name: 'Plus Family', price: '$130/mo', desc: 'Essential Family + local service search + unlimited family members + weekly summaries', popular: true },
+                    { id: 'concierge_family', name: 'Concierge Family', price: '$180/mo', desc: 'Plus Family + appointment scheduling + Lily answers any question for both parents' },
+                  ] : [
                     { id: 'essential', name: 'Essential', price: '$50/mo', desc: 'Daily check-ins + medication reminders + family dashboard (2 members)' },
                     { id: 'plus', name: 'Plus', price: '$80/mo', desc: 'Essential + local service search & live connect + unlimited family members + weekly summaries', popular: true },
                     { id: 'concierge', name: 'Concierge', price: '$110/mo', desc: 'Plus + appointment scheduling + reminders + Lily answers any question' },
-                  ].map(plan => (
+                  ]).map(plan => (
                     <label key={plan.id} className={`flex items-center gap-4 cursor-pointer p-4 rounded-xl border-2 transition-colors ${form.selectedPlan === plan.id ? 'border-teal bg-teal/5' : 'border-gray-200 hover:border-teal/50'}`}>
                       <input type="radio" name="plan" value={plan.id} checked={form.selectedPlan === plan.id} onChange={() => update('selectedPlan', plan.id)} className="w-4 h-4 accent-teal flex-shrink-0" />
                       <div className="flex-1">
@@ -503,6 +538,38 @@ export default function IntakePage() {
                   ) : 'Continue to Payment →'}
                 </button>
               </div>
+            </div>
+          )}
+
+          {/* Step 4 — Add Second Parent (family plans only) */}
+          {step === 4 && (
+            <div className="space-y-4">
+              <div className="text-center">
+                <div className="w-14 h-14 bg-teal/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-2xl">✓</span>
+                </div>
+                <h2 className="text-lg font-semibold text-navy mb-2">First parent saved!</h2>
+                <p className="text-sm text-gray-500">Your family plan covers 2 parents. Would you like to set up your second parent now?</p>
+              </div>
+
+              <div className="flex flex-col gap-3 pt-4">
+                <button
+                  onClick={() => router.push("/dashboard")}
+                  className="w-full border border-gray-200 text-navy py-3 rounded-full font-semibold hover:bg-gray-50"
+                >
+                  Skip for Now — Add Later from Dashboard
+                </button>
+                <button
+                  onClick={async () => {
+                    await goToCheckout();
+                  }}
+                  disabled={submitting}
+                  className="w-full bg-teal text-white py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors disabled:opacity-40"
+                >
+                  {submitting ? "Redirecting..." : "Continue to Payment →"}
+                </button>
+              </div>
+              <p className="text-xs text-gray-400 text-center mt-2">You can add your second parent from the dashboard anytime.</p>
             </div>
           )}
         </div>

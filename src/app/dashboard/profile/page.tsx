@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
+import PatientSwitcher from "@/components/PatientSwitcher";
+import { usePatientContext } from "@/components/PatientContext";
 
 const timeOptions = Array.from({ length: 48 }, (_, i) => {
   const hour = Math.floor(i / 2);
@@ -16,6 +18,7 @@ export default function ProfilePage() {
   const userRole = (session?.user as any)?.role || "CLIENT";
   const isOwner = userRole === "CLIENT" || userRole === "ADMIN";
   const canEditProfile = userRole === "CLIENT" || userRole === "MANAGER" || userRole === "ADMIN";
+  const { selectedPatientId, patientQuery } = usePatientContext();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -40,7 +43,8 @@ export default function ProfilePage() {
   const [medTimes, setMedTimes] = useState<string[]>([""]);
 
   useEffect(() => {
-    fetch("/api/patient")
+    const url = patientQuery ? `/api/patient?${patientQuery}` : "/api/patient";
+    fetch(url)
       .then((r) => r.json())
       .then((data) => {
         if (data.patient) {
@@ -67,7 +71,7 @@ export default function ProfilePage() {
         }
         setLoading(false);
       });
-  }, []);
+  }, [selectedPatientId, patientQuery]);
 
   async function handleDelete() {
     if (isOwner && deleteConfirm !== "DELETE") return;
@@ -86,7 +90,8 @@ export default function ProfilePage() {
       medicationReminderTime: medTimes.filter(Boolean).join(','),
       gender: form.gender || null,
     };
-    await fetch("/api/patient", {
+    const patchUrl = patientQuery ? `/api/patient?${patientQuery}` : "/api/patient";
+    await fetch(patchUrl, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -103,6 +108,7 @@ export default function ProfilePage() {
   return (
     <div>
       <h1 className="text-2xl font-bold text-navy mb-6">Patient Profile</h1>
+      <PatientSwitcher />
 
       {!canEditProfile && (
         <div className="bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 mb-4 text-sm text-gray-500 flex items-center gap-2">

@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import PatientSwitcher from "@/components/PatientSwitcher";
+import { usePatientContext } from "@/components/PatientContext";
 
 interface Appointment {
   id: string;
@@ -59,17 +61,19 @@ function formatDate(dateStr: string) {
 }
 
 export default function AppointmentsPage() {
+  const { selectedPatientId, patientQuery } = usePatientContext();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/service-requests")
+    const qs = patientQuery ? `?${patientQuery}` : "";
+    fetch(`/api/service-requests${qs}`)
       .then((r) => r.json())
       .then((data) => {
         setAppointments(data.items || []);
         setLoading(false);
       });
-  }, []);
+  }, [selectedPatientId, patientQuery]);
 
   if (loading) return <div className="text-gray-400 p-8">Loading...</div>;
 
@@ -80,6 +84,7 @@ export default function AppointmentsPage() {
   return (
     <div className="max-w-2xl">
       <h1 className="text-2xl font-bold text-navy mb-2">Appointments</h1>
+      <PatientSwitcher />
       <p className="text-sm text-gray-500 mb-6">
         All appointments are scheduled by Lily through phone calls. Just call <a href="tel:+18125155252" className="text-teal font-medium">(812) 515-5252</a> and ask Lily to schedule, reschedule, or cancel any appointment.
       </p>

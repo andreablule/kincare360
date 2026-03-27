@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import PatientSwitcher from "@/components/PatientSwitcher";
+import { usePatientContext } from "@/components/PatientContext";
 
 interface CallLog {
   id: string;
@@ -16,18 +18,20 @@ interface CallLog {
 }
 
 export default function HistoryPage() {
+  const { selectedPatientId, patientQuery } = usePatientContext();
   const [logs, setLogs] = useState<CallLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("");
 
   useEffect(() => {
-    fetch("/api/call-logs")
+    const qs = patientQuery ? `?${patientQuery}` : "";
+    fetch(`/api/call-logs${qs}`)
       .then((r) => r.json())
       .then((data) => {
         setLogs(Array.isArray(data) ? data : data.items || []);
         setLoading(false);
       });
-  }, []);
+  }, [selectedPatientId, patientQuery]);
 
   const filtered = logs.filter((log) => {
     if (!filter) return true;
@@ -46,6 +50,7 @@ export default function HistoryPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold text-navy mb-6">Call History</h1>
+      <PatientSwitcher />
 
       <div className="mb-4">
         <input

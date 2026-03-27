@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import PatientSwitcher from "@/components/PatientSwitcher";
+import { usePatientContext } from "@/components/PatientContext";
 
 interface Doctor { id?: string; name: string; specialty: string; phone: string; address: string; notes: string; }
 interface Pharmacy { id?: string; name: string; phone: string; address: string; }
@@ -124,6 +126,7 @@ export default function MedicalPage() {
   const { data: session } = useSession();
   const userRole = (session?.user as any)?.role || "CLIENT";
   const readOnly = userRole === "FAMILY";
+  const { selectedPatientId, patientQuery } = usePatientContext();
 
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [pharmacies, setPharmacies] = useState<Pharmacy[]>([]);
@@ -132,11 +135,12 @@ export default function MedicalPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const qs = patientQuery ? `?${patientQuery}` : "";
     Promise.all([
-      fetch("/api/doctors").then((r) => r.json()),
-      fetch("/api/pharmacies").then((r) => r.json()),
-      fetch("/api/medications").then((r) => r.json()),
-      fetch("/api/conditions").then((r) => r.json()),
+      fetch(`/api/doctors${qs}`).then((r) => r.json()),
+      fetch(`/api/pharmacies${qs}`).then((r) => r.json()),
+      fetch(`/api/medications${qs}`).then((r) => r.json()),
+      fetch(`/api/conditions${qs}`).then((r) => r.json()),
     ]).then(([d, p, m, c]) => {
       setDoctors(d.items || []);
       setPharmacies(p.items || []);
@@ -144,13 +148,14 @@ export default function MedicalPage() {
       setConditions(c.items || []);
       setLoading(false);
     });
-  }, []);
+  }, [selectedPatientId, patientQuery]);
 
   if (loading) return <div className="text-gray-400">Loading...</div>;
 
   return (
     <div>
       <h1 className="text-2xl font-bold text-navy mb-6">Medical Records</h1>
+      <PatientSwitcher />
 
       {readOnly && (
         <div className="bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 mb-4 text-sm text-gray-500 flex items-center gap-2">

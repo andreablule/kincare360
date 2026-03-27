@@ -1,47 +1,42 @@
-# Task: Family Plan Checkout + Concierge Phone Settings
+# Task: Family Plan Dashboard - Show 2 Patient Profiles
 
-## 1. FAMILY PLAN UPGRADE PATH ON WEBSITE + STRIPE CHECKOUT
+## Problem
+When a user has a Family plan (ESSENTIAL_FAMILY, PLUS_FAMILY, CONCIERGE_FAMILY), they should see 2 patient profiles on their dashboard. Currently only 1 shows.
 
-Currently the website only shows individual plans for signup/checkout. Add the ability to select Family plans.
+## Data Model
+The schema already supports 1 user -> many patients (User.patients is a Patient[] relation). So the DB side is fine.
 
-Check the current signup/checkout flow (register page, pricing page, checkout route) and add:
-- On the pricing page: each plan should have both Individual and Family pricing visible with a toggle or tab (if not already done)
-- On signup/register/checkout: allow selecting Family plan variants
-- In the checkout route (src/app/api/checkout or similar): make sure the family plan Stripe price IDs are wired up:
-  - Essential Family $75 -> price_1TFgePJlUr03cRD7o3hb9ZGN
-  - Plus Family $130 -> price_1TFgeRJlUr03cRD7OIIRu8kg
-  - Concierge Family $180 -> price_1TFgeSJlUr03cRD7BAJ0XDzT
-- The family plan toggle/selector should be clear: "Individual" vs "Family (2 Parents)"
-- When family plan is selected, checkout creates the Stripe session with the family price ID
-- Dashboard plan page should also show family plan details and allow upgrading from individual to family (or switching between family tiers)
+## What needs to change
 
-Also check the stripe-webhook to make sure it maps family price IDs to the correct plan names (essential_family, plus_family, concierge_family or however the plan field works).
+### 1. Dashboard Overview (src/app/dashboard/page.tsx or similar)
+- If user's plan contains "_FAMILY", fetch ALL patients for that user (not just the first)
+- Show a patient switcher/tabs at the top: "Parent 1: [Name]" | "Parent 2: [Name]"
+- OR show both profiles side by side in a 2-column layout
+- Each patient should show their own: check-in time, medication reminders, recent call, appointments
+- Whichever approach looks cleaner, do that
 
-## 2. CONCIERGE PLAN: CLIENT CAN CHANGE REMINDERS AND CHECK-IN TIMES VIA PHONE
+### 2. Dashboard Sub-pages (profile, medical, family, etc)
+- If family plan, add a patient selector/tab at the top of each sub-page
+- The selected patient's data loads below
+- Default to the first patient, allow switching to the second
 
-In src/app/api/vapi-lookup/route.ts, update the plan gating:
+### 3. Add Second Patient Flow
+- If a family plan user only has 1 patient created, show an "Add Second Parent" button/card on the dashboard
+- Clicking it should open a simplified intake form for the second parent (name, phone, DOB, medications, doctors, etc)
+- Save as a new Patient record linked to the same userId
 
-The updatePatientProfile tool (which lets Lily change medicationReminderTime, preferredCallTime, checkInDays) should ONLY be available to CONCIERGE plan clients (and free trial users).
+### 4. Intake Flow Update
+- After signup with a family plan, the intake form should say "Let's set up care for your first parent"
+- After completing the first parent, show "Add your second parent" with another intake form
+- Or allow them to skip and add later from the dashboard
 
-For Essential and Plus clients who ask to change their reminder times or check-in schedule, Lily should say: "Changing your reminder and check-in schedule by phone is available on our Concierge plan for $110 a month. You can also update these settings anytime through your dashboard at kincare360.com. Would you like to hear more about the Concierge plan?"
+### 5. Display the plan name nicely
+- "CONCIERGE_FAMILY" should display as "Concierge Family" (not the raw DB value)
+- Same for ESSENTIAL_FAMILY -> "Essential Family", PLUS_FAMILY -> "Plus Family"
 
-For Concierge clients: the updatePatientProfile tool stays fully available. Lily confirms the changes and saves them.
-
-In the system prompt, add to the Concierge section:
-
-CHANGE SETTINGS BY PHONE (CONCIERGE PLAN):
-Concierge clients can ask you to change their medication reminder times, daily check-in time, and check-in days just by asking during a call. Confirm the new values, then use updatePatientProfile to save. Examples:
-- "Change my medication reminder to 9 AM and 9 PM"
-- "Move my check-in call to 3 PM"  
-- "Only call me on weekdays"
-
-Always confirm before saving: "So your medication reminders will be at 9 AM and 9 PM, is that right?" Then call the tool.
-
-Also in the tools array that gets built in buildAssistantConfig, conditionally include updatePatientProfile ONLY when the patient's plan is concierge or they are on a free trial.
-
-## 3. GIT COMMIT AND PUSH
-Commit message: "feat: family plan checkout + Concierge-only phone settings changes"
+## Git
+Commit: "feat: family plan dashboard - 2 patient profiles with switcher"
 Push to main.
 
 When completely finished, run this command:
-openclaw system event --text "Done: Family plan checkout wired up, change reminders by phone is Concierge-only" --mode now
+openclaw system event --text "Done: Family plan dashboard shows 2 patient profiles with switcher + add second parent flow" --mode now

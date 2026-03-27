@@ -1,9 +1,11 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { getPatientIdForUser } from "@/lib/patient";
+import { getPatientIdForUser, getAllPatientsForUser } from "@/lib/patient";
+import { formatPlanName, isFamilyPlan } from "@/lib/format-plan";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import AddSecondParentCard from "@/components/AddSecondParentCard";
 
 async function getTrialDaysRemaining(stripeCustomerId: string | null | undefined): Promise<number | null> {
   if (!stripeCustomerId) return null;
@@ -23,6 +25,20 @@ async function getTrialDaysRemaining(stripeCustomerId: string | null | undefined
   return null;
 }
 
+async function getPatientDashboardData(patientId: string) {
+  const [patient, recentCall, callCount, totalAppointments, nextAppointment] = await Promise.all([
+    prisma.patient.findUnique({ where: { id: patientId } }),
+    prisma.callLog.findFirst({ where: { patientId }, orderBy: { callDate: "desc" } }),
+    prisma.callLog.count({ where: { patientId } }),
+    prisma.serviceRequest.count({ where: { patientId } }),
+    prisma.serviceRequest.findFirst({
+      where: { patientId, status: { in: ["DONE", "COMPLETED", "IN_PROGRESS"] } },
+      orderBy: { createdAt: "desc" },
+    }),
+  ]);
+  return { patient, recentCall, callCount, totalAppointments, nextAppointment };
+}
+
 export const metadata = {
   title: "Dashboard | KinCare360",
 };
@@ -34,51 +50,45 @@ export default async function DashboardPage() {
   const userRole = sessionUser?.role || "CLIENT";
   const userPatientId = sessionUser?.patientId ?? null;
 
-  // ADMIN users go straight to admin dashboard — no client view
   if (userRole === "ADMIN") redirect("/admin");
 
-  const patientId = await getPatientIdForUser(userId, userRole, userPatientId);
-  const patient = patientId ? await prisma.patient.findUnique({ where: { id: patientId } }) : null;
-  const recentCall = patient
-    ? await prisma.callLog.findFirst({
-        where: { patientId: patient.id },
-        orderBy: { callDate: "desc" },
-      })
-    : null;
-  const callCount = patient
-    ? await prisma.callLog.count({ where: { patientId: patient.id } })
-    : 0;
-  // For CLIENT/ADMIN, fetch their own user record for plan info.
-  // For FAMILY/MANAGER, fetch the patient owner's user record.
+  // Determine user and plan info
   const ownerUserId = (userRole === "FAMILY" || userRole === "MANAGER")
-    ? (patient ? (await prisma.patient.findUnique({ where: { id: patient.id }, select: { userId: true } }))?.userId : null)
+    ? (userPatientId ? (await prisma.patient.findUnique({ where: { id: userPatientId }, select: { userId: true } }))?.userId : null)
     : userId;
   const user = ownerUserId ? await prisma.user.findUnique({ where: { id: ownerUserId } }) : null;
   const trialDaysRemaining = user?.subscriptionStatus === "trialing"
     ? await getTrialDaysRemaining(user.stripeCustomerId)
     : null;
-  const totalAppointments = patient
-    ? await prisma.serviceRequest.count({
-        where: { patientId: patient.id },
-      })
-    : 0;
-  const nextAppointment = patient
-    ? await prisma.serviceRequest.findFirst({
-        where: { patientId: patient.id, status: { in: ["DONE", "COMPLETED", "IN_PROGRESS"] } },
-        orderBy: { createdAt: "desc" },
-      })
-    : null;
+
+  const familyPlan = isFamilyPlan(user?.plan);
+
+  // For family plans (CLIENT role), fetch ALL patients
+  // For non-family or FAMILY/MANAGER roles, fetch just the one
+  let patients: Awaited<ReturnType<typeof getPatientDashboardData>>[] = [];
+  if (familyPlan && userRole === "CLIENT") {
+    const allPatients = await getAllPatientsForUser(userId);
+    patients = await Promise.all(allPatients.map((p) => getPatientDashboardData(p.id)));
+  } else {
+    const patientId = await getPatientIdForUser(userId, userRole, userPatientId);
+    if (patientId) {
+      patients = [await getPatientDashboardData(patientId)];
+    }
+  }
+
+  const hasAnyPatient = patients.length > 0 && patients[0].patient;
+  const canAddSecondParent = familyPlan && userRole === "CLIENT" && patients.length < 2;
 
   return (
     <div>
       <h1 className="text-2xl font-bold text-navy mb-6">
-        {(userRole === "FAMILY" || userRole === "MANAGER") && patient
-          ? `Viewing ${patient.firstName} ${patient.lastName}'s Care 💙`
+        {(userRole === "FAMILY" || userRole === "MANAGER") && patients[0]?.patient
+          ? `Viewing ${patients[0].patient.firstName} ${patients[0].patient.lastName}'s Care 💙`
           : `Welcome back, ${session?.user?.name?.split(" ")[0] || "there"} 👋`}
       </h1>
 
       {/* Onboarding card — shown when no patient record exists */}
-      {!patient && (
+      {!hasAnyPatient && (
         <div className="bg-teal/5 border-2 border-teal/30 rounded-2xl p-6 mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <div className="w-12 h-12 bg-teal/10 rounded-xl flex items-center justify-center flex-shrink-0">
             <svg className="w-6 h-6 text-teal" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
@@ -98,24 +108,11 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      {/* No preferred call time reminder */}
-      {patient && !patient.preferredCallTime && (
-        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-6 flex items-center gap-3">
-          <svg className="w-5 h-5 text-amber-500 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <p className="text-sm text-amber-700 flex-1">
-            Set your check-in time so Lily knows when to call.{" "}
-            <Link href="/dashboard/profile" className="font-semibold underline">Update in your profile →</Link>
-          </p>
-        </div>
-      )}
-
+      {/* Plan card — always visible */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        {/* Plan card */}
         <div className="bg-white rounded-2xl border border-gray-100 p-5">
           <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Current Plan</div>
-          <div className="text-lg font-bold text-navy">{user?.plan || "No plan"}</div>
+          <div className="text-lg font-bold text-navy">{formatPlanName(user?.plan)}</div>
           {user?.subscriptionStatus === "trialing" ? (
             <div className="mt-1">
               <span className="inline-flex items-center gap-1.5 text-xs font-semibold bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full">
@@ -134,111 +131,32 @@ export default async function DashboardPage() {
             Manage Plan →
           </Link>
         </div>
-
-        {/* Next check-in */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-5">
-          <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Daily Check-In</div>
-          <div className="text-lg font-bold text-navy">
-            {patient?.preferredCallTime || "Not set"}
-          </div>
-          <div className="text-sm text-gray-500 mt-1">Daily wellness call with Lily</div>
-          <Link href="/dashboard/profile" className="text-sm text-teal font-medium mt-3 inline-block hover:underline">
-            {patient?.preferredCallTime ? "Update Time →" : "Set Time →"}
-          </Link>
-        </div>
-
-        {/* Medication reminders */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-5">
-          <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Medication Reminders</div>
-          {patient?.medicationReminderTime ? (
-            <div className="flex flex-wrap gap-1.5 mt-1">
-              {patient.medicationReminderTime.split(',').map((t, i) => (
-                <span key={i} className="text-sm font-bold text-navy bg-teal/5 border border-teal/20 rounded-lg px-2.5 py-1">{t.trim()}</span>
-              ))}
-            </div>
-          ) : (
-            <div className="text-lg font-bold text-navy">Not set</div>
-          )}
-          <div className="text-sm text-gray-500 mt-1">Daily medication reminder calls</div>
-          <Link href="/dashboard/profile" className="text-sm text-teal font-medium mt-3 inline-block hover:underline">
-            {patient?.medicationReminderTime ? "Manage Times →" : "Set Time →"}
-          </Link>
-        </div>
-
-        {/* Appointments */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-5">
-          <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Appointments</div>
-          {nextAppointment ? (
-            <>
-              <div className="text-sm font-bold text-navy mt-1">
-                {nextAppointment.description?.match(/DOCTOR: (.+)/)?.[1] || "Scheduled"}
-              </div>
-              <div className="text-xs text-gray-500 mt-0.5">
-                {nextAppointment.description?.match(/DATE: (.+)/)?.[1] || ""}
-              </div>
-              <span className={`inline-block mt-1.5 text-xs font-semibold px-2 py-0.5 rounded-full ${
-                nextAppointment.status === "DONE" || nextAppointment.status === "COMPLETED"
-                  ? "bg-green-100 text-green-700" 
-                  : "bg-blue-100 text-blue-700"
-              }`}>
-                {nextAppointment.status === "DONE" || nextAppointment.status === "COMPLETED" ? "✓ Confirmed" : "Scheduling..."}
-              </span>
-            </>
-          ) : (
-            <div className="text-lg font-bold text-navy">None</div>
-          )}
-          <Link href="/dashboard/requests" className="text-sm text-teal font-medium mt-3 inline-block hover:underline">
-            {totalAppointments > 0 ? `View All ${totalAppointments} →` : "Schedule with Lily →"}
-          </Link>
-        </div>
       </div>
 
-      {/* Recent call summary */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-5 mb-6">
-        <h2 className="text-sm font-semibold text-navy mb-3">Most Recent Call</h2>
-        {recentCall ? (
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-gray-500">Date</span>
-              <span className="text-navy font-medium">{new Date(recentCall.callDate).toLocaleDateString()}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-500">Mood</span>
-              <span className="text-navy font-medium">{recentCall.mood || "N/A"}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-500">Medications Taken</span>
-              <span className={`font-medium ${recentCall.medicationsTaken ? "text-teal" : "text-red-500"}`}>
-                {recentCall.medicationsTaken ? "Yes ✓" : "No ✗"}
-              </span>
-            </div>
-            {recentCall.summary && (
-              <div className="pt-2 border-t border-gray-100">
-                <span className="text-gray-500">Summary:</span>
-                <p className="text-navy mt-1">{recentCall.summary}</p>
-              </div>
+      {/* Patient profiles — show each patient's data */}
+      {familyPlan && patients.length >= 2 ? (
+        /* Family plan with 2 patients: side-by-side on desktop */
+        <div className="grid md:grid-cols-2 gap-6 mb-8">
+          {patients.map((data, idx) => (
+            <PatientCard key={data.patient?.id || idx} data={data} label={`Parent ${idx + 1}`} />
+          ))}
+        </div>
+      ) : (
+        /* Single patient (individual plan or family with 1 patient so far) */
+        patients.map((data, idx) => (
+          <div key={data.patient?.id || idx} className="mb-8">
+            {familyPlan && (
+              <h2 className="text-base font-semibold text-navy mb-3">Parent 1: {data.patient?.firstName} {data.patient?.lastName}</h2>
             )}
-            {recentCall.urgent && (
-              <div className="bg-red-50 text-red-600 rounded-xl px-3 py-2 text-xs font-medium">
-                ⚠️ Urgent concern flagged in this call
-              </div>
-            )}
+            <PatientCard data={data} />
           </div>
-        ) : patient ? (
-          <p className="text-gray-400 text-sm">
-            Lily will begin your daily check-ins soon. You&apos;ll see call summaries here.
-          </p>
-        ) : (
-          <p className="text-gray-400 text-sm">
-            Complete your care profile to begin check-ins with Lily.
-          </p>
-        )}
-        {callCount > 0 && (
-          <Link href="/dashboard/history" className="text-sm text-teal font-medium mt-3 inline-block hover:underline">
-            View All {callCount} Calls →
-          </Link>
-        )}
-      </div>
+        ))
+      )}
+
+      {/* Add Second Parent card for family plans with only 1 patient */}
+      {canAddSecondParent && hasAnyPatient && (
+        <AddSecondParentCard />
+      )}
 
       {/* Quick actions */}
       <div className="grid sm:grid-cols-2 gap-3">
@@ -286,6 +204,125 @@ export default async function DashboardPage() {
             <div className="text-xs text-gray-500">View daily check-in logs</div>
           </div>
         </Link>
+      </div>
+    </div>
+  );
+}
+
+function PatientCard({ data, label }: {
+  data: Awaited<ReturnType<typeof getPatientDashboardData>>;
+  label?: string;
+}) {
+  const { patient, recentCall, callCount, totalAppointments, nextAppointment } = data;
+  if (!patient) return null;
+
+  return (
+    <div>
+      {label && (
+        <h2 className="text-base font-semibold text-navy mb-3">{label}: {patient.firstName} {patient.lastName}</h2>
+      )}
+
+      {/* No preferred call time reminder */}
+      {!patient.preferredCallTime && (
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-4 flex items-center gap-3">
+          <svg className="w-5 h-5 text-amber-500 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p className="text-sm text-amber-700 flex-1">
+            Set check-in time so Lily knows when to call.{" "}
+            <Link href="/dashboard/profile" className="font-semibold underline">Update →</Link>
+          </p>
+        </div>
+      )}
+
+      <div className="grid gap-4 mb-4">
+        {/* Check-in */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-5">
+          <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Daily Check-In</div>
+          <div className="text-lg font-bold text-navy">{patient.preferredCallTime || "Not set"}</div>
+          <div className="text-sm text-gray-500 mt-1">Daily wellness call with Lily</div>
+        </div>
+
+        {/* Medication reminders */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-5">
+          <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Medication Reminders</div>
+          {patient.medicationReminderTime ? (
+            <div className="flex flex-wrap gap-1.5 mt-1">
+              {patient.medicationReminderTime.split(',').map((t: string, i: number) => (
+                <span key={i} className="text-sm font-bold text-navy bg-teal/5 border border-teal/20 rounded-lg px-2.5 py-1">{t.trim()}</span>
+              ))}
+            </div>
+          ) : (
+            <div className="text-lg font-bold text-navy">Not set</div>
+          )}
+        </div>
+
+        {/* Appointments */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-5">
+          <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Appointments</div>
+          {nextAppointment ? (
+            <>
+              <div className="text-sm font-bold text-navy mt-1">
+                {nextAppointment.description?.match(/DOCTOR: (.+)/)?.[1] || "Scheduled"}
+              </div>
+              <div className="text-xs text-gray-500 mt-0.5">
+                {nextAppointment.description?.match(/DATE: (.+)/)?.[1] || ""}
+              </div>
+              <span className={`inline-block mt-1.5 text-xs font-semibold px-2 py-0.5 rounded-full ${
+                nextAppointment.status === "DONE" || nextAppointment.status === "COMPLETED"
+                  ? "bg-green-100 text-green-700"
+                  : "bg-blue-100 text-blue-700"
+              }`}>
+                {nextAppointment.status === "DONE" || nextAppointment.status === "COMPLETED" ? "✓ Confirmed" : "Scheduling..."}
+              </span>
+            </>
+          ) : (
+            <div className="text-lg font-bold text-navy">None</div>
+          )}
+        </div>
+      </div>
+
+      {/* Recent call summary */}
+      <div className="bg-white rounded-2xl border border-gray-100 p-5">
+        <h3 className="text-sm font-semibold text-navy mb-3">Most Recent Call</h3>
+        {recentCall ? (
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-gray-500">Date</span>
+              <span className="text-navy font-medium">{new Date(recentCall.callDate).toLocaleDateString()}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-500">Mood</span>
+              <span className="text-navy font-medium">{recentCall.mood || "N/A"}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-500">Medications Taken</span>
+              <span className={`font-medium ${recentCall.medicationsTaken ? "text-teal" : "text-red-500"}`}>
+                {recentCall.medicationsTaken ? "Yes ✓" : "No ✗"}
+              </span>
+            </div>
+            {recentCall.summary && (
+              <div className="pt-2 border-t border-gray-100">
+                <span className="text-gray-500">Summary:</span>
+                <p className="text-navy mt-1">{recentCall.summary}</p>
+              </div>
+            )}
+            {recentCall.urgent && (
+              <div className="bg-red-50 text-red-600 rounded-xl px-3 py-2 text-xs font-medium">
+                ⚠️ Urgent concern flagged in this call
+              </div>
+            )}
+          </div>
+        ) : (
+          <p className="text-gray-400 text-sm">
+            Lily will begin daily check-ins soon. You&apos;ll see call summaries here.
+          </p>
+        )}
+        {callCount > 0 && (
+          <Link href="/dashboard/history" className="text-sm text-teal font-medium mt-3 inline-block hover:underline">
+            View All {callCount} Calls →
+          </Link>
+        )}
       </div>
     </div>
   );

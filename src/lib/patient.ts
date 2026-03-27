@@ -1,4 +1,5 @@
 import { prisma } from "./prisma";
+import { isFamilyPlan } from "./format-plan";
 
 const patientInclude = {
   doctors: true,
@@ -53,6 +54,45 @@ export async function getPatientIdForUser(
     select: { id: true },
   });
   return patient?.id ?? null;
+}
+
+/**
+ * Returns ALL patients for a user (used for family plans with 2 patients).
+ */
+export async function getAllPatientsForUser(userId: string) {
+  return prisma.patient.findMany({
+    where: { userId },
+    orderBy: { id: "asc" },
+  });
+}
+
+/**
+ * Validates that a specific patient belongs to the given user.
+ * Returns the patientId if valid, null otherwise.
+ */
+export async function resolvePatientId(
+  userId: string,
+  role: string,
+  sessionPatientId: string | null | undefined,
+  requestedPatientId: string | null | undefined
+): Promise<string | null> {
+  // If a specific patient was requested, validate ownership
+  if (requestedPatientId) {
+    if (role === "CLIENT") {
+      const patient = await prisma.patient.findFirst({
+        where: { id: requestedPatientId, userId },
+        select: { id: true },
+      });
+      return patient?.id ?? null;
+    }
+    // FAMILY/MANAGER can only access their linked patient
+    if ((role === "FAMILY" || role === "MANAGER") && sessionPatientId === requestedPatientId) {
+      return requestedPatientId;
+    }
+    return null;
+  }
+  // Default: return first patient
+  return getPatientIdForUser(userId, role, sessionPatientId);
 }
 
 /** Check if this user can edit (CLIENT or MANAGER) */

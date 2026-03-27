@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import PatientSwitcher from "@/components/PatientSwitcher";
+import { usePatientContext } from "@/components/PatientContext";
 
 interface LinkedUser {
   id: string;
@@ -67,6 +69,7 @@ export default function FamilyPage() {
   const userRole = (session?.user as any)?.role || "CLIENT";
   const isOwner = userRole === "CLIENT" || userRole === "ADMIN";
   const isManager = userRole === "MANAGER";
+  const { selectedPatientId, patientQuery } = usePatientContext();
 
   const [members, setMembers] = useState<FamilyMember[]>([]);
   const [loading, setLoading] = useState(true);
@@ -77,10 +80,11 @@ export default function FamilyPage() {
 
   useEffect(() => {
     loadMembers();
-  }, []);
+  }, [selectedPatientId, patientQuery]);
 
   function loadMembers() {
-    fetch("/api/family-members")
+    const qs = patientQuery ? `?${patientQuery}` : "";
+    fetch(`/api/family-members${qs}`)
       .then((r) => r.json())
       .then((data) => {
         setMembers(data.items || []);
@@ -178,6 +182,7 @@ export default function FamilyPage() {
           </button>
         )}
       </div>
+      <PatientSwitcher />
 
       {/* Role explainer card — shown to owners only */}
       {isOwner && (

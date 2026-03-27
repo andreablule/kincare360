@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "./auth";
-import { getPatientIdForUser } from "./patient";
+import { getPatientIdForUser, resolvePatientId } from "./patient";
 
 export interface SessionUser {
   id: string;
@@ -37,4 +37,15 @@ export function canManageFamilyMembers(role: string) {
 
 export function canManageRoles(role: string) {
   return role === "CLIENT" || role === "ADMIN";
+}
+
+/**
+ * Resolves patientId from an optional query param, falling back to session default.
+ * Use in API GET handlers to support family plan patient switching.
+ */
+export async function resolvePatientIdFromRequest(
+  user: SessionUser,
+  requestedPatientId?: string | null
+): Promise<string | null> {
+  return resolvePatientId(user.id, user.role, user.patientId, requestedPatientId);
 }

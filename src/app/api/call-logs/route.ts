@@ -238,19 +238,16 @@ export async function POST(req: NextRequest) {
 
 // GET: Fetch call logs for dashboard (supports patientId param or session-based lookup)
 export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  let patientId = searchParams.get('patientId');
+  const user = await getSessionUser();
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
-  // If no patientId provided, look up from session (supports FAMILY/MANAGER roles)
+  const { resolvePatientIdFromRequest } = await import('@/lib/session');
+  const requestedId = new URL(req.url).searchParams.get('patientId');
+  const patientId = await resolvePatientIdFromRequest(user, requestedId);
   if (!patientId) {
-    const user = await getSessionUser();
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-    patientId = await getSessionPatientId(user);
-    if (!patientId) {
-      return NextResponse.json([]);
-    }
+    return NextResponse.json([]);
   }
 
   const logs = await prisma.callLog.findMany({

@@ -1,12 +1,13 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getSessionUser, getSessionPatientId, canEdit } from "@/lib/session";
+import { getSessionUser, getSessionPatientId, canEdit, resolvePatientIdFromRequest } from "@/lib/session";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const user = await getSessionUser();
   if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
-  const patientId = await getSessionPatientId(user);
+  const requestedId = req.nextUrl.searchParams.get("patientId");
+  const patientId = await resolvePatientIdFromRequest(user, requestedId);
   if (!patientId) return Response.json({ items: [] });
 
   const items = await prisma.doctor.findMany({ where: { patientId } });
