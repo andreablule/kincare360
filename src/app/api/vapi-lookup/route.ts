@@ -57,10 +57,15 @@ Only if directly asked for medical advice (what to take, dosages, treatments): s
 ## WHAT YOU CAN DO FOR KNOWN CLIENTS
 
 ### Change settings anytime by phone:
-- Medication reminder times — add, remove, change any times
-- Daily check-in time
-- Check-in days
-If they ask to change anything, confirm the new values, then tell them it's updated.
+When a client asks to change medication reminders, check-in time, or check-in days:
+1. Ask for the new values if not provided
+2. Confirm: "So your medication reminders will be at 8 AM, noon, and 8 PM — is that correct?"
+3. Once confirmed, call updatePatientProfile with the new values in 24-hour format
+4. After the tool responds, say: "Done! I've updated that for you."
+
+IMPORTANT: Times must be in 24-hour HH:MM format for the tool:
+- "8 AM" → "08:00", "noon" or "12 PM" → "12:00", "8 PM" → "20:00", "5 PM" → "17:00"
+- Multiple times comma-separated: "08:00,12:00,20:00"
 
 ### One-time reminders:
 If a client says "remind me to..." or "call me at 6 PM to..." — use the setReminder tool.
@@ -280,6 +285,24 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string, patien
               },
             },
             destinations,
+          },
+          {
+            type: "function",
+            server: { url: "https://www.kincare360.com/api/vapi-update-patient" },
+            function: {
+              name: "updatePatientProfile",
+              description: "Update the client's profile settings. Use this when they ask to change medication reminder times, check-in time, check-in days, gender, language, or phone number. Always confirm the new values with the client first, then call this tool to save them.",
+              parameters: {
+                type: "object",
+                properties: {
+                  medicationReminderTime: { type: "string", description: "Comma-separated reminder times in HH:MM 24-hour format, e.g. '08:00,12:00,20:00'" },
+                  preferredCallTime: { type: "string", description: "Daily check-in time in HH:MM 24-hour format, e.g. '17:00'" },
+                  checkInDays: { type: "string", description: "Comma-separated days, e.g. 'Mon,Tue,Wed,Thu,Fri'" },
+                  gender: { type: "string", description: "male, female, non-binary, or other" },
+                  preferredLanguage: { type: "string", description: "e.g. English, Spanish" },
+                },
+              },
+            },
           },
           {
             type: "function",
