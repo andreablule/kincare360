@@ -16,6 +16,8 @@ model User {
   stripeCustomerId   String?
   subscriptionStatus String?
   plan               String?   // ESSENTIAL | PLUS | COMPLETE | ESSENTIAL_FAMILY | PLUS_FAMILY | COMPLETE_FAMILY
+  pendingPlan        String?
+  pendingPlanDate    DateTime?
   inviteToken        String?
   inviteExpiry       DateTime?
   patientId          String?   // For FAMILY users — direct link to their patient

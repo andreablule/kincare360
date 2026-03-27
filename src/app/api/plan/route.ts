@@ -19,7 +19,7 @@ export async function GET() {
   const userId = (session.user as any).id;
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { plan: true, subscriptionStatus: true, stripeCustomerId: true },
+    select: { plan: true, subscriptionStatus: true, stripeCustomerId: true, pendingPlan: true, pendingPlanDate: true },
   });
 
   let trialEnd: string | null = null;
@@ -42,5 +42,7 @@ export async function GET() {
     plan: user?.plan || null,
     subscriptionStatus: user?.subscriptionStatus || null,
     trialEnd,
+    pendingPlan: user?.pendingPlan || null,
+    pendingPlanDate: user?.pendingPlanDate?.toISOString() || null,
   });
 }

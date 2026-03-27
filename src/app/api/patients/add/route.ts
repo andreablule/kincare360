@@ -22,6 +22,9 @@ export async function POST(req: NextRequest) {
 
   const data = await req.json();
 
+  // Get primary insurance if provided
+  const primaryInsurance = Array.isArray(data.insurances) && data.insurances.length > 0 ? data.insurances[0] : null;
+
   const patient = await prisma.patient.create({
     data: {
       userId: user.id,
@@ -30,6 +33,7 @@ export async function POST(req: NextRequest) {
       dob: data.dob || null,
       phone: data.phone || null,
       gender: data.gender || null,
+      preferredLanguage: data.preferredLanguage || "English",
       address: data.address || null,
       city: data.city || null,
       state: data.state || null,
@@ -39,33 +43,86 @@ export async function POST(req: NextRequest) {
         ? data.medicationReminders.map((r: any) => r.time).filter(Boolean).join(",")
         : null,
       checkInDays: Array.isArray(data.checkInDays) ? data.checkInDays.join(",") : null,
+      insuranceCompany: primaryInsurance?.company || null,
+      insuranceMemberId: primaryInsurance?.memberId || null,
+      insuranceGroupNumber: primaryInsurance?.groupNumber || null,
+      insurancePolicyHolder: primaryInsurance?.policyHolder || null,
     },
   });
 
-  // Create doctor if provided
-  if (data.primaryDoctor) {
-    await prisma.doctor.create({
-      data: {
-        patientId: patient.id,
-        name: data.primaryDoctor,
-        phone: data.doctorPhone || null,
-      },
-    });
-  }
-
-  // Create medications if provided
-  if (data.medications) {
-    const meds = data.medications.split(",").map((m: string) => m.trim()).filter(Boolean);
-    for (const med of meds) {
-      await prisma.medication.create({ data: { patientId: patient.id, name: med } });
+  // Create doctors
+  if (Array.isArray(data.doctors)) {
+    for (const doc of data.doctors) {
+      if (doc.name) {
+        await prisma.doctor.create({
+          data: {
+            patientId: patient.id,
+            name: doc.name,
+            specialty: doc.specialty || null,
+            phone: doc.phone || null,
+            address: doc.address || null,
+          },
+        });
+      }
     }
   }
 
-  // Create conditions if provided
-  if (data.conditions) {
-    const conds = data.conditions.split(",").map((c: string) => c.trim()).filter(Boolean);
-    for (const cond of conds) {
-      await prisma.condition.create({ data: { patientId: patient.id, name: cond } });
+  // Create pharmacies
+  if (Array.isArray(data.pharmacies)) {
+    for (const ph of data.pharmacies) {
+      if (ph.name) {
+        await prisma.pharmacy.create({
+          data: {
+            patientId: patient.id,
+            name: ph.name,
+            phone: ph.phone || null,
+            address: ph.address || null,
+          },
+        });
+      }
+    }
+  }
+
+  // Create medications
+  if (Array.isArray(data.medications)) {
+    for (const med of data.medications) {
+      if (med.name) {
+        await prisma.medication.create({
+          data: {
+            patientId: patient.id,
+            name: med.name,
+            dosage: med.dosage || null,
+            frequency: med.frequency || null,
+          },
+        });
+      }
+    }
+  }
+
+  // Create conditions
+  if (Array.isArray(data.conditions)) {
+    for (const cond of data.conditions) {
+      if (cond.name) {
+        await prisma.condition.create({
+          data: { patientId: patient.id, name: cond.name },
+        });
+      }
+    }
+  }
+
+  // Create family members
+  if (Array.isArray(data.familyMembers)) {
+    for (const fm of data.familyMembers) {
+      if (fm.name) {
+        await prisma.familyMember.create({
+          data: {
+            patientId: patient.id,
+            name: fm.name,
+            relationship: fm.relationship || null,
+            phone: fm.phone || null,
+          },
+        });
+      }
     }
   }
 

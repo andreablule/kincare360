@@ -2,6 +2,15 @@
 
 import { useEffect, useState } from "react";
 
+const PLAN_PRICE_CENTS: Record<string, number> = {
+  ESSENTIAL: 5000,
+  PLUS: 8000,
+  CONCIERGE: 11000,
+  ESSENTIAL_FAMILY: 7500,
+  PLUS_FAMILY: 13000,
+  CONCIERGE_FAMILY: 18000,
+};
+
 const INDIVIDUAL_PLANS = [
   {
     key: "ESSENTIAL",
@@ -88,18 +97,27 @@ export default function PlanPage() {
   const [plan, setPlan] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [trialEnd, setTrialEnd] = useState<string | null>(null);
+  const [pendingPlan, setPendingPlan] = useState<string | null>(null);
+  const [pendingPlanDate, setPendingPlanDate] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [upgrading, setUpgrading] = useState<string | null>(null);
+  const [cancelingDowngrade, setCancelingDowngrade] = useState(false);
 
-  useEffect(() => {
+  function fetchPlan() {
     fetch("/api/plan")
       .then((r) => r.json())
       .then((data) => {
         setPlan(data.plan);
         setStatus(data.subscriptionStatus);
         setTrialEnd(data.trialEnd || null);
+        setPendingPlan(data.pendingPlan || null);
+        setPendingPlanDate(data.pendingPlanDate || null);
         setLoading(false);
       });
+  }
+
+  useEffect(() => {
+    fetchPlan();
   }, []);
 
   const [planTab, setPlanTab] = useState<"individual" | "family">(
@@ -109,6 +127,17 @@ export default function PlanPage() {
   const ALL_PLANS = [...INDIVIDUAL_PLANS, ...FAMILY_PLANS];
 
   const [showSwitchConfirm, setShowSwitchConfirm] = useState<string | null>(null);
+
+  function getPlanLabel(targetStripeKey: string): "upgrade" | "downgrade" | "current" | null {
+    if (!plan) return null;
+    const normalizedCurrent = plan.replace("COMPLETE_FAMILY", "CONCIERGE_FAMILY").replace("COMPLETE", "CONCIERGE");
+    const targetPlanObj = ALL_PLANS.find(p => p.stripeKey === targetStripeKey);
+    if (!targetPlanObj) return null;
+    if (targetPlanObj.key === normalizedCurrent) return "current";
+    const currentPrice = PLAN_PRICE_CENTS[normalizedCurrent] || 0;
+    const targetPrice = PLAN_PRICE_CENTS[targetPlanObj.key] || 0;
+    return targetPrice > currentPrice ? "upgrade" : "downgrade";
+  }
 
   async function selectPlan(stripeKey: string) {
     if (stripeKey !== "cancel") {
@@ -139,16 +168,41 @@ export default function PlanPage() {
     setUpgrading(null);
   }
 
+  async function cancelPendingDowngrade() {
+    setCancelingDowngrade(true);
+    try {
+      const res = await fetch("/api/plan/portal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "cancel_downgrade" }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setPendingPlan(null);
+        setPendingPlanDate(null);
+      }
+    } catch {
+      alert("Something went wrong. Please try again.");
+    }
+    setCancelingDowngrade(false);
+  }
+
   if (loading) return <div className="text-gray-400">Loading...</div>;
 
   const normalizedPlan = plan?.replace("COMPLETE_FAMILY", "CONCIERGE_FAMILY").replace("COMPLETE", "CONCIERGE") || plan;
   const currentPlan = ALL_PLANS.find((p) => p.key === normalizedPlan);
+  const pendingPlanObj = ALL_PLANS.find((p) => p.key === pendingPlan);
 
   const trialEndDate = trialEnd
     ? new Date(trialEnd).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
     : null;
 
+  const pendingDate = pendingPlanDate
+    ? new Date(pendingPlanDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
+    : null;
+
   const confirmPlan = ALL_PLANS.find(p => p.stripeKey === showSwitchConfirm);
+  const confirmLabel = showSwitchConfirm ? getPlanLabel(showSwitchConfirm) : null;
 
   return (
     <div>
@@ -156,17 +210,25 @@ export default function PlanPage() {
       {showSwitchConfirm && confirmPlan && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
           <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl">
-            <h3 className="text-lg font-bold text-navy mb-2">Switch to {confirmPlan.name}?</h3>
+            <h3 className="text-lg font-bold text-navy mb-2">
+              {confirmLabel === "upgrade" ? "Upgrade" : "Switch"} to {confirmPlan.name}?
+            </h3>
             <p className="text-sm text-gray-600 mb-4">
-              Your plan will switch to <strong>{confirmPlan.name} ({confirmPlan.price})</strong>.
+              Your plan will {confirmLabel === "upgrade" ? "be upgraded" : "switch"} to <strong>{confirmPlan.name} ({confirmPlan.price})</strong>.
               {status === "trialing"
                 ? " Since you're still in your free trial, no charge will occur until your trial ends. You can switch or cancel anytime before then."
-                : " The change takes effect at the start of your next billing cycle — your current plan stays active until that date."}
+                : confirmLabel === "upgrade"
+                ? " The upgrade takes effect immediately. You'll be charged a prorated amount for the remainder of this billing period."
+                : " The change takes effect at the end of your current billing period. You'll keep your current plan features until then."}
             </p>
-            <div className="bg-blue-50 text-blue-700 rounded-xl px-4 py-3 text-sm mb-5">
+            <div className={`rounded-xl px-4 py-3 text-sm mb-5 ${
+              confirmLabel === "upgrade" ? "bg-green-50 text-green-700" : "bg-blue-50 text-blue-700"
+            }`}>
               {status === "trialing"
                 ? "You're on a free trial — no charge until your trial ends."
-                : "No immediate charge. Changes apply at next billing cycle."}
+                : confirmLabel === "upgrade"
+                ? "Upgrade is immediate with prorated billing."
+                : "Downgrade takes effect at end of billing period."}
             </div>
             <div className="flex gap-3">
               <button onClick={() => setShowSwitchConfirm(null)}
@@ -174,8 +236,10 @@ export default function PlanPage() {
                 Cancel
               </button>
               <button onClick={() => doSelectPlan(showSwitchConfirm)}
-                className="flex-1 bg-teal text-white py-2.5 rounded-full text-sm font-semibold hover:bg-teal-dark">
-                Confirm Switch
+                className={`flex-1 text-white py-2.5 rounded-full text-sm font-semibold ${
+                  confirmLabel === "upgrade" ? "bg-green-600 hover:bg-green-700" : "bg-teal hover:bg-teal-dark"
+                }`}>
+                {confirmLabel === "upgrade" ? "Confirm Upgrade" : "Confirm Switch"}
               </button>
             </div>
           </div>
@@ -215,6 +279,25 @@ export default function PlanPage() {
             You&apos;re billed <strong>{currentPlan.price}</strong> monthly. Cancel anytime from below.
           </div>
         )}
+
+        {/* Pending downgrade banner */}
+        {pendingPlan && pendingPlanObj && (
+          <div className="mt-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div className="text-sm text-amber-800">
+                Your plan will change to <strong>{pendingPlanObj.name} ({pendingPlanObj.price})</strong>{pendingDate ? ` on ${pendingDate}` : " at the end of your billing period"}.
+                You&apos;ll keep your current features until then.
+              </div>
+              <button
+                onClick={cancelPendingDowngrade}
+                disabled={cancelingDowngrade}
+                className="text-sm font-semibold text-amber-700 hover:text-amber-900 underline whitespace-nowrap disabled:opacity-40"
+              >
+                {cancelingDowngrade ? "Canceling..." : "Cancel Change"}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Plan picker */}
@@ -247,6 +330,7 @@ export default function PlanPage() {
       <div className="grid sm:grid-cols-3 gap-4 max-w-4xl mb-6">
         {PLANS.map((p) => {
           const isCurrent = p.key === normalizedPlan;
+          const label = getPlanLabel(p.stripeKey);
           return (
             <div
               key={p.key}
@@ -288,6 +372,10 @@ export default function PlanPage() {
                 className={`w-full py-2.5 rounded-full text-sm font-semibold transition-colors disabled:opacity-40 ${
                   isCurrent
                     ? "bg-gray-100 text-gray-400 cursor-default"
+                    : label === "upgrade"
+                    ? "bg-green-600 text-white hover:bg-green-700"
+                    : label === "downgrade"
+                    ? "border border-gray-300 text-gray-600 hover:bg-gray-50"
                     : p.popular
                     ? "bg-teal text-white hover:bg-teal-dark"
                     : "border border-teal text-teal hover:bg-teal hover:text-white"
@@ -297,6 +385,10 @@ export default function PlanPage() {
                   ? "Redirecting..."
                   : isCurrent
                   ? "Current Plan"
+                  : label === "upgrade"
+                  ? "Upgrade"
+                  : label === "downgrade"
+                  ? "Downgrade"
                   : status === "trialing" || plan
                   ? "Switch to This Plan"
                   : "Start Free Trial"}

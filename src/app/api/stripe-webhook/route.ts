@@ -192,6 +192,65 @@ async function handleStripeEvent(req: NextRequest): Promise<NextResponse> {
         break;
       }
 
+      case 'invoice.paid': {
+        // When a new billing period starts, apply any pending downgrades
+        const invoice = event.data.object;
+        const customerId = invoice.customer;
+        if (customerId) {
+          const user = await prisma.user.findFirst({
+            where: { stripeCustomerId: customerId, pendingPlan: { not: null } },
+          });
+          if (user?.pendingPlan) {
+            // Apply the downgrade in Stripe
+            const PRICE_MAP: Record<string, string> = {
+              ESSENTIAL: 'price_1TFgeLJlUr03cRD7PP0gW8gW',
+              PLUS: 'price_1TFgeMJlUr03cRD7fTOu4j0y',
+              CONCIERGE: 'price_1TFgeOJlUr03cRD7Mli4BYhX',
+              ESSENTIAL_FAMILY: 'price_1TFgePJlUr03cRD7o3hb9ZGN',
+              PLUS_FAMILY: 'price_1TFgeRJlUr03cRD7OIIRu8kg',
+              CONCIERGE_FAMILY: 'price_1TFgeSJlUr03cRD7BAJ0XDzT',
+            };
+            const newPriceId = PRICE_MAP[user.pendingPlan];
+            if (newPriceId) {
+              const stripeKey = process.env.STRIPE_SECRET_KEY!;
+              const auth = Buffer.from(`${stripeKey}:`).toString('base64');
+              // Get active subscription
+              const subsRes = await fetch(
+                `https://api.stripe.com/v1/subscriptions?customer=${customerId}&status=active&limit=1`,
+                { headers: { Authorization: `Basic ${auth}` } }
+              );
+              const subs = await subsRes.json();
+              const activeSub = subs?.data?.[0];
+              if (activeSub) {
+                const itemId = activeSub.items?.data?.[0]?.id;
+                if (itemId) {
+                  await fetch(`https://api.stripe.com/v1/subscriptions/${activeSub.id}`, {
+                    method: 'POST',
+                    headers: { Authorization: `Basic ${auth}`, 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({
+                      [`items[0][id]`]: itemId,
+                      [`items[0][price]`]: newPriceId,
+                      'proration_behavior': 'none',
+                      [`metadata[plan]`]: user.pendingPlan,
+                    }).toString(),
+                  });
+                }
+              }
+            }
+            // Update DB: apply pending plan, clear pending fields
+            await prisma.user.update({
+              where: { id: user.id },
+              data: {
+                plan: user.pendingPlan,
+                pendingPlan: null,
+                pendingPlanDate: null,
+              },
+            });
+          }
+        }
+        break;
+      }
+
       case 'customer.subscription.deleted': {
         const sub = event.data.object;
         const customerId = sub.customer;
