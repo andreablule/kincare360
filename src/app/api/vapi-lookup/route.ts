@@ -269,26 +269,50 @@ export async function POST(req: NextRequest) {
 
     const { greeting } = getTimeContext();
 
-    // Handle getPatientContext tool call (new approach — called by static Lily at call start)
-    if (messageType === "tool-calls" || body.message?.toolCallList?.[0]?.function?.name === "getPatientContext") {
-      const toolCall = body.message?.toolCallList?.[0];
-      const args = typeof toolCall?.function?.arguments === 'string'
-        ? JSON.parse(toolCall.function.arguments)
-        : toolCall?.function?.arguments || {};
+    // Handle getPatientContext tool call (called by static Lily at call start)
+    const toolCallList = body.message?.toolCallList || body.message?.toolCalls || [];
+    const isToolCall = messageType === "tool-calls" || messageType === "function-call" ||
+      toolCallList.some((t: any) => t.function?.name === "getPatientContext");
+
+    if (isToolCall) {
+      const toolCall = toolCallList.find((t: any) => t.function?.name === "getPatientContext") || toolCallList[0];
+      
+      // Get phone from args OR from call object (callerPhone from top of request)
+      let args: any = {};
+      try {
+        args = typeof toolCall?.function?.arguments === 'string'
+          ? JSON.parse(toolCall.function.arguments)
+          : toolCall?.function?.arguments || {};
+      } catch {}
+
+      // Use callerPhone from args, or fall back to the call's customer number
       const phoneArg = args.callerPhone || callerPhone;
       const digits = phoneArg.replace(/\D/g, "").slice(-10);
+      
+      console.log(`[vapi-lookup] getPatientContext tool call | phone arg: ${phoneArg} | digits: ${digits}`);
 
       let contextText = "New caller — no profile found. Treat as prospective client.";
       if (digits) {
         const pt = await prisma.patient.findFirst({
           where: { phone: { contains: digits } },
-          include: { doctors: true, pharmacies: true, medications: true, conditions: true, familyMembers: true, callLogs: { orderBy: { callDate: "desc" }, take: 3 }, user: { select: { plan: true, subscriptionStatus: true } } }
+          include: {
+            doctors: { select: { name: true, specialty: true, phone: true, address: true } },
+            pharmacies: { select: { name: true, phone: true, address: true } },
+            medications: { select: { name: true, dosage: true, frequency: true } },
+            conditions: { select: { name: true } },
+            familyMembers: { select: { name: true, relationship: true, phone: true } },
+            callLogs: { orderBy: { callDate: "desc" }, take: 2, select: { summary: true, callDate: true } },
+            user: { select: { plan: true, subscriptionStatus: true } }
+          }
         });
-        if (pt) contextText = buildPatientContext(pt);
+        if (pt) {
+          contextText = buildPatientContext(pt);
+          console.log(`[vapi-lookup] Found patient: ${pt.firstName} ${pt.lastName}`);
+        }
       }
 
       return NextResponse.json({
-        results: [{ toolCallId: toolCall?.id, result: contextText }]
+        results: [{ toolCallId: toolCall?.id || 'unknown', result: contextText }]
       });
     }
 
