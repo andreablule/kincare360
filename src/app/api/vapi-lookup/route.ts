@@ -260,8 +260,8 @@ export async function POST(req: NextRequest) {
           : toolCall?.function?.arguments || {};
       } catch {}
 
-      // Use callerPhone from args, or fall back to the call's customer number
-      const phoneArg = args.callerPhone || callerPhone;
+      // Use phoneNumber from args, or callerPhone from args, or fall back to the call's customer number
+      const phoneArg = args.phoneNumber || args.callerPhone || args.phone || callerPhone;
       const digits = phoneArg.replace(/\D/g, "").slice(-10);
       
       console.log(`[vapi-lookup] getPatientContext tool call | phone arg: ${phoneArg} | digits: ${digits}`);
