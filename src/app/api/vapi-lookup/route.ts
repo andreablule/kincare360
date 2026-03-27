@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
+export const maxDuration = 10; // 10 second timeout
+export const dynamic = 'force-dynamic';
+
 // Format phone for natural TTS reading: 2674996927 → "267-499-6927"
 function fmtPhone(raw: string | null | undefined): string {
   if (!raw) return "not on file";
@@ -307,19 +310,19 @@ export async function POST(req: NextRequest) {
     // Normalize phone: strip non-digits, keep last 10
     const digits = callerPhone.replace(/\D/g, "").slice(-10);
 
-    // Look up patient by phone
+    // Look up patient by phone — optimized query, only what Lily needs
     const patient = await prisma.patient.findFirst({
       where: { phone: { contains: digits } },
       include: {
-        doctors: true,
-        pharmacies: true,
-        medications: true,
-        conditions: true,
-        familyMembers: true,
-        callLogs: { orderBy: { callDate: "desc" }, take: 3 },
+        doctors: { select: { name: true, specialty: true, phone: true, address: true } },
+        pharmacies: { select: { name: true, phone: true, address: true } },
+        medications: { select: { name: true, dosage: true, frequency: true } },
+        conditions: { select: { name: true } },
+        familyMembers: { select: { name: true, relationship: true, phone: true } },
+        callLogs: { orderBy: { callDate: "desc" }, take: 2, select: { summary: true, callDate: true } },
         user: { select: { plan: true, subscriptionStatus: true } },
       },
-      orderBy: { createdAt: "desc" }, // newest if multiple matches
+      orderBy: { createdAt: "desc" },
     });
 
     if (patient) {
