@@ -266,6 +266,29 @@ export async function POST(req: NextRequest) {
 
     const { greeting } = getTimeContext();
 
+    // Handle getPatientContext tool call (new approach — called by static Lily at call start)
+    if (messageType === "tool-calls" || body.message?.toolCallList?.[0]?.function?.name === "getPatientContext") {
+      const toolCall = body.message?.toolCallList?.[0];
+      const args = typeof toolCall?.function?.arguments === 'string'
+        ? JSON.parse(toolCall.function.arguments)
+        : toolCall?.function?.arguments || {};
+      const phoneArg = args.callerPhone || callerPhone;
+      const digits = phoneArg.replace(/\D/g, "").slice(-10);
+
+      let contextText = "New caller — no profile found. Treat as prospective client.";
+      if (digits) {
+        const pt = await prisma.patient.findFirst({
+          where: { phone: { contains: digits } },
+          include: { doctors: true, pharmacies: true, medications: true, conditions: true, familyMembers: true, callLogs: { orderBy: { callDate: "desc" }, take: 3 }, user: { select: { plan: true, subscriptionStatus: true } } }
+        });
+        if (pt) contextText = buildPatientContext(pt);
+      }
+
+      return NextResponse.json({
+        results: [{ toolCallId: toolCall?.id, result: contextText }]
+      });
+    }
+
     // If this isn't an assistant-request, just acknowledge
     if (messageType && messageType !== "assistant-request") {
       return NextResponse.json({ received: true });
