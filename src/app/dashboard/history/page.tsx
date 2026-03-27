@@ -85,6 +85,12 @@ export default function HistoryPage() {
                       year: "numeric",
                       month: "long",
                       day: "numeric",
+                    })}{" "}
+                    at{" "}
+                    {new Date(log.callDate).toLocaleTimeString("en-US", {
+                      hour: "numeric",
+                      minute: "2-digit",
+                      hour12: true,
                     })}
                   </span>
                   {log.urgent && (

@@ -53,12 +53,21 @@ export async function POST(req: NextRequest) {
       servicesRequested = JSON.stringify(serviceData);
     }
 
+    const lowerSummary = summary.toLowerCase();
+    const lowerTranscript = (transcript || '').toLowerCase();
+    const fullText = lowerSummary + ' ' + lowerTranscript;
     const urgent = structuredData.urgent === true ||
-                   summary.toLowerCase().includes('urgent') ||
-                   summary.toLowerCase().includes('911') ||
-                   summary.toLowerCase().includes('chest pain') ||
-                   summary.toLowerCase().includes('fall') ||
-                   summary.toLowerCase().includes('breathing');
+                   fullText.includes('call 911') ||
+                   fullText.includes('called 911') ||
+                   fullText.includes('chest pain') ||
+                   fullText.includes('can\'t breathe') ||
+                   fullText.includes('difficulty breathing') ||
+                   fullText.includes('fell down') ||
+                   fullText.includes('had a fall') ||
+                   fullText.includes('stroke') ||
+                   fullText.includes('unconscious') ||
+                   fullText.includes('not responding') ||
+                   fullText.includes('emergency');
 
     // Find patient by phone
     const digits = customerPhone.replace(/\D/g, '').slice(-10);
