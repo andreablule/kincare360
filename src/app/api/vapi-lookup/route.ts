@@ -168,17 +168,11 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string) {
       voice: {
         provider: "11labs",
         voiceId: "paula",
-        speed: 0.92,
-        stability: 0.65,
-        similarityBoost: 0.75,
-        style: 0.2,
-        useSpeakerBoost: true,
       },
       backgroundSound: "off",
       backgroundDenoisingEnabled: true,
       backchannelingEnabled: true,
-      silenceTimeoutSeconds: 10,
-      responseDelaySeconds: 0.5,
+      silenceTimeoutSeconds: 30,
       model: {
         provider: "openai",
         model: "gpt-4o-mini",
@@ -191,7 +185,7 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string) {
         tools: [
           {
             type: "function",
-            server: { url: "https://kincare360.com/api/find-provider" },
+            server: { url: "https://www.kincare360.com/api/find-provider" },
             function: {
               name: "findLocalService",
               description: "Search for local services near the client's home. ALWAYS pass their full home address as location.",
@@ -225,7 +219,7 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string) {
           },
           {
             type: "function",
-            server: { url: "https://kincare360.com/api/vapi-update-patient" },
+            server: { url: "https://www.kincare360.com/api/vapi-update-patient" },
             function: {
               name: "updatePatientProfile",
               description: "Update the client's profile when they request changes to their settings. Always confirm the new values with the client before calling this.",
@@ -245,7 +239,7 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string) {
         ],
       },
       firstMessage,
-      serverUrl: "https://kincare360.com/api/call-logs",
+      serverUrl: "https://www.kincare360.com/api/call-logs",
       endCallMessage: "Thank you for calling KinCare360. Have a wonderful day, and take care!",
       endCallPhrases: ["goodbye", "bye", "talk to you later", "thank you bye"],
     },
