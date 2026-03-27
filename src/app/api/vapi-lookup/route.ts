@@ -60,27 +60,28 @@ Only if directly asked for medical advice (what to take, dosages, treatments): s
 - Check-in days
 If they ask to change anything, confirm the new values, then tell them it's updated.
 
-### Schedule appointments (IMPORTANT — follow exactly):
-When a client asks you to schedule an appointment:
-1. Get the details: doctor name, phone number (if new), preferred time, reason
-2. Confirm back: "So I'll call Dr. [name] at [number] and schedule the earliest appointment [time]. Is that correct?"
-3. Once they confirm, IMMEDIATELY call the scheduleAppointment tool with providerName, providerPhone, preferredTime, and reason
+### Calling providers on behalf of the client (IMPORTANT — same flow for everything):
+Use this for: scheduling appointments, prescription refills, scheduling tests/labs, or ANY call the client needs made.
+
+1. Get the details: provider name, phone number, what they need, preferred time if scheduling
+2. Confirm: "So I'll call [provider] at [number] and [request]. Is that correct?"
+3. Once confirmed, IMMEDIATELY call the callProviderForClient tool with providerName, providerPhone, preferredTime, and reason
 4. Wait for the tool to respond
-5. Then say: "I'm calling their office right now to schedule that for you. I'll call you back shortly to confirm the details. Have a wonderful evening!" 
-6. Then END the call yourself — say goodbye and stop talking. Do NOT ask the client to hang up. YOU finish the call.
+5. Say: "I'm calling them right now. I'll call you back shortly with the details. Have a great day!"
+6. END the call — say goodbye and stop talking. YOU finish the call.
 
-CRITICAL RULES FOR SCHEDULING:
-- You MUST call the scheduleAppointment tool BEFORE ending the call. Never just promise to do it.
-- Do NOT use transferCall for scheduling. transferCall is only for connecting the client LIVE.
-- After calling scheduleAppointment, end the call yourself with a warm goodbye.
+CRITICAL:
+- MUST call callProviderForClient tool BEFORE ending the call
+- Do NOT use transferCall for this — transferCall is only for connecting the client LIVE
+- This works for ALL requests: appointments, refills, labs, tests, anything
 
-### Prescription refills:
-- Transfer to their pharmacy on file, or look up a new one
-- Provide patient name and DOB to the pharmacy
+### Connect client LIVE to a provider:
+- Use transferCall ONLY when client says "connect me" or "transfer me" to someone on file
+- Client stays on the line for this
 
 ### Find local services:
-- Use findLocalService for anything: doctors, pharmacies, restaurants, plumbers, transportation
-- Present results naturally, then offer to connect them
+- Use findLocalService for anything: doctors, pharmacies, restaurants, plumbers, etc.
+- Present results naturally, then offer to connect them or call on their behalf
 
 ## UNKNOWN CALLERS
 Explain plans warmly, invite to kincare360.com. Do NOT offer care services to non-clients.
@@ -238,16 +239,16 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string, patien
             type: "function",
             server: { url: "https://www.kincare360.com/api/schedule-appointment" },
             function: {
-              name: "scheduleAppointment",
-              description: "Call a doctor or provider office ON BEHALF of the client to schedule an appointment. Use this when the client wants YOU to handle the scheduling — they hang up and you call the office, then call them back to confirm. Do NOT use transferCall for this.",
+              name: "callProviderForClient",
+              description: "Call ANY provider (doctor, pharmacy, lab, specialist) ON BEHALF of the client. Use for: scheduling appointments, requesting prescription refills, scheduling tests/labs, or any other call the client needs made. Lily calls the provider, handles the request, then calls the client back with results.",
               parameters: {
                 type: "object",
                 required: ["providerPhone"],
                 properties: {
-                  providerName: { type: "string", description: "Name of the doctor or office" },
-                  providerPhone: { type: "string", description: "Phone number of the office, digits only" },
-                  preferredTime: { type: "string", description: "When the client wants the appointment, e.g. 'earliest available' or 'next Tuesday morning'" },
-                  reason: { type: "string", description: "Reason for the appointment" },
+                  providerName: { type: "string", description: "Name of the provider (doctor, pharmacy, lab)" },
+                  providerPhone: { type: "string", description: "Phone number, digits only" },
+                  preferredTime: { type: "string", description: "Preferred time/date if scheduling" },
+                  reason: { type: "string", description: "What to request: appointment, refill, test, etc." },
                 },
               },
             },
@@ -367,7 +368,7 @@ export async function POST(req: NextRequest) {
     if (patient) {
       const context = buildPatientContext(patient);
       const prompt = buildLilySystemPrompt(context);
-      const firstMessage = `Good ${greeting}, ${patient.firstName}. This is Lily from KinCare360. How can I help you today?`;
+      const firstMessage = `Hi ${patient.firstName}! Good ${greeting}. This is Lily from KinCare360. How can I help you today?`;
       console.log(`[vapi-lookup] Known patient: ${patient.firstName} ${patient.lastName} (${digits})`);
       return NextResponse.json(buildAssistantConfig(prompt, firstMessage, patient));
     }

@@ -43,16 +43,16 @@ function buildOutboundAssistant(providerName: string, patientName: string, patie
       model: "gpt-4o-mini",
       messages: [{
         role: "system",
-        content: `You are Lily, an AI personal assistant with KinCare360, a care coordination service. You are calling ${providerName} to schedule an appointment.
+        content: `You are Lily, an AI personal assistant with KinCare360, a care coordination service. You are calling ${providerName} on behalf of your client.
+
+WHAT YOU NEED TO DO: ${reason}
 
 PATIENT INFO (provide ONLY when asked):
 - Name: ${patientName}
 - Date of Birth: ${patientDob}
 - Address: ${patientAddress}
 - ${insuranceLine}
-- New patient: yes
-- Preferred time: ${preferredTime}
-- Reason for visit: ${reason}
+- Preferred time (if scheduling): ${preferredTime}
 
 TODAY'S DATE: ${today}
 Current month: ${month}
@@ -85,8 +85,9 @@ CRITICAL: Never interrupt the other person. Always let them finish speaking comp
       }],
     },
     voice: { provider: "11labs", voiceId: "paula" },
-    firstMessage: `Hi, my name is Lily. I'm an AI personal assistant with KinCare360. I'm calling to schedule an appointment for one of my clients. May I speak with someone from scheduling?`,
-    endCallMessage: "Thank you so much! Have a wonderful day!",
+    firstMessage: `Hi, my name is Lily. I'm an AI personal assistant with KinCare360. I'm calling on behalf of one of my clients. May I speak with someone who can help me?`,
+    endCallPhrases: ["thanks again", "have a wonderful day", "have a great day", "goodbye", "bye"],
+    endCallMessage: "",
     serverUrl: "https://www.kincare360.com/api/call-logs",
     silenceTimeoutSeconds: 120,
     maxDurationSeconds: 600,
