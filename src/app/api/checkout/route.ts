@@ -8,20 +8,25 @@ const SK = process.env.STRIPE_SECRET_KEY!;
 const PRICE_MAP: Record<string, string> = {
   essential: 'price_1TFgeLJlUr03cRD7PP0gW8gW',         // $50/mo
   plus: 'price_1TFgeMJlUr03cRD7fTOu4j0y',              // $80/mo
-  complete: 'price_1TFgeOJlUr03cRD7Mli4BYhX',           // $110/mo
+  concierge: 'price_1TFgeOJlUr03cRD7Mli4BYhX',         // $110/mo
   essential_family: 'price_1TFgePJlUr03cRD7o3hb9ZGN',   // $75/mo
   plus_family: 'price_1TFgeRJlUr03cRD7OIIRu8kg',        // $130/mo
-  complete_family: 'price_1TFgeSJlUr03cRD7BAJ0XDzT',    // $180/mo
+  concierge_family: 'price_1TFgeSJlUr03cRD7BAJ0XDzT',   // $180/mo
+  // Legacy aliases for existing subscribers
+  complete: 'price_1TFgeOJlUr03cRD7Mli4BYhX',
+  complete_family: 'price_1TFgeSJlUr03cRD7BAJ0XDzT',
 };
 
 // Map price IDs back to plan names for DB storage
 const PLAN_NAME_MAP: Record<string, string> = {
   essential: 'ESSENTIAL',
   plus: 'PLUS',
-  complete: 'COMPLETE',
+  concierge: 'CONCIERGE',
   essential_family: 'ESSENTIAL_FAMILY',
   plus_family: 'PLUS_FAMILY',
-  complete_family: 'COMPLETE_FAMILY',
+  concierge_family: 'CONCIERGE_FAMILY',
+  complete: 'CONCIERGE',
+  complete_family: 'CONCIERGE_FAMILY',
 };
 
 async function stripeAPI(path: string, body: Record<string, string>) {

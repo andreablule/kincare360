@@ -95,10 +95,10 @@ function planFromPriceId(priceId: string): string {
   const map: Record<string, string> = {
     'price_1TFgeLJlUr03cRD7PP0gW8gW': 'ESSENTIAL',
     'price_1TFgeMJlUr03cRD7fTOu4j0y': 'PLUS',
-    'price_1TFgeOJlUr03cRD7Mli4BYhX': 'COMPLETE',
+    'price_1TFgeOJlUr03cRD7Mli4BYhX': 'CONCIERGE',
     'price_1TFgePJlUr03cRD7o3hb9ZGN': 'ESSENTIAL_FAMILY',
     'price_1TFgeRJlUr03cRD7OIIRu8kg': 'PLUS_FAMILY',
-    'price_1TFgeSJlUr03cRD7BAJ0XDzT': 'COMPLETE_FAMILY',
+    'price_1TFgeSJlUr03cRD7BAJ0XDzT': 'CONCIERGE_FAMILY',
   };
   return map[priceId] || 'ESSENTIAL';
 }

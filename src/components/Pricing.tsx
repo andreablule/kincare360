@@ -15,8 +15,8 @@ const individualPlans = [
         detail: "Lily calls your loved one every day at their preferred time to check on their mood, health, and how they're feeling.",
       },
       {
-        text: "Medication reminders (up to 2x/day)",
-        detail: "Lily calls at scheduled medication times to remind your loved one to take their medications — up to twice per day.",
+        text: "Medication reminders",
+        detail: "Lily calls at scheduled medication times to remind your loved one to take their medications — as many times per day as needed.",
       },
       {
         text: "Family dashboard (up to 2 members)",
@@ -44,16 +44,12 @@ const individualPlans = [
         detail: "All daily check-in calls, medication reminders, family dashboard, and emergency alerts included.",
       },
       {
-        text: "24/7 access to Lily (call anytime)",
-        detail: "Your loved one can call Lily any time of day or night — whether they need someone to talk to, have a question, or need help.",
+        text: "Medication reminders",
+        detail: "Lily calls as many times as needed throughout the day to match your loved one's medication schedule.",
       },
       {
-        text: "Unlimited medication reminders",
-        detail: "No limit on daily medication reminders — Lily calls as many times as needed throughout the day to match your loved one's medication schedule.",
-      },
-      {
-        text: "Family dashboard (up to 4 members)",
-        detail: "Up to 4 family members can view check-in history, medication status, and care notes through a shared dashboard — updated after every call.",
+        text: "Family dashboard (unlimited members)",
+        detail: "Unlimited family members can view check-in history, medication status, and care notes through a shared dashboard — updated after every call.",
       },
       {
         text: "Local service search & live connect",
@@ -74,15 +70,15 @@ const individualPlans = [
     href: "/register",
   },
   {
-    key: "complete",
+    key: "concierge",
     label: "Full Service",
-    name: "Complete",
+    name: "Concierge",
     price: "$110",
-    tagline: "Complete hands-off care with full concierge",
+    tagline: "Your personal assistant for everything",
     features: [
       {
         text: "Everything in Plus",
-        detail: "All check-ins, unlimited reminders, 24/7 access, service search, live connect, family dashboard, and weekly summaries included.",
+        detail: "All check-ins, medication reminders, service search, live connect, family dashboard, and weekly summaries included.",
       },
       {
         text: "Medical appointment scheduling (Lily calls for you)",
@@ -91,6 +87,10 @@ const individualPlans = [
       {
         text: "One-time call-back reminders",
         detail: "Your loved one tells Lily 'remind me to...' or 'call me at 6 PM to...' and Lily calls them back at the chosen time with the reminder.",
+      },
+      {
+        text: "Lily answers any question — weather, sports, news, anything",
+        detail: "Your loved one can ask Lily absolutely anything — weather, sports scores, store hours, recipes, trivia, news. She's their personal assistant, not just a care coordinator.",
       },
       {
         text: "Detailed weekly care reports",
@@ -121,8 +121,8 @@ const familyPlans = [
         detail: "Lily calls each parent separately at their preferred time to check on mood, health, and how they're feeling.",
       },
       {
-        text: "Medication reminders (up to 2x/day each)",
-        detail: "Each parent gets their own medication reminder schedule — up to twice per day per parent.",
+        text: "Medication reminders (each parent)",
+        detail: "Each parent gets their own medication reminder schedule — as many times per day as needed.",
       },
       {
         text: "Family dashboard (up to 2 members) + emergency alerts",
@@ -143,15 +143,11 @@ const familyPlans = [
     features: [
       {
         text: "Everything in Plus — for 2 parents",
-        detail: "All Plus features for both parents: 24/7 access, unlimited reminders, service search, live connect, and weekly summaries.",
+        detail: "All Plus features for both parents: medication reminders, service search, live connect, and weekly summaries.",
       },
       {
-        text: "24/7 access to Lily (each parent)",
-        detail: "Both parents can call Lily anytime — day or night — for help, questions, or just to chat.",
-      },
-      {
-        text: "Family dashboard (up to 4 members)",
-        detail: "Up to 4 family members can view check-in history, medication tracking, and care notes for both parents.",
+        text: "Family dashboard (unlimited members)",
+        detail: "Unlimited family members can view check-in history, medication tracking, and care notes for both parents.",
       },
       {
         text: "Local service search & live connect",
@@ -168,15 +164,15 @@ const familyPlans = [
     href: "/register",
   },
   {
-    key: "complete_family",
+    key: "concierge_family",
     label: "Full Service",
-    name: "Complete Family",
+    name: "Concierge Family",
     price: "$180",
-    tagline: "Complete concierge care for both parents",
+    tagline: "Full personal assistant care for both parents",
     features: [
       {
-        text: "Everything in Complete — for 2 parents",
-        detail: "Full concierge for both parents. Each gets individualized care, medical scheduling, reminders, and detailed reports.",
+        text: "Everything in Concierge — for 2 parents",
+        detail: "Full personal assistant for both parents. Each gets individualized care, medical scheduling, reminders, and detailed reports.",
       },
       {
         text: "Medical appointment scheduling (each parent)",

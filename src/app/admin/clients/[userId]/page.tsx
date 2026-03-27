@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 
-const PLAN_PRICES: Record<string, number> = { ESSENTIAL: 50, PLUS: 80, COMPLETE: 110, ESSENTIAL_FAMILY: 75, PLUS_FAMILY: 130, COMPLETE_FAMILY: 180 };
+const PLAN_PRICES: Record<string, number> = { ESSENTIAL: 50, PLUS: 80, CONCIERGE: 110, ESSENTIAL_FAMILY: 75, PLUS_FAMILY: 130, CONCIERGE_FAMILY: 180, COMPLETE: 110, COMPLETE_FAMILY: 180 };
 
 export default async function ClientDetailPage({ params }: { params: Promise<{ userId: string }> }) {
   const session = await getServerSession(authOptions);
@@ -89,7 +89,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ u
             ) : (
               <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-100 text-gray-500">{user.subscriptionStatus || "—"}</span>
             )}
-            {user.plan === "COMPLETE" || user.plan === "COMPLETE_FAMILY" ? (
+            {user.plan === "CONCIERGE" || user.plan === "CONCIERGE_FAMILY" || user.plan === "COMPLETE" || user.plan === "COMPLETE_FAMILY" ? (
               <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-gradient-to-r from-teal to-blue-500 text-white">{user.plan}</span>
             ) : user.plan === "PLUS" || user.plan === "PLUS_FAMILY" ? (
               <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-100 text-blue-800">{user.plan}</span>

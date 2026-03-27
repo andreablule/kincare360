@@ -7,21 +7,25 @@ const SK = process.env.STRIPE_SECRET_KEY!;
 
 // Map plan name -> Stripe price ID
 const PRICE_MAP: Record<string, string> = {
-  essential:       "price_1TFgeLJlUr03cRD7PP0gW8gW",
-  plus:            "price_1TFgeMJlUr03cRD7fTOu4j0y",
-  complete:        "price_1TFgeOJlUr03cRD7Mli4BYhX",
-  essential_family:"price_1TFgePJlUr03cRD7o3hb9ZGN",
-  plus_family:     "price_1TFgeRJlUr03cRD7OIIRu8kg",
-  complete_family: "price_1TFgeSJlUr03cRD7BAJ0XDzT",
+  essential:         "price_1TFgeLJlUr03cRD7PP0gW8gW",
+  plus:              "price_1TFgeMJlUr03cRD7fTOu4j0y",
+  concierge:         "price_1TFgeOJlUr03cRD7Mli4BYhX",
+  essential_family:  "price_1TFgePJlUr03cRD7o3hb9ZGN",
+  plus_family:       "price_1TFgeRJlUr03cRD7OIIRu8kg",
+  concierge_family:  "price_1TFgeSJlUr03cRD7BAJ0XDzT",
+  complete:          "price_1TFgeOJlUr03cRD7Mli4BYhX",
+  complete_family:   "price_1TFgeSJlUr03cRD7BAJ0XDzT",
 };
 
 const PLAN_KEY_MAP: Record<string, string> = {
   essential: "ESSENTIAL",
   plus: "PLUS",
-  complete: "COMPLETE",
+  concierge: "CONCIERGE",
   essential_family: "ESSENTIAL_FAMILY",
   plus_family: "PLUS_FAMILY",
-  complete_family: "COMPLETE_FAMILY",
+  concierge_family: "CONCIERGE_FAMILY",
+  complete: "CONCIERGE",
+  complete_family: "CONCIERGE_FAMILY",
 };
 
 async function stripeAPI(path: string, body: Record<string, string>) {

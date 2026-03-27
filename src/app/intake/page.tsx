@@ -169,7 +169,7 @@ export default function IntakePage() {
       const planMap: Record<string, string> = {
         essential: 'essential',
         plus: 'plus',
-        complete: 'complete',
+        concierge: 'concierge',
       };
       const stripePlan = planMap[form.selectedPlan] || 'essential';
 
@@ -460,9 +460,9 @@ export default function IntakePage() {
                 <h3 className="text-sm font-semibold text-navy mb-3">Choose Your Plan</h3>
                 <div className="grid gap-3">
                   {[
-                    { id: 'essential', name: 'Essential', price: '$50/mo', desc: 'Daily check-ins + medication reminders + 24/7 Lily access' },
-                    { id: 'plus', name: 'Plus', price: '$80/mo', desc: 'Essential + appointment scheduling + family dashboard + weekly summaries', popular: true },
-                    { id: 'complete', name: 'Complete', price: '$110/mo', desc: 'Plus + full concierge service' },
+                    { id: 'essential', name: 'Essential', price: '$50/mo', desc: 'Daily check-ins + medication reminders + family dashboard (2 members)' },
+                    { id: 'plus', name: 'Plus', price: '$80/mo', desc: 'Essential + local service search & live connect + unlimited family members + weekly summaries', popular: true },
+                    { id: 'concierge', name: 'Concierge', price: '$110/mo', desc: 'Plus + appointment scheduling + reminders + Lily answers any question' },
                   ].map(plan => (
                     <label key={plan.id} className={`flex items-center gap-4 cursor-pointer p-4 rounded-xl border-2 transition-colors ${form.selectedPlan === plan.id ? 'border-teal bg-teal/5' : 'border-gray-200 hover:border-teal/50'}`}>
                       <input type="radio" name="plan" value={plan.id} checked={form.selectedPlan === plan.id} onChange={() => update('selectedPlan', plan.id)} className="w-4 h-4 accent-teal flex-shrink-0" />

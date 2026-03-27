@@ -10,8 +10,8 @@ const PLANS = [
     price: "$50/mo",
     features: [
       "Daily wellness check-in calls",
-      "Medication reminders (up to 2x/day)",
-      "24/7 access to Lily (call anytime)",
+      "Medication reminders",
+      "Family dashboard (up to 2 members)",
       "Emergency detection and family alerts",
     ],
   },
@@ -23,22 +23,23 @@ const PLANS = [
     popular: true,
     features: [
       "Everything in Essential",
-      "Unlimited medication reminders",
-      "Family dashboard access",
-      "Appointment scheduling (Lily calls providers)",
+      "Medication reminders",
+      "Family dashboard (unlimited members)",
+      "Local service search & live connect",
       "Weekly care summaries",
     ],
   },
   {
-    key: "COMPLETE",
-    stripeKey: "complete",
-    name: "Complete",
+    key: "CONCIERGE",
+    stripeKey: "concierge",
+    name: "Concierge",
     price: "$110/mo",
     features: [
       "Everything in Plus",
-      "Full concierge service (Lily handles ANY call)",
+      "Medical appointment scheduling (Lily calls for you)",
+      "One-time call-back reminders",
+      "Lily answers any question — weather, sports, news, anything",
       "Detailed weekly care reports",
-      "Custom check-in scheduling",
     ],
   },
 ];
@@ -94,7 +95,8 @@ export default function PlanPage() {
 
   if (loading) return <div className="text-gray-400">Loading...</div>;
 
-  const currentPlan = PLANS.find((p) => p.key === plan);
+  const normalizedPlan = plan?.replace("COMPLETE", "CONCIERGE") || plan;
+  const currentPlan = PLANS.find((p) => p.key === normalizedPlan);
 
   const trialEndDate = trialEnd
     ? new Date(trialEnd).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
@@ -176,7 +178,7 @@ export default function PlanPage() {
 
       <div className="grid sm:grid-cols-3 gap-4 max-w-4xl mb-6">
         {PLANS.map((p) => {
-          const isCurrent = p.key === plan;
+          const isCurrent = p.key === normalizedPlan;
           return (
             <div
               key={p.key}

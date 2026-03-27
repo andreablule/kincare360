@@ -7,7 +7,7 @@ const services = [
   "Care Consultation (Free)",
   "Essential Plan - $50/mo",
   "Plus Plan - $80/mo",
-  "Complete Plan - $110/mo",
+  "Concierge Plan - $110/mo",
   "Medication Reminder Setup",
   "Family Dashboard Setup",
 ];

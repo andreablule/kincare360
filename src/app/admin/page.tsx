@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 
-const PLAN_PRICES: Record<string, number> = { ESSENTIAL: 50, PLUS: 80, COMPLETE: 110, ESSENTIAL_FAMILY: 75, PLUS_FAMILY: 130, COMPLETE_FAMILY: 180 };
+const PLAN_PRICES: Record<string, number> = { ESSENTIAL: 50, PLUS: 80, CONCIERGE: 110, ESSENTIAL_FAMILY: 75, PLUS_FAMILY: 130, CONCIERGE_FAMILY: 180, COMPLETE: 110, COMPLETE_FAMILY: 180 };
 
 function relativeDate(date: Date) {
   const now = new Date();
@@ -317,7 +317,7 @@ export default async function AdminPage() {
                           {patient ? `${patient.firstName} ${patient.lastName}` : "\u2014"}
                         </td>
                         <td className="px-4 py-4">
-                          {c.plan === "COMPLETE" || c.plan === "COMPLETE_FAMILY" ? (
+                          {c.plan === "CONCIERGE" || c.plan === "CONCIERGE_FAMILY" || c.plan === "COMPLETE" || c.plan === "COMPLETE_FAMILY" ? (
                             <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-gradient-to-r from-teal to-blue-500 text-white">{c.plan}</span>
                           ) : c.plan === "PLUS" || c.plan === "PLUS_FAMILY" ? (
                             <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-100 text-blue-800">{c.plan}</span>

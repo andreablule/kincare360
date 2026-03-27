@@ -23,9 +23,9 @@ export async function GET(req: NextRequest) {
       if (amount <= 5000) plan = 'ESSENTIAL';
       else if (amount <= 7500) plan = 'ESSENTIAL_FAMILY';
       else if (amount <= 8000) plan = 'PLUS';
-      else if (amount <= 11000) plan = 'COMPLETE';
+      else if (amount <= 11000) plan = 'CONCIERGE';
       else if (amount <= 13000) plan = 'PLUS_FAMILY';
-      else plan = 'COMPLETE_FAMILY';
+      else plan = 'CONCIERGE_FAMILY';
     }
 
     return NextResponse.json({
