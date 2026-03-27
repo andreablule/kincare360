@@ -62,6 +62,11 @@ Only if directly asked for medical advice (what to take, dosages, treatments): s
 - Check-in days
 If they ask to change anything, confirm the new values, then tell them it's updated.
 
+### One-time reminders:
+If a client says "remind me to..." or "call me at 6 PM to..." — use the setReminder tool.
+Ask: what to remind them about, and when. Then confirm: "I'll call you today at 6 PM to remind you to [message]."
+This works for anything: medications, appointments, calls, tasks.
+
 ### MEDICAL providers — call on behalf of client (PREMIUM PLAN ONLY):
 Use callProviderForClient for: scheduling doctor appointments, specialist visits, prescription refills, lab tests, medical exams, anything healthcare-related.
 Available for: clients on FREE TRIAL (any plan) and PREMIUM plan subscribers. If a Basic or Standard client whose trial has ended asks you to schedule or call a provider on their behalf, say: "Appointment scheduling is included in our Premium plan. Would you like to upgrade? You can do that at kincare360.com or I can tell you more about the Premium plan." Trial users get full access to try everything.
@@ -253,6 +258,22 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string, patien
           },
           {
             type: "function",
+            server: { url: "https://www.kincare360.com/api/set-reminder" },
+            function: {
+              name: "setReminder",
+              description: "Set a one-time reminder for the client. Lily will call them back at the specified time with the reminder message. Use for any reminder: take medication, call someone, do something, attend appointment, etc.",
+              parameters: {
+                type: "object",
+                required: ["reminderMessage", "reminderTime"],
+                properties: {
+                  reminderMessage: { type: "string", description: "What to remind the client about, e.g. 'take your evening medication' or 'call your daughter'" },
+                  reminderTime: { type: "string", description: "When to send the reminder, e.g. '6 PM', '3:30 PM', 'in 2 hours'" },
+                },
+              },
+            },
+          },
+          {
+            type: "function",
             server: { url: "https://www.kincare360.com/api/schedule-appointment" },
             function: {
               name: "callProviderForClient",
@@ -389,7 +410,7 @@ export async function POST(req: NextRequest) {
     if (patient) {
       const context = buildPatientContext(patient);
       const prompt = buildLilySystemPrompt(context);
-      const firstMessage = `Hi ${patient.firstName}! Good ${greeting}. This is Lily from KinCare360. How can I help you today?`;
+      const firstMessage = `Good ${greeting}, this is Lily from KinCare360. How are you doing today, ${patient.firstName}?`;
       console.log(`[vapi-lookup] Known patient: ${patient.firstName} ${patient.lastName} (${digits})`);
       return NextResponse.json(buildAssistantConfig(prompt, firstMessage, patient));
     }
