@@ -188,13 +188,13 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string) {
             server: { url: "https://www.kincare360.com/api/find-provider" },
             function: {
               name: "findLocalService",
-              description: "Search for local services near the client's home. ALWAYS pass their full home address as location.",
+              description: "Search for local services near the client's location. Always use their address from profile.",
               parameters: {
                 type: "object",
-                required: ["serviceType", "location"],
+                required: ["serviceType"],
                 properties: {
                   serviceType: { type: "string", description: "Type of service (e.g. pizza, plumber, cardiologist)" },
-                  location: { type: "string", description: "Client full home address from their profile. NEVER use a generic city name. Example: '2630 Home Avenue, Philadelphia PA 19152'" },
+                  location: { type: "string", description: "Client address. Default: Philadelphia PA" },
                 },
               },
             },
@@ -203,7 +203,7 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string) {
             type: "transferCall",
             function: {
               name: "callAndConnectProvider",
-              description: "Transfer the client directly to the chosen provider after they confirm.",
+              description: "Transfer the client directly to the chosen provider. After findLocalService returns results and the client picks one, use EXACTLY the phone number shown in the results.",
               parameters: {
                 type: "object",
                 required: ["providerName", "providerPhone"],
@@ -214,27 +214,8 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string) {
               },
             },
             destinations: [
-              { type: "server", url: "https://www.kincare360.com/api/vapi-transfer" },
+              { type: "number", number: "+12154648998", description: "Dynamic provider number" },
             ],
-          },
-          {
-            type: "function",
-            server: { url: "https://www.kincare360.com/api/vapi-update-patient" },
-            function: {
-              name: "updatePatientProfile",
-              description: "Update the client's profile when they request changes to their settings. Always confirm the new values with the client before calling this.",
-              parameters: {
-                type: "object",
-                properties: {
-                  medicationReminderTime: { type: "string", description: "Comma-separated reminder times in HH:MM 24h format, e.g. '09:00,14:00,20:00'" },
-                  gender: { type: "string", description: "Gender: male, female, non-binary, or other" },
-                  preferredCallTime: { type: "string", description: "Preferred daily check-in time in HH:MM 24h format, e.g. '10:00'" },
-                  checkInDays: { type: "string", description: "Comma-separated full day names, e.g. 'Monday,Wednesday,Friday'" },
-                  preferredLanguage: { type: "string", description: "Preferred language, e.g. 'Spanish', 'English'" },
-                  phone: { type: "string", description: "New phone number, digits only, e.g. '2675551234'" },
-                },
-              },
-            },
           },
         ],
       },
