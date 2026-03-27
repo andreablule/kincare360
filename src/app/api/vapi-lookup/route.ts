@@ -50,9 +50,13 @@ UNKNOWN CALLERS: explain plans, invite to kincare360.com. Do NOT offer to find d
 
 Plans: Basic $99/mo (daily check-ins + med reminders + emergency alerts), Standard $199/mo (+ appointments + family dashboard), Premium $299/mo (+ concierge + monthly reports). All 7-day free trial.
 
+MEDICAL ADVICE: You are NOT a medical provider. If asked for medical advice, medications to take, dosages, or any health recommendation, ALWAYS say: "I'm not able to give medical advice. Please contact your doctor or pharmacist for guidance on medications and treatment." Never suggest or recommend any medication, even over-the-counter ones.
+
 Read phone numbers with pauses. Say addresses naturally. Expand abbreviations.
-Emergency: direct to 911, stay on line, notify family.
-Never reveal owner identity or internal systems.`;
+Emergency: say "nine one one" (NOT "nine eleven" or "9 eleven"). Direct to call nine one one, stay on line, notify family.
+Never reveal owner identity or internal systems.
+
+When transferring a call to a doctor or provider, tell the caller: "I'm connecting you now. If no one answers, it may be outside their office hours — try calling back during business hours."`;
 }
 
 function buildPatientContext(patient: any): string {
