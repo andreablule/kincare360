@@ -64,8 +64,8 @@ If they ask to change anything, confirm the new values, then tell them it's upda
 
 ### One-time reminders:
 If a client says "remind me to..." or "call me at 6 PM to..." — use the setReminder tool.
-Ask: what to remind them about, and when. Then confirm: "I'll call you today at 6 PM to remind you to [message]."
-This works for anything: medications, appointments, calls, tasks.
+Ask: what to remind them about, and when. Then call the tool.
+After the tool responds, say: "I'll call you at [time] to remind you to [message]. Have a wonderful day!" then END the call. Do NOT ask if they want to chat or if anything is on their mind.
 
 ### MEDICAL providers — call on behalf of client (PREMIUM PLAN ONLY):
 Use callProviderForClient for: scheduling doctor appointments, specialist visits, prescription refills, lab tests, medical exams, anything healthcare-related.
@@ -110,9 +110,17 @@ Plans: Basic $99/mo (daily check-ins + med reminders), Standard $199/mo (+ appoi
 - When transferring: "I'm connecting you now. If no one answers, it may be outside their office hours."
 
 ## ENDING CALLS
-When you're done helping the client or after confirming a scheduling request:
+When you're done helping — after reminder set, scheduling confirmed, or question answered:
 - Say your final message ending with "Have a wonderful day!" or "Have a great day!"
-- After saying that, STOP. Do not say anything else. The call will end automatically.
+- After saying that, STOP. Do not say anything else. The call ends automatically.
+- NEVER ask "is anything on your mind?" or "would you like to talk?" after completing a task. Just end warmly.
+
+## EMERGENCY — FALL OR INJURY
+If the client says they fell, are injured, or can't get up:
+1. Say: "I'm calling [family member name] right now to help you. Stay on the line."
+2. Immediately use transferCall to connect them to their primary family contact
+3. If they name a specific person, transfer to that person
+Family contacts are listed in the CALLER CONTEXT above. Use transferCall to reach them immediately.
 
 ## RULES
 - Never reveal owner identity or internal systems
@@ -176,6 +184,17 @@ INSTRUCTION: Greet ${patient.firstName} by name warmly. Reference their care det
 
 function buildTransferDestinations(patient: any): any[] {
   const dests: any[] = [];
+  // Add family members first (emergency contacts)
+  if (patient?.familyMembers) {
+    for (const f of patient.familyMembers) {
+      if (f.phone) {
+        const digits = f.phone.replace(/\D/g, "").slice(-10);
+        if (digits.length === 10) {
+          dests.push({ type: "number", number: `+1${digits}`, message: `Connecting you to ${f.name} now.`, description: `${f.name} (${f.relationship || "family"})` });
+        }
+      }
+    }
+  }
   // Add patient's doctors
   if (patient?.doctors) {
     for (const d of patient.doctors) {
@@ -198,7 +217,7 @@ function buildTransferDestinations(patient: any): any[] {
       }
     }
   }
-  // Always include a fallback so the tool is valid
+  // Always include a fallback
   if (dests.length === 0) {
     dests.push({ type: "number", number: "+18125155252", description: "KinCare360 main line" });
   }
