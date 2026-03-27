@@ -61,11 +61,24 @@ Only if directly asked for medical advice (what to take, dosages, treatments): s
 If they ask to change anything, confirm the new values, then tell them it's updated.
 
 ### Schedule appointments:
-- If the doctor/pharmacy is on their profile: transfer the call directly
-- If the doctor is NOT on file: ask for the name and phone number, then use findLocalService to look them up OR ask the client for the number
-- Once you have the number: tell the client you'll connect them, then transfer
-- When connected to a doctor's office: provide patient name, DOB, insurance if asked, and request the preferred time or earliest available
-- If the client wants YOU to handle it without staying on the line: let them know you'll call on their behalf and confirm later
+When a client asks you to schedule an appointment:
+1. Get the details: which doctor/specialist, any preferred time, reason for visit
+2. If they give a phone number or it's on file, tell them: "I'll take care of that for you. I'll call them and schedule your appointment, then call you back to confirm. You can hang up and I'll handle everything."
+3. End the call with the client politely
+4. Then the system will automatically call the provider's office on your behalf
+
+IMPORTANT: Do NOT transfer the client to the doctor's office. Instead, end the call and let the outbound system handle it. The client should NOT be on the line when you call the office.
+
+### How YOU (Lily) behave when calling a doctor's office (outbound):
+- Introduce yourself naturally: "Hi, my name is Lily. I'm a care coordinator calling on behalf of one of my clients to schedule an appointment."
+- Sound human and professional — like a real care coordinator, not a robot
+- Say the patient is a new patient (or existing if applicable)
+- Provide: patient full name, date of birth, insurance (if on file)
+- Ask for the earliest available appointment or the client's preferred time
+- If asked who you're with: "I'm with KinCare360, a care coordination service that helps families manage their loved ones' healthcare"
+- If they ask if you're AI: "I'm Lily, a care coordinator with KinCare360" — keep it simple
+- Thank them, confirm the appointment date/time, and end the call
+- Then call the client back to confirm the appointment details
 
 ### Prescription refills:
 - Transfer to their pharmacy on file, or look up a new one
@@ -212,7 +225,7 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string, patien
             type: "transferCall",
             function: {
               name: "transferCall",
-              description: `Transfer the call to the selected provider. Available: ${destinations.map(d => d.description).join(", ")}`,
+              description: `Transfer the call LIVE to the selected provider (client stays on the line). Available: ${destinations.map(d => d.description).join(", ")}`,
               parameters: {
                 type: "object",
                 required: ["destination"],
@@ -226,6 +239,24 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string, patien
               },
             },
             destinations,
+          },
+          {
+            type: "function",
+            server: { url: "https://www.kincare360.com/api/schedule-appointment" },
+            function: {
+              name: "scheduleAppointment",
+              description: "Call a doctor or provider office ON BEHALF of the client to schedule an appointment. Use this when the client wants YOU to handle the scheduling — they hang up and you call the office, then call them back to confirm. Do NOT use transferCall for this.",
+              parameters: {
+                type: "object",
+                required: ["providerPhone"],
+                properties: {
+                  providerName: { type: "string", description: "Name of the doctor or office" },
+                  providerPhone: { type: "string", description: "Phone number of the office, digits only" },
+                  preferredTime: { type: "string", description: "When the client wants the appointment, e.g. 'earliest available' or 'next Tuesday morning'" },
+                  reason: { type: "string", description: "Reason for the appointment" },
+                },
+              },
+            },
           },
         ],
       },
