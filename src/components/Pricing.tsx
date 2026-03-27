@@ -19,8 +19,8 @@ const individualPlans = [
         detail: "Lily calls at scheduled medication times to remind your loved one to take their medications — up to twice per day.",
       },
       {
-        text: "24/7 access to Lily (call anytime)",
-        detail: "Your loved one can call Lily any time of day or night — whether they need someone to talk to, have a question, or need help.",
+        text: "Family dashboard (up to 2 members)",
+        detail: "Up to 2 family members can view check-in history, medication status, and care notes through a shared dashboard — updated after every call.",
       },
       {
         text: "Emergency detection and family alerts",
@@ -41,15 +41,15 @@ const individualPlans = [
     features: [
       {
         text: "Everything in Essential",
-        detail: "All daily check-in calls, medication reminders, 24/7 Lily access, and emergency alerts included.",
+        detail: "All daily check-in calls, medication reminders, family dashboard, and emergency alerts included.",
       },
       {
         text: "Unlimited medication reminders",
         detail: "No limit on daily medication reminders — Lily calls as many times as needed throughout the day to match your loved one's medication schedule.",
       },
       {
-        text: "Family dashboard access",
-        detail: "All family members get access to a shared dashboard showing daily call summaries, medication status, mood trends, and care notes — updated after every call.",
+        text: "24/7 access to Lily (call anytime)",
+        detail: "Your loved one can call Lily any time of day or night — whether they need someone to talk to, have a question, or need help.",
       },
       {
         text: "Appointment scheduling (Lily calls providers)",
@@ -121,8 +121,8 @@ const familyPlans = [
         detail: "Each parent gets their own medication reminder schedule — up to twice per day per parent.",
       },
       {
-        text: "24/7 access to Lily + emergency alerts",
-        detail: "Both parents can call Lily anytime. Emergency detection and family alerts active for both.",
+        text: "Family dashboard (up to 2 members) + emergency alerts",
+        detail: "Up to 2 family members can view check-in history and care notes for both parents. Emergency detection and family alerts active for both.",
       },
     ],
     dark: false,
