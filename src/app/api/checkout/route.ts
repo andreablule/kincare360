@@ -6,16 +6,22 @@ const SK = process.env.STRIPE_SECRET_KEY!;
 
 // Hardcoded price IDs — these are the live Stripe prices
 const PRICE_MAP: Record<string, string> = {
-  starter: 'price_1TEPOcJlUr03cRD7vm4xB09U',     // $99/mo
-  essential: 'price_1TEPOcJlUr03cRD7ypzyYYif',    // $199/mo
-  premium: 'price_1TEPOcJlUr03cRD7tVv6DDjY',      // $299/mo
+  essential: 'price_1TFgeLJlUr03cRD7PP0gW8gW',         // $50/mo
+  plus: 'price_1TFgeMJlUr03cRD7fTOu4j0y',              // $80/mo
+  complete: 'price_1TFgeOJlUr03cRD7Mli4BYhX',           // $110/mo
+  essential_family: 'price_1TFgePJlUr03cRD7o3hb9ZGN',   // $75/mo
+  plus_family: 'price_1TFgeRJlUr03cRD7OIIRu8kg',        // $130/mo
+  complete_family: 'price_1TFgeSJlUr03cRD7BAJ0XDzT',    // $180/mo
 };
 
 // Map price IDs back to plan names for DB storage
 const PLAN_NAME_MAP: Record<string, string> = {
-  starter: 'BASIC',
-  essential: 'STANDARD',
-  premium: 'PREMIUM',
+  essential: 'ESSENTIAL',
+  plus: 'PLUS',
+  complete: 'COMPLETE',
+  essential_family: 'ESSENTIAL_FAMILY',
+  plus_family: 'PLUS_FAMILY',
+  complete_family: 'COMPLETE_FAMILY',
 };
 
 async function stripeAPI(path: string, body: Record<string, string>) {

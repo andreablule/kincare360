@@ -5,8 +5,9 @@ import { useState } from "react";
 
 const services = [
   "Care Consultation (Free)",
-  "Essential Plan - $299/mo",
-  "Premium Plan - $349/mo",
+  "Essential Plan - $50/mo",
+  "Plus Plan - $80/mo",
+  "Complete Plan - $110/mo",
   "Medication Reminder Setup",
   "Family Dashboard Setup",
 ];

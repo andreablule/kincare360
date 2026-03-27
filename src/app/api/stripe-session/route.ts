@@ -20,9 +20,12 @@ export async function GET(req: NextRequest) {
     if (session.line_items || session.subscription) {
       // Simple mapping based on amount
       const amount = session.amount_total;
-      if (amount <= 9900) plan = 'BASIC';
-      else if (amount <= 19900) plan = 'STANDARD';
-      else plan = 'PREMIUM';
+      if (amount <= 5000) plan = 'ESSENTIAL';
+      else if (amount <= 7500) plan = 'ESSENTIAL_FAMILY';
+      else if (amount <= 8000) plan = 'PLUS';
+      else if (amount <= 11000) plan = 'COMPLETE';
+      else if (amount <= 13000) plan = 'PLUS_FAMILY';
+      else plan = 'COMPLETE_FAMILY';
     }
 
     return NextResponse.json({

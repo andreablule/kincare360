@@ -93,11 +93,14 @@ async function sendWelcomeEmail(to: string, customerName: string, trialEnd: stri
 // Map Stripe price IDs to plan names
 function planFromPriceId(priceId: string): string {
   const map: Record<string, string> = {
-    'price_1TEPOcJlUr03cRD7vm4xB09U': 'BASIC',
-    'price_1TEPOcJlUr03cRD7ypzyYYif': 'STANDARD',
-    'price_1TEPOcJlUr03cRD7tVv6DDjY': 'PREMIUM',
+    'price_1TFgeLJlUr03cRD7PP0gW8gW': 'ESSENTIAL',
+    'price_1TFgeMJlUr03cRD7fTOu4j0y': 'PLUS',
+    'price_1TFgeOJlUr03cRD7Mli4BYhX': 'COMPLETE',
+    'price_1TFgePJlUr03cRD7o3hb9ZGN': 'ESSENTIAL_FAMILY',
+    'price_1TFgeRJlUr03cRD7OIIRu8kg': 'PLUS_FAMILY',
+    'price_1TFgeSJlUr03cRD7BAJ0XDzT': 'COMPLETE_FAMILY',
   };
-  return map[priceId] || 'BASIC';
+  return map[priceId] || 'ESSENTIAL';
 }
 
 // Real Stripe webhook handler (called by Stripe with Stripe-Signature header)
@@ -161,7 +164,7 @@ async function handleStripeEvent(req: NextRequest): Promise<NextResponse> {
           await prisma.user.update({
             where: { id: userId },
             data: {
-              plan: plan || 'BASIC',
+              plan: plan || 'ESSENTIAL',
               subscriptionStatus,
               stripeCustomerId: stripeCustomerId || undefined,
             },
@@ -270,7 +273,7 @@ export async function POST(req: NextRequest) {
       await prisma.user.update({
         where: { id: metadataUserId },
         data: {
-          plan: metadataPlan || 'BASIC',
+          plan: metadataPlan || 'ESSENTIAL',
           subscriptionStatus,
           stripeCustomerId: stripeCustomerId || undefined,
         },

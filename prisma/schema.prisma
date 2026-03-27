@@ -15,7 +15,7 @@ model User {
   role               String    @default("CLIENT") // CLIENT | MANAGER | FAMILY | ADMIN
   stripeCustomerId   String?
   subscriptionStatus String?
-  plan               String?   // BASIC | STANDARD | PREMIUM
+  plan               String?   // ESSENTIAL | PLUS | COMPLETE | ESSENTIAL_FAMILY | PLUS_FAMILY | COMPLETE_FAMILY
   inviteToken        String?
   inviteExpiry       DateTime?
   patientId          String?   // For FAMILY users — direct link to their patient
@@ -83,6 +83,7 @@ model Medication {
   dosage            String?
   frequency         String?
   instructions      String?
+  reminderTime      String?  // HH:MM 24-hour format, e.g. "08:00"
   lastRefillDate    DateTime?
   refillIntervalDays Int?
   pharmacyName      String?

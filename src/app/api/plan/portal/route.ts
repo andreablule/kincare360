@@ -7,15 +7,21 @@ const SK = process.env.STRIPE_SECRET_KEY!;
 
 // Map plan name -> Stripe price ID
 const PRICE_MAP: Record<string, string> = {
-  basic:    process.env.STRIPE_PRICE_BASIC    || "price_1TEPOcJlUr03cRD7vm4xB09U",
-  standard: process.env.STRIPE_PRICE_STANDARD || "price_1TEPOcJlUr03cRD7ypzyYYif",
-  premium:  process.env.STRIPE_PRICE_PREMIUM  || "price_1TEPOcJlUr03cRD7tVv6DDjY",
+  essential:       "price_1TFgeLJlUr03cRD7PP0gW8gW",
+  plus:            "price_1TFgeMJlUr03cRD7fTOu4j0y",
+  complete:        "price_1TFgeOJlUr03cRD7Mli4BYhX",
+  essential_family:"price_1TFgePJlUr03cRD7o3hb9ZGN",
+  plus_family:     "price_1TFgeRJlUr03cRD7OIIRu8kg",
+  complete_family: "price_1TFgeSJlUr03cRD7BAJ0XDzT",
 };
 
 const PLAN_KEY_MAP: Record<string, string> = {
-  basic: "BASIC",
-  standard: "STANDARD",
-  premium: "PREMIUM",
+  essential: "ESSENTIAL",
+  plus: "PLUS",
+  complete: "COMPLETE",
+  essential_family: "ESSENTIAL_FAMILY",
+  plus_family: "PLUS_FAMILY",
+  complete_family: "COMPLETE_FAMILY",
 };
 
 async function stripeAPI(path: string, body: Record<string, string>) {
@@ -44,8 +50,8 @@ export async function POST(req: Request) {
   const body = await req.json().catch(() => ({}));
   const action = body.action || "change"; // "change" | "cancel"
   const targetPlan = (body.plan || "standard").toLowerCase();
-  const priceId = PRICE_MAP[targetPlan] || PRICE_MAP.standard;
-  const planKey = PLAN_KEY_MAP[targetPlan] || "STANDARD";
+  const priceId = PRICE_MAP[targetPlan] || PRICE_MAP.plus;
+  const planKey = PLAN_KEY_MAP[targetPlan] || "PLUS";
 
   const baseUrl = process.env.NEXTAUTH_URL || "https://kincare360.com";
 

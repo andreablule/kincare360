@@ -4,42 +4,42 @@ import { useEffect, useState } from "react";
 
 const PLANS = [
   {
-    key: "BASIC",
-    stripeKey: "basic",
-    name: "Basic",
-    price: "$99/mo",
+    key: "ESSENTIAL",
+    stripeKey: "essential",
+    name: "Essential",
+    price: "$50/mo",
     features: [
       "Daily wellness check-in calls",
-      "Medication reminder calls (per your schedule)",
-      "Weekly family update",
-      "Emergency escalation protocol",
+      "Medication reminders (up to 2x/day)",
+      "24/7 access to Lily (call anytime)",
+      "Emergency detection and family alerts",
     ],
   },
   {
-    key: "STANDARD",
-    stripeKey: "standard",
-    name: "Standard",
-    price: "$199/mo",
+    key: "PLUS",
+    stripeKey: "plus",
+    name: "Plus",
+    price: "$80/mo",
     popular: true,
     features: [
-      "Everything in Basic",
-      "Appointment scheduling & coordination",
-      "Prescription refill reminders",
-      "Family dashboard",
-      "Bi-weekly family call",
+      "Everything in Essential",
+      "Unlimited medication reminders",
+      "Family dashboard access",
+      "Appointment scheduling (Lily calls providers)",
+      "Weekly care summaries",
     ],
   },
   {
-    key: "PREMIUM",
-    stripeKey: "premium",
-    name: "Premium",
-    price: "$299/mo",
+    key: "COMPLETE",
+    stripeKey: "complete",
+    name: "Complete",
+    price: "$110/mo",
     features: [
-      "Everything in Standard",
-      "Priority same-day response",
-      "Full family dashboard",
-      "Monthly care report",
-      "Doctor & pharmacy liaison",
+      "Everything in Plus",
+      "Full concierge service (Lily handles ANY call)",
+      "Detailed weekly care reports",
+      "Priority support",
+      "Custom check-in scheduling",
     ],
   },
 ];
@@ -118,8 +118,8 @@ export default function PlanPage() {
             </p>
             <div className="bg-blue-50 text-blue-700 rounded-xl px-4 py-3 text-sm mb-5">
               {status === "trialing"
-                ? "🎁 You're on a free trial — no charge until your trial ends."
-                : "💡 No immediate charge. Changes apply at next billing cycle."}
+                ? "You're on a free trial — no charge until your trial ends."
+                : "No immediate charge. Changes apply at next billing cycle."}
             </div>
             <div className="flex gap-3">
               <button onClick={() => setShowSwitchConfirm(null)}
@@ -159,7 +159,7 @@ export default function PlanPage() {
 
         {status === "trialing" && trialEnd && (
           <div className="mt-3 bg-blue-50 text-blue-700 rounded-xl px-4 py-2.5 text-sm">
-            🎁 Free trial — <strong>{Math.max(0, Math.ceil((new Date(trialEnd).getTime() - Date.now()) / 86400000))} days remaining</strong> (ends {new Date(trialEnd).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}). No charge until then — cancel anytime.
+            Free trial — <strong>{Math.max(0, Math.ceil((new Date(trialEnd).getTime() - Date.now()) / 86400000))} days remaining</strong> (ends {new Date(trialEnd).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}). No charge until then — cancel anytime.
           </div>
         )}
 

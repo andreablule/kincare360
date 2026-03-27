@@ -2,20 +2,12 @@
 
 import { useState } from "react";
 
-function CheckoutButton({ href, className, children }: { href: string; className: string; children: React.ReactNode }) {
-  return (
-    <a href={href} className={className}>
-      {children}
-    </a>
-  );
-}
-
-const plans = [
+const individualPlans = [
   {
-    key: "basic",
+    key: "essential",
     label: "Getting Started",
-    name: "Basic",
-    price: "$99",
+    name: "Essential",
+    price: "$50",
     tagline: "Best for families just getting started",
     features: [
       {
@@ -23,16 +15,16 @@ const plans = [
         detail: "Lily calls your loved one every day at their preferred time to check on their mood, health, and how they're feeling.",
       },
       {
-        text: "Medication reminder calls",
-        detail: "Lily calls at each scheduled medication time to remind your loved one to take their medications. Multiple calls per day based on their schedule.",
+        text: "Medication reminders (up to 2x/day)",
+        detail: "Lily calls at scheduled medication times to remind your loved one to take their medications — up to twice per day.",
       },
       {
-        text: "Weekly family update",
-        detail: "Every week, family members receive an automated summary of how their loved one has been doing — mood trends, medications, any concerns flagged by Lily.",
+        text: "24/7 access to Lily (call anytime)",
+        detail: "Your loved one can call Lily any time of day or night — whether they need someone to talk to, have a question, or need help.",
       },
       {
-        text: "Emergency escalation",
-        detail: "If your loved one reports an emergency, falls, or serious concern during a call, Lily immediately sends an urgent SMS alert to all family members and advises calling 911.",
+        text: "Emergency detection and family alerts",
+        detail: "If your loved one reports a fall, injury, or emergency during a call, Lily immediately sends SMS and email alerts to all family members.",
       },
     ],
     dark: false,
@@ -41,27 +33,31 @@ const plans = [
     href: "/register",
   },
   {
-    key: "standard",
+    key: "plus",
     label: "Best Value",
-    name: "Standard",
-    price: "$199",
+    name: "Plus",
+    price: "$80",
     tagline: "Full care coordination for your family",
     features: [
       {
-        text: "Everything in Basic",
-        detail: "All daily check-in calls, medication reminders, weekly updates, and emergency escalation included.",
+        text: "Everything in Essential",
+        detail: "All daily check-in calls, medication reminders, 24/7 Lily access, and emergency alerts included.",
       },
       {
-        text: "Appointment scheduling & coordination",
-        detail: "Your loved one or family can request a doctor appointment through the dashboard or by asking Lily by phone. Lily handles the scheduling, confirms the appointment, and sends reminders.",
-      },
-      {
-        text: "Prescription refill reminders",
-        detail: "Lily tracks when medications are due for refill and proactively reminds your loved one — and notifies family members — 3 days before they run out.",
+        text: "Unlimited medication reminders",
+        detail: "No limit on daily medication reminders — Lily calls as many times as needed throughout the day to match your loved one's medication schedule.",
       },
       {
         text: "Family dashboard access",
         detail: "All family members get access to a shared dashboard showing daily call summaries, medication status, mood trends, and care notes — updated after every call.",
+      },
+      {
+        text: "Appointment scheduling (Lily calls providers)",
+        detail: "Your loved one or family can request a doctor appointment. Lily calls the provider's office, schedules it, and confirms the details back.",
+      },
+      {
+        text: "Weekly care summaries",
+        detail: "Every week, family members receive an automated summary of how their loved one has been doing — mood trends, medications, appointments, and any concerns.",
       },
     ],
     dark: false,
@@ -70,31 +66,121 @@ const plans = [
     href: "/register",
   },
   {
-    key: "premium",
+    key: "complete",
     label: "Full Service",
-    name: "Premium",
-    price: "$299",
-    tagline: "Complete hands-off care for complex needs",
+    name: "Complete",
+    price: "$110",
+    tagline: "Complete hands-off care with full concierge",
     features: [
       {
-        text: "Everything in Standard",
-        detail: "All check-ins, reminders, scheduling, refill tracking, and family dashboard included.",
+        text: "Everything in Plus",
+        detail: "All check-ins, unlimited reminders, scheduling, family dashboard, and weekly summaries included.",
       },
       {
-        text: "Healthcare coordination",
-        detail: "Lily calls doctor offices, specialist clinics, and pharmacies directly on your loved one's behalf — scheduling appointments, requesting prescription refills, following up on lab results or imaging. Just ask Lily by phone or submit a request in the dashboard.",
+        text: "Full concierge service (Lily handles ANY call)",
+        detail: "Need a plumber, pharmacy refill, restaurant reservation, or any service? Your loved one just asks Lily. She finds the provider, makes the call, and handles everything.",
       },
       {
-        text: "Local service concierge",
-        detail: "Need a plumber, electrician, pizza delivery, or any local service? Your loved one just calls Lily. She searches nearby businesses, calls them, and connects your loved one directly — so they can speak with the provider, ask about pricing, and decide. Lily remembers who was contacted and tries a different provider if needed.",
+        text: "Detailed weekly care reports",
+        detail: "Comprehensive weekly reports delivered to all family members: wellness trends, mood analysis, medication adherence, appointments, services used, and any concerns.",
       },
       {
-        text: "Monthly care summary report",
-        detail: "A detailed monthly report delivered to all family members: wellness trends, medications, appointments completed, services used, and any concerns — everything in one place.",
+        text: "Priority support",
+        detail: "Priority response times and dedicated support for any questions or issues with your loved one's care.",
       },
       {
-        text: "Full family dashboard",
-        detail: "Unlimited family members can be invited to the dashboard. Each gets their own login with role-based access. Managers can update care records and submit requests.",
+        text: "Custom check-in scheduling",
+        detail: "Fully customizable check-in schedule — choose specific days, times, and frequency that work best for your loved one's routine.",
+      },
+    ],
+    dark: true,
+    popular: false,
+    cta: "Start Free Trial",
+    href: "/register",
+  },
+];
+
+const familyPlans = [
+  {
+    key: "essential_family",
+    label: "Getting Started",
+    name: "Essential Family",
+    price: "$75",
+    tagline: "Care for both parents under one plan",
+    features: [
+      {
+        text: "Everything in Essential — for 2 parents",
+        detail: "Each parent gets their own personalized daily check-ins and medication reminders. Mom might get her call at 9 AM and Dad at 10 AM — fully individualized.",
+      },
+      {
+        text: "Daily wellness check-in calls (each parent)",
+        detail: "Lily calls each parent separately at their preferred time to check on mood, health, and how they're feeling.",
+      },
+      {
+        text: "Medication reminders (up to 2x/day each)",
+        detail: "Each parent gets their own medication reminder schedule — up to twice per day per parent.",
+      },
+      {
+        text: "24/7 access to Lily + emergency alerts",
+        detail: "Both parents can call Lily anytime. Emergency detection and family alerts active for both.",
+      },
+    ],
+    dark: false,
+    popular: false,
+    cta: "Start Free Trial",
+    href: "/register",
+  },
+  {
+    key: "plus_family",
+    label: "Best Value",
+    name: "Plus Family",
+    price: "$130",
+    tagline: "Full coordination for both parents",
+    features: [
+      {
+        text: "Everything in Plus — for 2 parents",
+        detail: "All Plus features for both parents: unlimited reminders, dashboard, appointment scheduling, and weekly summaries.",
+      },
+      {
+        text: "Unlimited medication reminders (each parent)",
+        detail: "No limits — each parent gets as many daily medication reminders as they need.",
+      },
+      {
+        text: "Family dashboard for both parents",
+        detail: "See check-in history, medication tracking, and care notes for both parents in one dashboard.",
+      },
+      {
+        text: "Appointment scheduling + weekly summaries",
+        detail: "Lily schedules appointments for both parents and sends combined weekly care summaries to the family.",
+      },
+    ],
+    dark: false,
+    popular: true,
+    cta: "Start Free Trial",
+    href: "/register",
+  },
+  {
+    key: "complete_family",
+    label: "Full Service",
+    name: "Complete Family",
+    price: "$180",
+    tagline: "Complete concierge care for both parents",
+    features: [
+      {
+        text: "Everything in Complete — for 2 parents",
+        detail: "Full concierge service for both parents. Each gets individualized care, detailed reports, and priority support.",
+      },
+      {
+        text: "Full concierge for each parent",
+        detail: "Lily handles any call for either parent — doctors, pharmacies, restaurants, services, anything they need.",
+      },
+      {
+        text: "Detailed weekly reports (per parent)",
+        detail: "Separate detailed weekly care reports for each parent, plus a combined family overview.",
+      },
+      {
+        text: "Priority support + custom scheduling",
+        detail: "Priority response and fully customizable check-in schedules for both parents.",
       },
     ],
     dark: true,
@@ -106,6 +192,9 @@ const plans = [
 
 export default function Pricing() {
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [tab, setTab] = useState<"individual" | "family">("individual");
+
+  const plans = tab === "individual" ? individualPlans : familyPlans;
 
   return (
     <section id="pricing" className="bg-white py-16 md:py-24">
@@ -113,11 +202,34 @@ export default function Pricing() {
         <h2 className="text-3xl md:text-4xl font-bold text-navy text-center mb-4">
           Simple, transparent pricing
         </h2>
-        <p className="text-gray-500 text-center mb-2">Cancel anytime. No contracts.</p>
+        <p className="text-gray-500 text-center mb-4">Cancel anytime. No contracts.</p>
+
+        {/* Individual / Family toggle */}
+        <div className="flex justify-center mb-6">
+          <div className="inline-flex bg-gray-100 rounded-full p-1">
+            <button
+              onClick={() => setTab("individual")}
+              className={`px-6 py-2 rounded-full text-sm font-semibold transition-colors ${
+                tab === "individual" ? "bg-white text-navy shadow-sm" : "text-gray-500 hover:text-navy"
+              }`}
+            >
+              Individual
+            </button>
+            <button
+              onClick={() => setTab("family")}
+              className={`px-6 py-2 rounded-full text-sm font-semibold transition-colors ${
+                tab === "family" ? "bg-white text-navy shadow-sm" : "text-gray-500 hover:text-navy"
+              }`}
+            >
+              Family (2 parents)
+            </button>
+          </div>
+        </div>
+
         <div className="flex flex-wrap justify-center gap-3 mb-12">
-          <span className="bg-teal/10 text-teal text-sm font-semibold px-4 py-2 rounded-full">🎁 7-day free trial on all plans — No charge until day 8</span>
-          <span className="bg-gray-100 text-gray-600 text-sm font-semibold px-4 py-2 rounded-full">✓ Cancel anytime</span>
-          <span className="bg-gray-100 text-gray-600 text-sm font-semibold px-4 py-2 rounded-full">✓ No contracts</span>
+          <span className="bg-teal/10 text-teal text-sm font-semibold px-4 py-2 rounded-full">7-day free trial on all plans — No charge until day 8</span>
+          <span className="bg-gray-100 text-gray-600 text-sm font-semibold px-4 py-2 rounded-full">Cancel anytime</span>
+          <span className="bg-gray-100 text-gray-600 text-sm font-semibold px-4 py-2 rounded-full">No contracts</span>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
@@ -201,7 +313,7 @@ export default function Pricing() {
         <p className="text-center text-sm text-gray-400 mt-8">
           Questions about which plan is right for you?{" "}
           <a href="tel:+18125155252" className="text-teal hover:underline">Call Lily at (812) 515-5252</a>
-          {" "}— she'll help you choose.
+          {" "}— she&apos;ll help you choose.
         </p>
       </div>
     </section>

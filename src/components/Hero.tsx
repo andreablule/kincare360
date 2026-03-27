@@ -10,7 +10,7 @@ export default function Hero() {
             <p className="mt-6 text-lg text-gray-600 leading-relaxed max-w-lg">
               KinCare360&apos;s AI concierge Lily provides daily check-ins, medication reminders, and
               appointment coordination for your aging parent — 24/7, every single day.
-              Automated care. Total peace of mind. Starting at $99/month.
+              Automated care. Total peace of mind. Starting at $50/month.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
               <a
@@ -52,7 +52,7 @@ export default function Hero() {
               {/* Floating badge top right */}
               <div className="absolute -top-4 -right-4 bg-teal text-white rounded-2xl shadow-lg px-4 py-3 text-center">
                 <p className="text-xs font-medium opacity-80">Starting at</p>
-                <p className="text-xl font-extrabold">$99<span className="text-sm font-normal">/mo</span></p>
+                <p className="text-xl font-extrabold">$50<span className="text-sm font-normal">/mo</span></p>
               </div>
             </div>
           </div>
