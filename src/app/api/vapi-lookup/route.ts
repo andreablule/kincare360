@@ -403,6 +403,41 @@ INSTRUCTION: Greet ${familyMember.name} by name. They are calling about their lo
       return NextResponse.json(buildAssistantConfig(prompt, firstMessage, familyMember.patient));
     }
 
+    // Check if this is a doctor's office calling back about a pending appointment
+    if (digits) {
+      const pendingAppt = await prisma.serviceRequest.findFirst({
+        where: {
+          status: "IN_PROGRESS",
+          type: "APPOINTMENT",
+          description: { contains: digits },
+        },
+        include: { patient: true },
+        orderBy: { createdAt: "desc" },
+      });
+
+      if (pendingAppt && pendingAppt.patient) {
+        const pt = pendingAppt.patient;
+        const officeContext = `INCOMING CALL FROM DOCTOR'S OFFICE — This is likely a callback from a provider about a pending appointment.
+
+Patient: ${pt.firstName} ${pt.lastName}, DOB: ${pt.dob || "on file"}
+Insurance: ${pt.insuranceCompany || "patient will bring card"}${pt.insuranceMemberId ? `, member ID ${pt.insuranceMemberId}` : ""}
+
+You are Lily, a care coordinator with KinCare360. This office is calling you back about scheduling an appointment for your client ${pt.firstName}.
+
+HOW TO ACT:
+- Answer professionally: "Hi, this is Lily with KinCare360. Thank you for calling back!"
+- Provide patient name and DOB
+- Schedule the appointment — confirm date, time, doctor, any prep
+- If they need insurance info, provide it
+- Thank them
+- After the call, you'll need to call ${pt.firstName} to confirm the appointment`;
+        const prompt = buildLilySystemPrompt(officeContext);
+        const firstMessage = `Hi, this is Lily with KinCare360. Thank you for calling back!`;
+        console.log(`[vapi-lookup] Doctor office callback for ${pt.firstName} from ${digits}`);
+        return NextResponse.json(buildAssistantConfig(prompt, firstMessage));
+      }
+    }
+
     // Unknown caller — new prospect
     const context =
       "UNKNOWN CALLER — Not an existing client. Treat as a new prospective client. Explain KinCare360 services and pricing warmly, and offer to help them get started with the 7-day free trial.";
