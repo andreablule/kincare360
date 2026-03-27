@@ -169,6 +169,10 @@ export async function POST(req: NextRequest) {
             let firstMsg: string;
 
             if (officeConfirmed) {
+              // Mark appointment as DONE in DB
+              await prisma.serviceRequest.update({ where: { id: pendingAppt.id }, data: { status: "DONE" } });
+              console.log(`[call-logs] Appointment ${pendingAppt.id} marked as DONE`);
+              
               callbackPrompt = `You are Lily from KinCare360, calling ${pt.firstName} back. You SUCCESSFULLY scheduled their appointment with ${providerLabel}. Here is exactly what happened:\n\n${summary}\n\nTell ${pt.firstName} the EXACT date, time, and doctor confirmed by the office. Only share details that were actually confirmed. Ask if they need anything else.`;
               firstMsg = `Hi ${pt.firstName}, this is Lily from KinCare360. Great news — I was able to schedule your appointment with ${providerLabel}!`;
             } else if (askedToCallBack) {

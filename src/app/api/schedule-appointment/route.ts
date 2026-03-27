@@ -150,16 +150,26 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Store pending appointment
+    // Store pending appointment — check for existing to prevent duplicates
     if (patient) {
-      await prisma.serviceRequest.create({
-        data: {
+      const existing = await prisma.serviceRequest.findFirst({
+        where: {
           patientId: patient.id,
           type: "APPOINTMENT",
           status: "IN_PROGRESS",
-          description: `DATE: ${preferredTime || "earliest available"}\nDOCTOR: ${providerName || "New doctor"}\nDOCTOR PHONE: ${providerDigits}\nNOTES: ${reason || "General appointment"}\nCALLBACK: ${callbackPhone}\nATTEMPTS: 1`,
+          description: { contains: providerDigits },
         },
       });
+      if (!existing) {
+        await prisma.serviceRequest.create({
+          data: {
+            patientId: patient.id,
+            type: "APPOINTMENT",
+            status: "IN_PROGRESS",
+            description: `DATE: ${preferredTime || "earliest available"}\nDOCTOR: ${providerName || "New doctor"}\nDOCTOR PHONE: ${providerDigits}\nNOTES: ${reason || "General appointment"}\nCALLBACK: ${callbackPhone}`,
+          },
+        });
+      }
     }
 
     const assistant = buildOutboundAssistant(
@@ -182,12 +192,12 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Store call ID in the service request for callback tracking
+    // Store outbound call ID for callback tracking
     if (patient) {
       await prisma.serviceRequest.updateMany({
-        where: { patientId: patient.id, status: "IN_PROGRESS", type: "APPOINTMENT" },
+        where: { patientId: patient.id, status: "IN_PROGRESS", type: "APPOINTMENT", description: { contains: providerDigits } },
         data: {
-          description: `DATE: ${preferredTime || "earliest available"}\nDOCTOR: ${providerName || "New doctor"}\nDOCTOR PHONE: ${providerDigits}\nNOTES: ${reason || "General appointment"}\nCALLBACK: ${callbackPhone}\nOUTBOUND_CALL_ID: ${result.data.id}\nATTEMPTS: 1`,
+          description: `DATE: ${preferredTime || "earliest available"}\nDOCTOR: ${providerName || "New doctor"}\nDOCTOR PHONE: ${providerDigits}\nNOTES: ${reason || "General appointment"}\nCALLBACK: ${callbackPhone}\nOUTBOUND_CALL_ID: ${result.data.id}`,
         },
       });
     }
