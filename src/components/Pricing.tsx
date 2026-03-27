@@ -96,10 +96,6 @@ const individualPlans = [
         text: "Detailed weekly care reports",
         detail: "Comprehensive weekly reports delivered to all family members: wellness trends, mood analysis, medication adherence, appointments, services used, and any concerns.",
       },
-      {
-        text: "Priority support",
-        detail: "Priority response times and dedicated support for any questions or issues with your loved one's care.",
-      },
     ],
     dark: true,
     popular: false,
@@ -180,7 +176,7 @@ const familyPlans = [
     features: [
       {
         text: "Everything in Complete — for 2 parents",
-        detail: "Full concierge for both parents. Each gets individualized care, medical scheduling, reminders, detailed reports, and priority support.",
+        detail: "Full concierge for both parents. Each gets individualized care, medical scheduling, reminders, and detailed reports.",
       },
       {
         text: "Medical appointment scheduling (each parent)",
@@ -193,10 +189,6 @@ const familyPlans = [
       {
         text: "Detailed weekly reports (per parent)",
         detail: "Separate detailed weekly care reports for each parent, plus a combined family overview.",
-      },
-      {
-        text: "Priority support",
-        detail: "Priority response and dedicated support for both parents.",
       },
     ],
     dark: true,

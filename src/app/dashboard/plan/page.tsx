@@ -38,7 +38,6 @@ const PLANS = [
       "Everything in Plus",
       "Full concierge service (Lily handles ANY call)",
       "Detailed weekly care reports",
-      "Priority support",
       "Custom check-in scheduling",
     ],
   },

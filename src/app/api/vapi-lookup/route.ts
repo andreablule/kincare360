@@ -447,6 +447,10 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const messageType = body.message?.type || body.type || "";
 
+    // Check for callType from serverUrl query param (set by send-reminders)
+    const url = new URL(req.url);
+    const callType = url.searchParams.get('callType'); // 'checkin' | 'medication' | null
+
     // Extract caller phone number from various VAPI event formats
     const callerPhone =
       body.message?.call?.customer?.number ||
@@ -541,9 +545,40 @@ export async function POST(req: NextRequest) {
 
     if (patient) {
       const context = buildPatientContext(patient);
-      const prompt = buildLilySystemPrompt(context);
-      const firstMessage = `Good ${greeting}, this is Lily from KinCare360. How are you doing today, ${patient.firstName}?`;
-      console.log(`[vapi-lookup] Known patient: ${patient.firstName} ${patient.lastName} (${digits})`);
+      let prompt: string;
+      let firstMessage: string;
+
+      if (callType === 'checkin') {
+        // Daily check-in call — add check-in flow to prompt
+        prompt = buildLilySystemPrompt(context + `
+
+## DAILY CHECK-IN FLOW
+When this is a scheduled daily check-in call, follow this conversation flow naturally:
+1. Ask how they are feeling today — listen carefully to their response
+2. Ask about any pain or discomfort — 'Are you experiencing any pain or discomfort today?'
+3. Ask about medications — 'Have you taken your medications today?'
+4. Ask about eating — 'Have you eaten today? What did you have?'
+5. Ask if they have any concerns or need anything — 'Is there anything else on your mind or anything you need help with?'
+
+Be natural and conversational — these are NOT rapid-fire questions. Listen to each answer, respond with empathy, follow up on anything concerning. If they mention pain, ask where and how bad (1-10). If they have not eaten, gently encourage them. If they missed medications, remind them which ones.
+
+After covering all topics, end warmly: 'It was wonderful talking with you. Have a wonderful day!'
+
+If at ANY point they mention a fall, injury, chest pain, or emergency — IMMEDIATELY trigger the emergency protocol (sendEmergencyAlert + transfer to family).`);
+        firstMessage = `Good ${greeting}, ${patient.firstName}! This is Lily from KinCare360 with your daily check-in. How are you feeling today?`;
+        console.log(`[vapi-lookup] Check-in call for: ${patient.firstName} ${patient.lastName} (${digits})`);
+      } else if (callType === 'medication') {
+        // Medication reminder call
+        prompt = buildLilySystemPrompt(context);
+        firstMessage = `Hi ${patient.firstName || 'there'}! This is Lily from KinCare360. This is your medication reminder — it is time to take your medications. Have you taken them yet?`;
+        console.log(`[vapi-lookup] Medication reminder for: ${patient.firstName} ${patient.lastName} (${digits})`);
+      } else {
+        // Normal inbound call
+        prompt = buildLilySystemPrompt(context);
+        firstMessage = `Good ${greeting}, this is Lily from KinCare360. How are you doing today, ${patient.firstName}?`;
+        console.log(`[vapi-lookup] Known patient: ${patient.firstName} ${patient.lastName} (${digits})`);
+      }
+
       return NextResponse.json(buildAssistantConfig(prompt, firstMessage, patient));
     }
 
