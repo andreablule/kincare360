@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-const PLANS = [
+const INDIVIDUAL_PLANS = [
   {
     key: "ESSENTIAL",
     stripeKey: "essential",
@@ -44,6 +44,46 @@ const PLANS = [
   },
 ];
 
+const FAMILY_PLANS = [
+  {
+    key: "ESSENTIAL_FAMILY",
+    stripeKey: "essential_family",
+    name: "Essential Family",
+    price: "$75/mo",
+    features: [
+      "Everything in Essential — for 2 parents",
+      "Daily wellness check-in calls (each parent)",
+      "Medication reminders (each parent)",
+      "Family dashboard + emergency alerts",
+    ],
+  },
+  {
+    key: "PLUS_FAMILY",
+    stripeKey: "plus_family",
+    name: "Plus Family",
+    price: "$130/mo",
+    popular: true,
+    features: [
+      "Everything in Plus — for 2 parents",
+      "Family dashboard (unlimited members)",
+      "Local service search & live connect",
+      "Weekly care summaries",
+    ],
+  },
+  {
+    key: "CONCIERGE_FAMILY",
+    stripeKey: "concierge_family",
+    name: "Concierge Family",
+    price: "$180/mo",
+    features: [
+      "Everything in Concierge — for 2 parents",
+      "Medical appointment scheduling (each parent)",
+      "One-time call-back reminders (each parent)",
+      "Detailed weekly reports (per parent)",
+    ],
+  },
+];
+
 export default function PlanPage() {
   const [plan, setPlan] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
@@ -61,6 +101,12 @@ export default function PlanPage() {
         setLoading(false);
       });
   }, []);
+
+  const [planTab, setPlanTab] = useState<"individual" | "family">(
+    plan?.includes("FAMILY") ? "family" : "individual"
+  );
+  const PLANS = planTab === "individual" ? INDIVIDUAL_PLANS : FAMILY_PLANS;
+  const ALL_PLANS = [...INDIVIDUAL_PLANS, ...FAMILY_PLANS];
 
   const [showSwitchConfirm, setShowSwitchConfirm] = useState<string | null>(null);
 
@@ -95,14 +141,14 @@ export default function PlanPage() {
 
   if (loading) return <div className="text-gray-400">Loading...</div>;
 
-  const normalizedPlan = plan?.replace("COMPLETE", "CONCIERGE") || plan;
-  const currentPlan = PLANS.find((p) => p.key === normalizedPlan);
+  const normalizedPlan = plan?.replace("COMPLETE_FAMILY", "CONCIERGE_FAMILY").replace("COMPLETE", "CONCIERGE") || plan;
+  const currentPlan = ALL_PLANS.find((p) => p.key === normalizedPlan);
 
   const trialEndDate = trialEnd
     ? new Date(trialEnd).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
     : null;
 
-  const confirmPlan = PLANS.find(p => p.stripeKey === showSwitchConfirm);
+  const confirmPlan = ALL_PLANS.find(p => p.stripeKey === showSwitchConfirm);
 
   return (
     <div>
@@ -175,6 +221,28 @@ export default function PlanPage() {
       <h2 className="text-base font-semibold text-navy mb-3">
         {plan ? "Switch Plan" : "Choose a Plan"}
       </h2>
+
+      {/* Individual / Family toggle */}
+      <div className="flex mb-4">
+        <div className="inline-flex bg-gray-100 rounded-full p-1">
+          <button
+            onClick={() => setPlanTab("individual")}
+            className={`px-5 py-1.5 rounded-full text-sm font-semibold transition-colors ${
+              planTab === "individual" ? "bg-white text-navy shadow-sm" : "text-gray-500 hover:text-navy"
+            }`}
+          >
+            Individual
+          </button>
+          <button
+            onClick={() => setPlanTab("family")}
+            className={`px-5 py-1.5 rounded-full text-sm font-semibold transition-colors ${
+              planTab === "family" ? "bg-white text-navy shadow-sm" : "text-gray-500 hover:text-navy"
+            }`}
+          >
+            Family (2 Parents)
+          </button>
+        </div>
+      </div>
 
       <div className="grid sm:grid-cols-3 gap-4 max-w-4xl mb-6">
         {PLANS.map((p) => {
