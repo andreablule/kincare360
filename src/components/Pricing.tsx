@@ -240,7 +240,7 @@ export default function Pricing() {
           {plans.map((plan) => (
             <div
               key={plan.key}
-              className={`animate-on-scroll rounded-2xl border-2 p-7 flex flex-col relative ${
+              className={`rounded-2xl border-2 p-7 flex flex-col relative ${
                 plan.dark
                   ? "bg-navy border-navy"
                   : plan.popular
