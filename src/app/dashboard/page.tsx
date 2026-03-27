@@ -57,11 +57,17 @@ export default async function DashboardPage() {
   const trialDaysRemaining = user?.subscriptionStatus === "trialing"
     ? await getTrialDaysRemaining(user.stripeCustomerId)
     : null;
-  const pendingRequests = patient
+  const totalAppointments = patient
     ? await prisma.serviceRequest.count({
-        where: { patientId: patient.id, status: "PENDING" },
+        where: { patientId: patient.id },
       })
     : 0;
+  const nextAppointment = patient
+    ? await prisma.serviceRequest.findFirst({
+        where: { patientId: patient.id, status: { in: ["DONE", "COMPLETED", "IN_PROGRESS"] } },
+        orderBy: { createdAt: "desc" },
+      })
+    : null;
 
   return (
     <div>
@@ -162,10 +168,27 @@ export default async function DashboardPage() {
         {/* Appointments */}
         <div className="bg-white rounded-2xl border border-gray-100 p-5">
           <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Appointments</div>
-          <div className="text-lg font-bold text-navy">{pendingRequests}</div>
-          <div className="text-sm text-gray-500 mt-1">{pendingRequests === 1 ? "appointment" : "appointments"} in progress</div>
+          {nextAppointment ? (
+            <>
+              <div className="text-sm font-bold text-navy mt-1">
+                {nextAppointment.description?.match(/DOCTOR: (.+)/)?.[1] || "Scheduled"}
+              </div>
+              <div className="text-xs text-gray-500 mt-0.5">
+                {nextAppointment.description?.match(/DATE: (.+)/)?.[1] || ""}
+              </div>
+              <span className={`inline-block mt-1.5 text-xs font-semibold px-2 py-0.5 rounded-full ${
+                nextAppointment.status === "DONE" || nextAppointment.status === "COMPLETED"
+                  ? "bg-green-100 text-green-700" 
+                  : "bg-blue-100 text-blue-700"
+              }`}>
+                {nextAppointment.status === "DONE" || nextAppointment.status === "COMPLETED" ? "✓ Confirmed" : "Scheduling..."}
+              </span>
+            </>
+          ) : (
+            <div className="text-lg font-bold text-navy">None</div>
+          )}
           <Link href="/dashboard/requests" className="text-sm text-teal font-medium mt-3 inline-block hover:underline">
-            View Appointments →
+            {totalAppointments > 0 ? `View All ${totalAppointments} →` : "Schedule with Lily →"}
           </Link>
         </div>
       </div>
