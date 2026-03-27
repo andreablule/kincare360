@@ -23,7 +23,7 @@ function timeMatches(timeStr: string, nowMins: number): boolean {
   const rh = parseInt(parts[0], 10);
   const rm = parseInt(parts[1], 10);
   if (isNaN(rh) || isNaN(rm)) return false;
-  return Math.abs(rh * 60 + rm - nowMins) <= 2;
+  return Math.abs(rh * 60 + rm - nowMins) <= 5;
 }
 
 async function hasRecentCall(patientId: string, callType: string): Promise<boolean> {
