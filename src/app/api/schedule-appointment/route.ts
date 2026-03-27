@@ -13,10 +13,10 @@ async function makeVapiCall(body: any) {
   return { ok: res.ok, data: await res.json() };
 }
 
-function buildOutboundAssistant(providerName: string, patientName: string, patientDob: string, insurance: string | null, preferredTime: string, reason: string) {
+function buildOutboundAssistant(providerName: string, patientName: string, patientDob: string, patientAddress: string, insurance: string | null, preferredTime: string, reason: string) {
   const insuranceLine = insurance
-    ? `If they ask about insurance, say: "${insurance}"`
-    : `If they ask about insurance, say: "The patient will bring their insurance card to the appointment."`;
+    ? `Insurance: ${insurance}`
+    : `Insurance: patient will bring their card to the appointment`;
 
   return {
     name: "Lily - Scheduling",
@@ -25,37 +25,43 @@ function buildOutboundAssistant(providerName: string, patientName: string, patie
       model: "gpt-4o-mini",
       messages: [{
         role: "system",
-        content: `You are Lily, a care coordinator with KinCare360. You are calling ${providerName} to schedule an appointment.
+        content: `You are Lily, an AI personal assistant with KinCare360, a care coordination service. You are calling ${providerName} to schedule an appointment for your client.
 
-CLIENT: ${patientName}, DOB: ${patientDob}
-This is a new patient.
-Preferred time: ${preferredTime}
-Reason: ${reason}
-${insuranceLine}
+PATIENT INFO (provide when asked):
+- Name: ${patientName}
+- Date of Birth: ${patientDob}
+- Address: ${patientAddress}
+- ${insuranceLine}
+- New patient: yes
+- Preferred time: ${preferredTime}
+- Reason for visit: ${reason}
 
-HOW TO ACT — like a real human care coordinator:
-- Be natural, warm, professional
-- If they answer: "Hi, my name is Lily. I'm a care coordinator calling to schedule a new patient appointment for ${patientName}."
-- Give DOB when asked
-- Ask for the earliest available time or client's preferred time
-- If put on hold: wait patiently, do NOT hang up
-- If they say "please hold" or "one moment": say "Of course, take your time" and wait
-- If transferred to another person: re-introduce yourself
-- Confirm: date, time, doctor name, any prep instructions
-- If no one answers after ringing: leave a voicemail: "Hi, this is Lily from KinCare360 calling to schedule a new patient appointment for ${patientName}. Please call us back at 812-515-5252. Thank you!"
-- If they ask who you are with: "KinCare360, a care coordination service"
-- NEVER say you are AI
-- Thank them and end warmly
+HOW TO CONDUCT THE CALL — like a real scenario:
+1. When they answer, introduce yourself: "Hi, my name is Lily. I'm an AI personal assistant with KinCare360, a care coordination service. I'm calling to schedule an appointment for one of my clients."
+2. Wait for their response. If they ask who the patient is, say: "The patient's name is ${patientName}."
+3. Only provide information AS THEY ASK for it — name first, then DOB, then address, then insurance. Don't dump everything at once.
+4. Ask for the earliest available appointment, or the client's preferred time: "${preferredTime}"
+5. If they say "please hold" or "one moment" or transfer you: wait patiently, then re-introduce yourself to the new person
+6. If they put you in a queue: wait. Do NOT hang up.
+7. Confirm ALL details before ending: appointment date, time, doctor name, location, any prep instructions
+8. Thank them warmly and end the call
 
-CALLBACK: 812-515-5252`
+IF NO ONE ANSWERS:
+Leave a voicemail: "Hi, this is Lily, an AI assistant with KinCare360. I'm calling to schedule a new patient appointment for ${patientName}. Please call us back at 812-515-5252. Thank you!"
+
+IF THEY ASK:
+- "Are you a real person?" — "I'm Lily, an AI personal assistant with KinCare360. I help coordinate care for elderly patients and their families."
+- "What is KinCare360?" — "We're a care coordination service that provides daily check-ins, medication reminders, and appointment scheduling for elderly adults. We work with families to make sure their loved ones get the care they need."
+
+CALLBACK NUMBER: 812-515-5252`
       }],
     },
     voice: { provider: "11labs", voiceId: "paula" },
-    firstMessage: `Hi, my name is Lily. I'm a care coordinator calling to schedule a new patient appointment. Is this ${providerName}?`,
-    endCallMessage: "Thank you so much for your help!",
+    firstMessage: `Hi, my name is Lily. I'm an AI personal assistant with KinCare360. I'm calling to schedule an appointment for one of my clients. May I speak with someone from scheduling?`,
+    endCallMessage: "Thank you so much for your help! Have a wonderful day!",
     serverUrl: "https://www.kincare360.com/api/call-logs",
     silenceTimeoutSeconds: 120,
-    maxDurationSeconds: 300,
+    maxDurationSeconds: 600,
   };
 }
 
@@ -92,6 +98,9 @@ export async function POST(req: NextRequest) {
 
     const patientName = patient ? `${patient.firstName} ${patient.lastName}` : "the patient";
     const patientDob = patient?.dob || "on file";
+    const patientAddress = patient
+      ? [patient.address, patient.city, patient.state, patient.zip].filter(Boolean).join(", ")
+      : "on file";
     const insurance = patient?.insuranceCompany
       ? `${patient.insuranceCompany}${patient.insuranceMemberId ? `, member ID ${patient.insuranceMemberId}` : ""}`
       : null;
@@ -119,7 +128,7 @@ export async function POST(req: NextRequest) {
 
     const assistant = buildOutboundAssistant(
       providerName || "the doctor's office",
-      patientName, patientDob, insurance,
+      patientName, patientDob, patientAddress, insurance,
       preferredTime || "the earliest available",
       reason || "general consultation"
     );
@@ -140,29 +149,63 @@ export async function POST(req: NextRequest) {
 
     console.log(`[schedule-appointment] Outbound call to ${providerName} at +1${providerDigits} for ${patientName}`);
 
-    // Schedule retry after 3 minutes if first attempt doesn't connect
-    // And callback to patient after 2 minutes
-    setTimeout(async () => {
-      try {
-        // Check if the call ended without connecting (silence timeout, no answer)
-        const callCheck = await fetch(`https://api.vapi.ai/call/${result1.data.id}`, {
-          headers: { Authorization: `Bearer ${VAPI_KEY}` },
-        });
-        const callData = await callCheck.json();
+    // Poll the outbound call until it ends, THEN call patient back
+    const outboundCallId = result1.data.id;
+    const patientFirstName = patient?.firstName || "there";
+    const providerLabel = providerName || "the doctor's office";
+    const providerPhoneFormatted = providerDigits.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3");
 
-        if (callData.endedReason === "silence-timed-out" || callData.endedReason === "customer-did-not-answer") {
-          console.log("[schedule-appointment] First attempt failed, retrying...");
-          // Retry
+    // Fire-and-forget: monitor outbound call and callback when done
+    (async () => {
+      try {
+        // Poll every 15 seconds for up to 10 minutes
+        let callEnded = false;
+        let callData: any = null;
+        for (let i = 0; i < 40; i++) {
+          await new Promise(r => setTimeout(r, 15000));
+          const check = await fetch(`https://api.vapi.ai/call/${outboundCallId}`, {
+            headers: { Authorization: `Bearer ${VAPI_KEY}` },
+          });
+          callData = await check.json();
+          if (callData.status === "ended") {
+            callEnded = true;
+            break;
+          }
+        }
+
+        if (!callEnded) {
+          console.log("[schedule-appointment] Outbound call still running after 10 min, proceeding with callback");
+        }
+
+        const endReason = callData?.endedReason || "unknown";
+        console.log(`[schedule-appointment] Outbound call ended: ${endReason}`);
+
+        // Get transcript to see if appointment was actually scheduled
+        const msgs = callData?.messages || [];
+        const transcript = msgs.map((m: any) => `${m.role}: ${m.message || ""}`).join("\n");
+        const wasScheduled = transcript.toLowerCase().includes("appointment") && 
+          (transcript.toLowerCase().includes("confirmed") || transcript.toLowerCase().includes("scheduled") || transcript.toLowerCase().includes("see you"));
+
+        // If no answer, retry once
+        if (endReason === "silence-timed-out" || endReason === "customer-did-not-answer") {
+          console.log("[schedule-appointment] No answer, retrying once...");
           await makeVapiCall({
             phoneNumberId: PHONE_NUMBER_ID,
             customer: { number: `+1${providerDigits}` },
             assistant,
           });
+          // Wait 30 more seconds for retry
+          await new Promise(r => setTimeout(r, 30000));
         }
 
-        // Callback to patient
+        // Now call patient back with results
         if (callbackPhone) {
           const cbDigits = callbackPhone.replace(/\D/g, "").slice(-10);
+
+          const callbackPrompt = wasScheduled
+            ? `You are Lily from KinCare360, calling ${patientName} back. You SUCCESSFULLY scheduled their appointment with ${providerLabel}. Share the details from this transcript:\n\n${transcript.slice(-500)}\n\nBe warm, share the date/time/location, and ask if they need anything else.`
+            : `You are Lily from KinCare360, calling ${patientName} back about the appointment with ${providerLabel}. The office ${endReason === "silence-timed-out" ? "didn't answer — it may be outside business hours" : "call ended before scheduling could be confirmed"}. Let them know: "I left a voicemail with our callback number. I'll try again during business hours, or you can reach them directly at ${providerPhoneFormatted}." Be warm and helpful.`;
+
           await makeVapiCall({
             phoneNumberId: PHONE_NUMBER_ID,
             customer: { number: `+1${cbDigits}` },
@@ -171,26 +214,18 @@ export async function POST(req: NextRequest) {
               model: {
                 provider: "openai",
                 model: "gpt-4o-mini",
-                messages: [{
-                  role: "system",
-                  content: `You are Lily from KinCare360, calling ${patientName} back about the appointment with ${providerName || "their doctor"}.
-
-If the office answered and you scheduled: tell them the appointment details.
-If no one answered: say "I wasn't able to reach ${providerName || "the office"} — it might be outside their business hours. I left a voicemail with our callback number. I'll try again tomorrow during business hours, or you can call them directly at ${providerDigits.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3')}."
-
-Be warm and natural. Ask if there's anything else you can help with.`
-                }],
+                messages: [{ role: "system", content: callbackPrompt }],
               },
               voice: { provider: "11labs", voiceId: "paula" },
-              firstMessage: `Hi ${patient?.firstName || "there"}, this is Lily from KinCare360 calling you back about the appointment.`,
+              firstMessage: `Hi ${patientFirstName}, this is Lily from KinCare360 calling you back about your appointment with ${providerLabel}.`,
               serverUrl: "https://www.kincare360.com/api/call-logs",
             },
           });
         }
       } catch (e) {
-        console.error("[schedule-appointment] Retry/callback error:", e);
+        console.error("[schedule-appointment] Monitor/callback error:", e);
       }
-    }, 120000); // 2 minutes
+    })();
 
     return NextResponse.json({
       results: [{ toolCallId: toolCall?.id || "", result: `I'm calling ${providerName || "the office"} right now to schedule your appointment. I'll call you back in a few minutes to confirm the details. Have a wonderful evening!` }]
