@@ -157,14 +157,30 @@ export async function POST(req: NextRequest) {
 
           if (cbPhone) {
             const cbDigits = cbPhone.replace(/\D/g, "").slice(-10);
-            const wasScheduled = summary.toLowerCase().includes("scheduled") || 
-              summary.toLowerCase().includes("confirmed") || 
-              summary.toLowerCase().includes("appointment") ||
-              (transcript || "").toLowerCase().includes("see you");
+            
+            // Check transcript carefully for ACTUAL confirmed appointment
+            const fullText = ((transcript || "") + " " + summary).toLowerCase();
+            const hasConfirmedDate = fullText.match(/\b(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b.*\b(am|pm|\d{1,2}:\d{2})\b/);
+            const officeConfirmed = hasConfirmedDate && (fullText.includes("see you") || fullText.includes("we'll see") || fullText.includes("you're all set") || fullText.includes("appointment is") || fullText.includes("booked"));
+            const askedToCallBack = fullText.includes("call back") || fullText.includes("check with") || fullText.includes("call us back") || fullText.includes("no availability");
+            const noAnswer = fullText.length < 50; // Very short = no real conversation
 
-            const callbackPrompt = wasScheduled
-              ? `You are Lily from KinCare360, calling ${pt.firstName} back. You successfully scheduled their appointment with ${providerLabel}. Here is what happened on the call:\n\n${summary}\n\nShare the appointment details warmly. Ask if they need anything else.`
-              : `You are Lily from KinCare360, calling ${pt.firstName} back about the appointment with ${providerLabel}. The office call ended but the appointment may not have been fully confirmed. Let them know what happened and suggest calling during business hours if needed. Be warm and helpful.`;
+            let callbackPrompt: string;
+            let firstMsg: string;
+
+            if (officeConfirmed) {
+              callbackPrompt = `You are Lily from KinCare360, calling ${pt.firstName} back. You SUCCESSFULLY scheduled their appointment with ${providerLabel}. Here is exactly what happened:\n\n${summary}\n\nTell ${pt.firstName} the EXACT date, time, and doctor confirmed by the office. Only share details that were actually confirmed. Ask if they need anything else.`;
+              firstMsg = `Hi ${pt.firstName}, this is Lily from KinCare360. Great news — I was able to schedule your appointment with ${providerLabel}!`;
+            } else if (askedToCallBack) {
+              callbackPrompt = `You are Lily from KinCare360, calling ${pt.firstName} back about ${providerLabel}. The office didn't have availability for the requested time and asked you to check with your client about alternative dates. Here's what happened:\n\n${summary}\n\nLet ${pt.firstName} know honestly that the office needs them to pick a different date. Ask when else works for them, and offer to call the office again.`;
+              firstMsg = `Hi ${pt.firstName}, this is Lily from KinCare360. I called ${providerLabel} but they didn't have availability for the time you requested. Let me tell you what they said.`;
+            } else if (noAnswer) {
+              callbackPrompt = `You are Lily from KinCare360, calling ${pt.firstName} back. You tried calling ${providerLabel} but no one answered. Let them know you'll try again during business hours, or they can call the office directly. Be warm.`;
+              firstMsg = `Hi ${pt.firstName}, this is Lily from KinCare360. I tried reaching ${providerLabel} but wasn't able to get through. It may be outside their office hours.`;
+            } else {
+              callbackPrompt = `You are Lily from KinCare360, calling ${pt.firstName} back about ${providerLabel}. You spoke with the office but the appointment was NOT fully confirmed. Here's what happened:\n\n${summary}\n\nBe HONEST — only share what was actually confirmed. If no date/time was confirmed, tell ${pt.firstName} the appointment is not yet scheduled and offer to try again.`;
+              firstMsg = `Hi ${pt.firstName}, this is Lily from KinCare360 calling you back about ${providerLabel}.`;
+            }
 
             await fetch("https://api.vapi.ai/call/phone", {
               method: "POST",
@@ -183,12 +199,16 @@ export async function POST(req: NextRequest) {
                     messages: [{ role: "system", content: callbackPrompt }],
                   },
                   voice: { provider: "11labs", voiceId: "paula" },
-                  firstMessage: `Hi ${pt.firstName}, this is Lily from KinCare360 calling you back about your appointment with ${providerLabel}.`,
+                  firstMessage: firstMsg,
                   serverUrl: "https://www.kincare360.com/api/call-logs",
+                  backgroundSound: "off",
+                  backgroundDenoisingEnabled: true,
+                  backchannelingEnabled: false,
+                  endCallPhrases: ["have a wonderful day", "have a great day", "goodbye", "bye", "take care"],
                 },
               }),
             });
-            console.log(`[call-logs] Triggered callback to ${pt.firstName} at ${cbDigits}`);
+            console.log(`[call-logs] Triggered callback to ${pt.firstName} at ${cbDigits} | confirmed: ${!!officeConfirmed}`);
           }
         }
       } catch (cbErr) {
