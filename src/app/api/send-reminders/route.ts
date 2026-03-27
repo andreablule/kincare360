@@ -30,6 +30,7 @@ function timeMatches(timeStr: string, nowMins: number): boolean {
 async function vapiCall(phone: string, firstName: string, firstMessage: string): Promise<string> {
   const rawPhone = phone.replace(/\D/g, '');
   const formattedPhone = rawPhone.length === 10 ? `+1${rawPhone}` : `+${rawPhone}`;
+  // Use serverUrl so vapi-lookup injects full patient context (address, meds, etc.)
   const res = await fetch('https://api.vapi.ai/call', {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${VAPI_KEY}`, 'Content-Type': 'application/json' },
@@ -37,7 +38,10 @@ async function vapiCall(phone: string, firstName: string, firstMessage: string):
       phoneNumberId: PHONE_NUMBER_ID,
       customer: { number: formattedPhone },
       assistantId: DAILY_CHECKIN_ASSISTANT_ID,
-      assistantOverrides: { firstMessage }
+      assistantOverrides: {
+        firstMessage,
+        serverUrl: 'https://www.kincare360.com/api/vapi-lookup'
+      }
     })
   });
   const result = await res.json();

@@ -165,8 +165,8 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string) {
       voice: {
         provider: "11labs",
         voiceId: "paula",
-        speed: 0.85,
-        stability: 0.75,
+        speed: 0.92,
+        stability: 0.65,
         similarityBoost: 0.75,
         style: 0.2,
         useSpeakerBoost: true,
@@ -174,8 +174,8 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string) {
       backgroundSound: "off",
       backgroundDenoisingEnabled: true,
       backchannelingEnabled: true,
-      silenceTimeoutSeconds: 15,
-      responseDelaySeconds: 1.5,
+      silenceTimeoutSeconds: 10,
+      responseDelaySeconds: 0.5,
       model: {
         provider: "openai",
         model: "gpt-4o-mini",
