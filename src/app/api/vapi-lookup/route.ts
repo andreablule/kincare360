@@ -113,8 +113,45 @@ IMPORTANT FOR SPEAKING: When reading phone numbers aloud, say each group separat
 INSTRUCTION: Greet ${patient.firstName} by name warmly. Reference their care details when relevant. This is a VIP client — make them feel known and cared for.`;
 }
 
-function buildAssistantConfig(systemPrompt: string, firstMessage: string) {
-  // Match EXACT key order and structure from working call 019d2959
+function buildTransferDestinations(patient: any): any[] {
+  const dests: any[] = [];
+  // Add patient's doctors
+  if (patient?.doctors) {
+    for (const d of patient.doctors) {
+      if (d.phone) {
+        const digits = d.phone.replace(/\D/g, "").slice(-10);
+        if (digits.length === 10) {
+          dests.push({ type: "number", number: `+1${digits}`, message: `Connecting you to ${d.name} now.`, description: d.name });
+        }
+      }
+    }
+  }
+  // Add patient's pharmacies
+  if (patient?.pharmacies) {
+    for (const p of patient.pharmacies) {
+      if (p.phone) {
+        const digits = p.phone.replace(/\D/g, "").slice(-10);
+        if (digits.length === 10) {
+          dests.push({ type: "number", number: `+1${digits}`, message: `Connecting you to ${p.name} now.`, description: p.name });
+        }
+      }
+    }
+  }
+  // Always include a fallback so the tool is valid
+  if (dests.length === 0) {
+    dests.push({ type: "number", number: "+18125155252", description: "KinCare360 main line" });
+  }
+  return dests;
+}
+
+function buildTransferEnum(dests: any[]): string[] {
+  return dests.map(d => d.number);
+}
+
+function buildAssistantConfig(systemPrompt: string, firstMessage: string, patient?: any) {
+  const destinations = buildTransferDestinations(patient);
+  const destEnum = buildTransferEnum(destinations);
+
   return {
     assistant: {
       name: "Lily",
@@ -142,18 +179,21 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string) {
           {
             type: "transferCall",
             function: {
-              name: "callAndConnectProvider",
-              description: "Transfer the client directly to the chosen provider.",
+              name: "transferCall",
+              description: `Transfer the call to the selected provider. Available: ${destinations.map(d => d.description).join(", ")}`,
               parameters: {
                 type: "object",
-                required: ["providerName", "providerPhone"],
+                required: ["destination"],
                 properties: {
-                  providerName: { type: "string", description: "Name of the business" },
-                  providerPhone: { type: "string", description: "Phone number digits only e.g. 2154648998" },
+                  destination: {
+                    type: "string",
+                    enum: destEnum,
+                    description: "The phone number to transfer to",
+                  },
                 },
               },
             },
-            destinations: [{ type: "number", number: "+12154648998", description: "Dynamic provider number" }],
+            destinations,
           },
         ],
       },
@@ -272,7 +312,7 @@ export async function POST(req: NextRequest) {
       const prompt = buildLilySystemPrompt(context);
       const firstMessage = `Good ${greeting}, ${patient.firstName}. This is Lily from KinCare360. How can I help you today?`;
       console.log(`[vapi-lookup] Known patient: ${patient.firstName} ${patient.lastName} (${digits})`);
-      return NextResponse.json(buildAssistantConfig(prompt, firstMessage));
+      return NextResponse.json(buildAssistantConfig(prompt, firstMessage, patient));
     }
 
     // Check if caller is a family member
@@ -303,7 +343,7 @@ INSTRUCTION: Greet ${familyMember.name} by name. They are calling about their lo
       const prompt = buildLilySystemPrompt(context);
       const firstMessage = `Good ${greeting}, ${familyMember.name}. This is Lily from KinCare360. How can I help you today?`;
       console.log(`[vapi-lookup] Known family member: ${familyMember.name} calling about ${p.firstName} (${digits})`);
-      return NextResponse.json(buildAssistantConfig(prompt, firstMessage));
+      return NextResponse.json(buildAssistantConfig(prompt, firstMessage, familyMember.patient));
     }
 
     // Unknown caller — new prospect
