@@ -3,6 +3,9 @@ import "./globals.css";
 import SessionProvider from "@/components/SessionProvider";
 
 export const metadata: Metadata = {
+  verification: {
+    google: "cf_IcqWaXVOu0IqvLj-_TW_mkcd9yl3Mmq8ZcEyJnJA",
+  },
   title: "KinCare360 — AI-Powered Daily Check-In Calls for Aging Parents",
   description: "KinCare360's AI care assistant Lily calls your aging parent every day — checking in, reminding medications, and alerting family if something's wrong. Starting at $50/month. 7-day free trial.",
   keywords: "elderly care, aging parents, daily check-in calls, medication reminders, senior care, AI care assistant, elder care service, remote patient monitoring, caregiver support, family dashboard",

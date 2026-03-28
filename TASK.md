@@ -1,100 +1,113 @@
-# Task: Fix Second Parent Form + Plan Switch Logic
+# Task: SEO - Make KinCare360 Discoverable on Google
 
-## 1. SECOND PARENT INTAKE FORM - COMPLETE FIELDS
+## 1. UPDATE META TAGS (src/app/layout.tsx)
 
-The "Add Second Parent" form is missing fields compared to the first parent intake. It needs to match EXACTLY what the first parent intake has:
+Update the metadata export with proper SEO tags:
 
-Find the AddSecondParentCard component or the /api/patients/add route and the form that adds the second parent. Update it to include:
-
-### Required fields (same as first parent intake):
-- First name, Last name
-- Date of birth
-- Phone number
-- Address, City, State, ZIP
-- Gender
-- Preferred language
-- Preferred check-in time
-- Medication reminder times
-- Check-in days
-
-### Multiple entries (with add/remove buttons):
-- Doctors (name, specialty, phone, address) - allow adding MULTIPLE doctors
-- Pharmacies (name, phone, address) - allow adding MULTIPLE pharmacies  
-- Medications (name, dosage, frequency) - allow adding MULTIPLE medications
-- Conditions (name) - allow adding MULTIPLE conditions
-- Family members (name, relationship, phone) - allow adding MULTIPLE family members
-- Insurance (company, member ID, group number, policy holder)
-
-Each section (doctors, pharmacies, meds, conditions, family members) should have an "Add Another" button and ability to remove entries. Look at how the FIRST parent intake form (src/app/intake/page.tsx) handles these sections and replicate the same UX.
-
-## 2. PLAN SWITCHING - UPGRADE IMMEDIATE, DOWNGRADE END OF CYCLE
-
-### How it should work (Google Fi / industry standard):
-
-**Upgrades (moving to a higher plan):**
-- Take effect IMMEDIATELY
-- Charge the prorated difference for the remainder of the current billing period
-- Use Stripe's subscription update with `proration_behavior: 'create_prorations'`
-- Send confirmation email: "Your plan has been upgraded to [Plan Name]. The change is effective immediately. You'll see a prorated charge of $X.XX for the remainder of this billing period."
-
-**Downgrades (moving to a lower plan):**
-- Take effect at the END of the current billing period
-- User keeps current plan features until then
-- Use Stripe's subscription update with `proration_behavior: 'none'` and schedule the change using Stripe's `billing_cycle_anchor` or `cancel_at_period_end` approach
-- Actually the best approach: use Stripe subscription schedules or update with `proration_behavior: 'none'` and set the new price to start at period end
-- Send confirmation email: "Your plan will change to [Plan Name] at the end of your current billing period on [date]. You'll continue to enjoy [Current Plan] features until then."
-
-**Same tier Individual to Family (or vice versa):**
-- Treat as upgrade if going individual -> family (more expensive)
-- Treat as downgrade if going family -> individual (less expensive)
-
-### Implementation:
-
-Update the plan switching API route (src/app/api/plan or src/app/dashboard/plan or wherever plan changes happen).
-
-For Stripe subscription updates:
-- Get current subscription
-- Determine if upgrade or downgrade by comparing price amounts
-- Upgrade: `stripe.subscriptions.update(subId, { items: [{ id: itemId, price: newPriceId }], proration_behavior: 'create_prorations' })`
-- Downgrade: `stripe.subscriptions.update(subId, { items: [{ id: itemId, price: newPriceId }], proration_behavior: 'none', billing_cycle_anchor: 'unchanged' })` and set a metadata flag or use Stripe's schedule phase to apply the new price at period end
-
-Actually the cleanest approach for downgrade:
 ```
-stripe.subscriptions.update(subId, {
-  cancel_at_period_end: false,
-  items: [{ id: itemId, price: newPriceId }],
-  proration_behavior: 'none',
-  // Apply change at end of period using trial_end or schedule
-})
+export const metadata = {
+  title: "KinCare360 — AI-Powered Daily Check-In Calls for Aging Parents",
+  description: "KinCare360's AI care assistant Lily calls your aging parent every day — checking in, reminding medications, and alerting family if something's wrong. Starting at $50/month. 7-day free trial.",
+  keywords: "elderly care, aging parents, daily check-in calls, medication reminders, senior care, AI care assistant, elder care service, remote patient monitoring, caregiver support, family dashboard",
+  openGraph: {
+    title: "KinCare360 — Daily AI Check-In Calls for Your Aging Parent",
+    description: "Lily calls your loved one every day to check in, remind medications, and alert you if something's wrong. Plans from $50/mo. Free 7-day trial.",
+    url: "https://kincare360.com",
+    siteName: "KinCare360",
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "KinCare360 — Daily AI Check-In Calls for Aging Parents",
+    description: "AI care assistant Lily calls your parent daily. Medication reminders. Emergency alerts. Family dashboard. From $50/mo.",
+  },
+  alternates: {
+    canonical: "https://kincare360.com",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
+};
 ```
 
-OR use Stripe Subscription Schedules to schedule the phase change.
+## 2. CREATE SITEMAP (src/app/sitemap.ts)
 
-The simplest reliable approach:
-- Upgrade: update immediately with prorations
-- Downgrade: store the pending downgrade in DB (pendingPlan, pendingPlanEffectiveDate = current_period_end), update the subscription at period end via webhook (customer.subscription.updated or invoice.paid)
+Create a Next.js sitemap:
 
-Update the User model if needed to add: pendingPlan (String?), pendingPlanDate (DateTime?)
+```typescript
+import { MetadataRoute } from 'next'
 
-### Email notifications:
+export default function sitemap(): MetadataRoute.Sitemap {
+  return [
+    { url: 'https://kincare360.com', lastModified: new Date(), changeFrequency: 'weekly', priority: 1 },
+    { url: 'https://kincare360.com/register', lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+    { url: 'https://kincare360.com/login', lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
+    { url: 'https://kincare360.com/privacy', lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
+    { url: 'https://kincare360.com/terms', lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
+  ]
+}
+```
 
-Send emails for plan changes using the existing Google SMTP setup:
-- From: hello@kincare360.com
-- App password: rogv owro cfhd sasp
-- Use nodemailer
+## 3. CREATE ROBOTS.TXT (src/app/robots.ts)
 
-Email templates:
-- Upgrade: Subject "Your KinCare360 plan has been upgraded!" - include new plan name, effective immediately, prorated charge amount
-- Downgrade: Subject "Your KinCare360 plan change is scheduled" - include new plan name, effective date (end of billing period), note they keep current features until then
+```typescript
+import { MetadataRoute } from 'next'
 
-### Update the dashboard plan page:
-- Show pending downgrade if one exists: "Your plan will change to [Plan] on [date]"
-- Allow canceling a pending downgrade
-- Show clear upgrade vs downgrade labels on plan options
+export default function robots(): MetadataRoute.Robots {
+  return {
+    rules: {
+      userAgent: '*',
+      allow: '/',
+      disallow: ['/dashboard/', '/admin/', '/api/', '/intake/'],
+    },
+    sitemap: 'https://kincare360.com/sitemap.xml',
+  }
+}
+```
 
-## 3. GIT COMMIT AND PUSH
-Commit: "feat: complete second parent form + smart plan switching with email confirmations"
+## 4. ADD STRUCTURED DATA (JSON-LD) TO HOME PAGE
+
+In src/app/page.tsx, add a script tag with JSON-LD structured data at the top of the page component:
+
+```jsx
+<script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{
+    __html: JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "HealthAndBeautyBusiness",
+      "name": "KinCare360",
+      "description": "AI-powered daily check-in calls, medication reminders, and care coordination for aging parents.",
+      "url": "https://kincare360.com",
+      "telephone": "+18125155252",
+      "email": "hello@kincare360.com",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Philadelphia",
+        "addressRegion": "PA",
+        "addressCountry": "US"
+      },
+      "priceRange": "$50-$180/month",
+      "openingHours": "Mo-Su 00:00-23:59",
+      "sameAs": []
+    })
+  }}
+/>
+```
+
+## 5. ADD HEADING TAGS FOR SEO
+
+Check that the home page (src/app/page.tsx) has proper H1, H2, H3 hierarchy. The main headline should be an H1. Section headers should be H2. There should only be ONE H1 on the page.
+
+## GIT
+Commit: "feat: SEO - meta tags, sitemap, robots.txt, structured data, OG tags"
 Push to main.
 
 When completely finished, run this command:
-openclaw system event --text "Done: Second parent form complete with all fields, plan switching with immediate upgrades and end-of-cycle downgrades, email confirmations" --mode now
+openclaw system event --text "Done: Full SEO setup - meta tags, sitemap, robots.txt, structured data, OpenGraph tags" --mode now
