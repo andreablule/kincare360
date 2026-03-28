@@ -49,20 +49,61 @@ async function logCall(patientId: string, callType: string, callId: string): Pro
   });
 }
 
+async function getAssistantConfig(phone: string, callType: string): Promise<any> {
+  // Call our own vapi-lookup to get the full dynamic assistant config with patient context
+  const baseUrl = process.env.NEXTAUTH_URL || 'https://www.kincare360.com';
+  const formattedPhone = phone.replace(/\D/g, '').slice(-10);
+  const fullPhone = `+1${formattedPhone}`;
+  
+  try {
+    const res = await fetch(`${baseUrl}/api/vapi-lookup?callType=${callType}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: {
+          type: 'assistant-request',
+          call: { customer: { number: fullPhone } }
+        }
+      })
+    });
+    const data = await res.json();
+    return data.assistant || null;
+  } catch (e) {
+    console.error(`[send-reminders] Failed to get assistant config for ${phone}:`, e);
+    return null;
+  }
+}
+
 async function vapiCheckinCall(phone: string, firstName: string): Promise<string> {
   const rawPhone = phone.replace(/\D/g, '');
   const formattedPhone = rawPhone.length === 10 ? `+1${rawPhone}` : `+${rawPhone}`;
+  
+  // Get full dynamic assistant config from vapi-lookup (with patient context, tools, etc.)
+  const assistantConfig = await getAssistantConfig(phone, 'checkin');
+  
+  const callBody: any = {
+    phoneNumberId: PHONE_NUMBER_ID,
+    customer: { number: formattedPhone },
+  };
+  
+  if (assistantConfig) {
+    // Use inline assistant with full context
+    callBody.assistant = {
+      ...assistantConfig,
+      firstMessage: `Hi ${firstName}! This is Lily from KinCare360 with your daily check-in. How are you feeling today?`
+    };
+  } else {
+    // Fallback to static Lily if lookup fails
+    callBody.assistantId = LILY_ASSISTANT_ID;
+    callBody.assistantOverrides = {
+      firstMessage: `Hi ${firstName}! This is Lily from KinCare360 with your daily check-in. How are you feeling today?`
+    };
+  }
+  
   const res = await fetch('https://api.vapi.ai/call/phone', {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${VAPI_KEY}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      phoneNumberId: PHONE_NUMBER_ID,
-      customer: { number: formattedPhone },
-      assistantId: LILY_ASSISTANT_ID,
-      assistantOverrides: {
-        firstMessage: `Hi ${firstName}! This is Lily from KinCare360 with your daily check-in. How are you feeling today?`
-      }
-    })
+    body: JSON.stringify(callBody)
   });
   const result = await res.json();
   return result.id || result.error || JSON.stringify(result).substring(0, 100);
@@ -71,17 +112,30 @@ async function vapiCheckinCall(phone: string, firstName: string): Promise<string
 async function vapiMedicationCall(phone: string, firstName: string): Promise<string> {
   const rawPhone = phone.replace(/\D/g, '');
   const formattedPhone = rawPhone.length === 10 ? `+1${rawPhone}` : `+${rawPhone}`;
+  
+  const assistantConfig = await getAssistantConfig(phone, 'medication');
+  
+  const callBody: any = {
+    phoneNumberId: PHONE_NUMBER_ID,
+    customer: { number: formattedPhone },
+  };
+  
+  if (assistantConfig) {
+    callBody.assistant = {
+      ...assistantConfig,
+      firstMessage: `Hi ${firstName}! This is Lily from KinCare360. This is your medication reminder — it's time to take your medications. Have you taken them yet?`
+    };
+  } else {
+    callBody.assistantId = LILY_ASSISTANT_ID;
+    callBody.assistantOverrides = {
+      firstMessage: `Hi ${firstName}! This is Lily from KinCare360. This is your medication reminder — it's time to take your medications. Have you taken them yet?`
+    };
+  }
+  
   const res = await fetch('https://api.vapi.ai/call/phone', {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${VAPI_KEY}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      phoneNumberId: PHONE_NUMBER_ID,
-      customer: { number: formattedPhone },
-      assistantId: LILY_ASSISTANT_ID,
-      assistantOverrides: {
-        firstMessage: `Hi ${firstName}! This is Lily from KinCare360. This is your medication reminder — it's time to take your medications. Have you taken them yet?`
-      }
-    })
+    body: JSON.stringify(callBody)
   });
   const result = await res.json();
   return result.id || result.error || JSON.stringify(result).substring(0, 100);
