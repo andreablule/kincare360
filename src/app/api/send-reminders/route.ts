@@ -86,15 +86,7 @@ async function vapiCheckinCall(phone: string, firstName: string): Promise<string
     customer: { number: formattedPhone },
   };
   
-  // Add voicemail detection — hang up if voicemail answers
-  callBody.phoneCallProvider = 'twilio';
-  callBody.transportConfigurations = [{
-    provider: 'twilio',
-    timeout: 20,
-    machineDetection: 'DetectMessageEnd',
-    asyncAmd: true,
-    asyncAmdStatusCallbackUrl: undefined
-  }];
+  // Voicemail detection — hang up if voicemail answers
 
   if (assistantConfig) {
     callBody.assistant = {
@@ -126,13 +118,7 @@ async function vapiMedicationCall(phone: string, firstName: string): Promise<str
   const callBody: any = {
     phoneNumberId: PHONE_NUMBER_ID,
     customer: { number: formattedPhone },
-    phoneCallProvider: 'twilio',
-    transportConfigurations: [{
-      provider: 'twilio',
-      timeout: 20,
-      machineDetection: 'DetectMessageEnd',
-      asyncAmd: true,
-    }]
+  
   };
   
   if (assistantConfig) {
@@ -191,7 +177,9 @@ export async function GET() {
               break;
             }
             const callId = await vapiMedicationCall(patient.phone, patient.firstName || 'there');
-            await logCall(patient.id, 'medication', callId);
+            if (callId && !callId.includes('Bad Request') && !callId.includes('error')) {
+              await logCall(patient.id, 'medication', callId);
+            }
             console.log(`[med-reminder] ${patient.firstName} @ ${t} → ${callId}`);
             medsSent.push(`${patient.firstName}@${t}: ${callId}`);
             break; // only one call per patient per minute
@@ -208,7 +196,9 @@ export async function GET() {
           continue;
         }
         const callId = await vapiCheckinCall(patient.phone, patient.firstName || 'there');
-        await logCall(patient.id, 'checkin', callId);
+        if (callId && !callId.includes('Bad Request') && !callId.includes('error')) {
+          await logCall(patient.id, 'checkin', callId);
+        }
         console.log(`[daily-checkin] ${patient.firstName} @ ${patient.preferredCallTime} → ${callId}`);
         checkinSent.push(`${patient.firstName}@${patient.preferredCallTime}: ${callId}`);
       }
