@@ -24,7 +24,7 @@ function timeMatches(timeStr: string, nowMins: number): boolean {
   const rh = parseInt(parts[0], 10);
   const rm = parseInt(parts[1], 10);
   if (isNaN(rh) || isNaN(rm)) return false;
-  return Math.abs(rh * 60 + rm - nowMins) <= 5;
+  return Math.abs(rh * 60 + rm - nowMins) <= 1;
 }
 
 async function hasRecentCall(patientId: string, callType: string): Promise<boolean> {
@@ -86,14 +86,22 @@ async function vapiCheckinCall(phone: string, firstName: string): Promise<string
     customer: { number: formattedPhone },
   };
   
+  // Add voicemail detection — hang up if voicemail answers
+  callBody.phoneCallProvider = 'twilio';
+  callBody.transportConfigurations = [{
+    provider: 'twilio',
+    timeout: 20,
+    machineDetection: 'DetectMessageEnd',
+    asyncAmd: true,
+    asyncAmdStatusCallbackUrl: undefined
+  }];
+
   if (assistantConfig) {
-    // Use inline assistant with full context
     callBody.assistant = {
       ...assistantConfig,
       firstMessage: `Hi ${firstName}! This is Lily from KinCare360 with your daily check-in. How are you feeling today?`
     };
   } else {
-    // Fallback to static Lily if lookup fails
     callBody.assistantId = LILY_ASSISTANT_ID;
     callBody.assistantOverrides = {
       firstMessage: `Hi ${firstName}! This is Lily from KinCare360 with your daily check-in. How are you feeling today?`
@@ -118,6 +126,13 @@ async function vapiMedicationCall(phone: string, firstName: string): Promise<str
   const callBody: any = {
     phoneNumberId: PHONE_NUMBER_ID,
     customer: { number: formattedPhone },
+    phoneCallProvider: 'twilio',
+    transportConfigurations: [{
+      provider: 'twilio',
+      timeout: 20,
+      machineDetection: 'DetectMessageEnd',
+      asyncAmd: true,
+    }]
   };
   
   if (assistantConfig) {
