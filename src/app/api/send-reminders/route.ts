@@ -4,6 +4,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 const VAPI_KEY = '3e6bdfb6-fc6f-4c60-a584-16cfa60e6846';
 const PHONE_NUMBER_ID = '8354bde3-c67c-4316-b181-95c227479b58'; // (812) 515-5252
+const LILY_ASSISTANT_ID = '8dc06b99-9533-4b28-b379-7ed4f07768aa';
 
 function getEtTime(): { etTime: string; nowMins: number } {
   const now = new Date();
@@ -48,36 +49,42 @@ async function logCall(patientId: string, callType: string, callId: string): Pro
   });
 }
 
-async function vapiCheckinCall(phone: string): Promise<string> {
+async function vapiCheckinCall(phone: string, firstName: string): Promise<string> {
   const rawPhone = phone.replace(/\D/g, '');
   const formattedPhone = rawPhone.length === 10 ? `+1${rawPhone}` : `+${rawPhone}`;
-  const res = await fetch('https://api.vapi.ai/call', {
+  const res = await fetch('https://api.vapi.ai/call/phone', {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${VAPI_KEY}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       phoneNumberId: PHONE_NUMBER_ID,
       customer: { number: formattedPhone },
-      serverUrl: 'https://www.kincare360.com/api/vapi-lookup?callType=checkin',
+      assistantId: LILY_ASSISTANT_ID,
+      assistantOverrides: {
+        firstMessage: `Hi ${firstName}! This is Lily from KinCare360 with your daily check-in. How are you feeling today?`
+      }
     })
   });
   const result = await res.json();
-  return result.id || result.error || 'unknown';
+  return result.id || result.error || JSON.stringify(result).substring(0, 100);
 }
 
 async function vapiMedicationCall(phone: string, firstName: string): Promise<string> {
   const rawPhone = phone.replace(/\D/g, '');
   const formattedPhone = rawPhone.length === 10 ? `+1${rawPhone}` : `+${rawPhone}`;
-  const res = await fetch('https://api.vapi.ai/call', {
+  const res = await fetch('https://api.vapi.ai/call/phone', {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${VAPI_KEY}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       phoneNumberId: PHONE_NUMBER_ID,
       customer: { number: formattedPhone },
-      serverUrl: 'https://www.kincare360.com/api/vapi-lookup?callType=medication',
+      assistantId: LILY_ASSISTANT_ID,
+      assistantOverrides: {
+        firstMessage: `Hi ${firstName}! This is Lily from KinCare360. This is your medication reminder — it's time to take your medications. Have you taken them yet?`
+      }
     })
   });
   const result = await res.json();
-  return result.id || result.error || 'unknown';
+  return result.id || result.error || JSON.stringify(result).substring(0, 100);
 }
 
 export async function GET() {
@@ -131,7 +138,7 @@ export async function GET() {
           skipped.push(`${patient.firstName}@${patient.preferredCallTime}: dedup-checkin`);
           continue;
         }
-        const callId = await vapiCheckinCall(patient.phone);
+        const callId = await vapiCheckinCall(patient.phone, patient.firstName || 'there');
         await logCall(patient.id, 'checkin', callId);
         console.log(`[daily-checkin] ${patient.firstName} @ ${patient.preferredCallTime} → ${callId}`);
         checkinSent.push(`${patient.firstName}@${patient.preferredCallTime}: ${callId}`);
