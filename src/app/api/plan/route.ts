@@ -19,7 +19,7 @@ export async function GET() {
   const userId = (session.user as any).id;
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { plan: true, subscriptionStatus: true, stripeCustomerId: true, pendingPlan: true, pendingPlanDate: true },
+    select: { plan: true, subscriptionStatus: true, stripeCustomerId: true, pendingPlan: true, pendingPlanDate: true, patients: { select: { firstName: true, lastName: true }, orderBy: { id: "asc" } } },
   });
 
   let trialEnd: string | null = null;
@@ -38,11 +38,14 @@ export async function GET() {
     }
   }
 
+  const patientNames = (user?.patients || []).map((p: any) => `${p.firstName} ${p.lastName}`);
+
   return Response.json({
     plan: user?.plan || null,
     subscriptionStatus: user?.subscriptionStatus || null,
     trialEnd,
     pendingPlan: user?.pendingPlan || null,
     pendingPlanDate: user?.pendingPlanDate?.toISOString() || null,
+    patientNames,
   });
 }

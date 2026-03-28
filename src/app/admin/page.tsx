@@ -298,7 +298,9 @@ export default async function AdminPage() {
                     const patient = c.patients?.[0];
                     const lastCall = patient?.callLogs?.[0]?.callDate;
                     const totalCalls = patient?._count?.callLogs || 0;
-                    const initials = (c.name || c.email || "?").split(" ").map((w: string) => w[0]).join("").toUpperCase().slice(0, 2);
+                    const patientName = patient ? `${patient.firstName} ${patient.lastName}` : null;
+                    const displayName = patientName || c.name;
+                    const initials = (displayName || c.email || "?").split(" ").map((w: string) => w[0]).join("").toUpperCase().slice(0, 2);
                     return (
                       <tr key={c.id} className={`border-b border-gray-50 hover:bg-blue-50/30 transition-colors cursor-pointer ${i % 2 === 1 ? "bg-gray-50/30" : ""}`}>
                         <td className="px-4 py-4 text-gray-400 text-xs">{i + 1}</td>
@@ -308,7 +310,7 @@ export default async function AdminPage() {
                               {initials}
                             </div>
                             <div>
-                              <div className="font-semibold text-[#0f172a]">{c.name || "\u2014"}</div>
+                              <div className="font-semibold text-[#0f172a]">{displayName || "\u2014"}</div>
                               <div className="text-xs text-gray-400">{c.email}</div>
                             </div>
                           </div>

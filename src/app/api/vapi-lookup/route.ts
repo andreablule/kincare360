@@ -62,10 +62,12 @@ Only if directly asked for medical advice (what to take, dosages, treatments): s
 ## WHAT YOU CAN DO FOR KNOWN CLIENTS
 
 ### CHANGE SETTINGS BY PHONE (CONCIERGE PLAN):
-Concierge clients can ask you to change their medication reminder times, daily check-in time, and check-in days just by asking during a call. Confirm the new values, then use updatePatientProfile to save. Examples:
+Concierge clients can ask you to change their medication reminder times, daily check-in time, and check-in days just by asking during a call. Confirm the new values, then use updatePatientProfile to save. If a client asks to stop medication reminders or check-in calls, confirm they want to turn them off, then use updatePatientProfile with an empty value. Examples:
 - "Change my medication reminder to 9 AM and 9 PM"
 - "Move my check-in call to 3 PM"
 - "Only call me on weekdays"
+- "Stop my medication reminders" → confirm, then set medicationReminderTime to ""
+- "I don't want check-in calls anymore" → confirm, then set preferredCallTime to ""
 
 Always confirm before saving: "So your medication reminders will be at 9 AM and 9 PM, is that right?" Then call the tool.
 
@@ -238,8 +240,6 @@ Home address: ${fmtAddress([patient.address, patient.city, patient.state, patien
 Preferred check-in time: ${patient.preferredCallTime || "not set"}
 Medication reminder time: ${patient.medicationReminderTime || "not set"}
 Check-in days: ${patient.checkInDays || "not set"}
-Preferred language: ${patient.preferredLanguage || "English"}
-
 Medications: ${medList}
 Conditions: ${condList}
 Doctors: ${docList}
@@ -384,15 +384,14 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string, patien
       server: { url: "https://www.kincare360.com/api/vapi-update-patient" },
       function: {
         name: "updatePatientProfile",
-        description: "Update the client's profile settings. Use this when they ask to change medication reminder times, check-in time, check-in days, gender, language, or phone number. Always confirm the new values with the client first, then call this tool to save them.",
+        description: "Update the client's profile settings. Use this when they ask to change medication reminder times, check-in time, check-in days, gender, or phone number. If a client asks to stop medication reminders or check-in calls, confirm they want to turn them off, then use this tool with an empty string value to disable them. Always confirm the new values with the client first, then call this tool to save them.",
         parameters: {
           type: "object",
           properties: {
-            medicationReminderTime: { type: "string", description: "Comma-separated reminder times in HH:MM 24-hour format, e.g. '08:00,12:00,20:00'" },
-            preferredCallTime: { type: "string", description: "Daily check-in time in HH:MM 24-hour format, e.g. '17:00'" },
+            medicationReminderTime: { type: "string", description: "Comma-separated reminder times in HH:MM 24-hour format, e.g. '08:00,12:00,20:00'. Use empty string '' to turn off medication reminders." },
+            preferredCallTime: { type: "string", description: "Daily check-in time in HH:MM 24-hour format, e.g. '17:00'. Use empty string '' to turn off check-in calls." },
             checkInDays: { type: "string", description: "Comma-separated days, e.g. 'Mon,Tue,Wed,Thu,Fri'" },
             gender: { type: "string", description: "male, female, non-binary, or other" },
-            preferredLanguage: { type: "string", description: "e.g. English, Spanish" },
           },
         },
       },

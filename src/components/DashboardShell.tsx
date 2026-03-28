@@ -76,7 +76,7 @@ export default function DashboardShell({ children, user }: { children: React.Rea
           })}
         </nav>
         <div className="p-4 border-t border-gray-100">
-          <div className="text-sm font-medium text-gray-700 truncate">{user?.name || user?.email}</div>
+          <div className="text-sm font-medium text-gray-700 truncate">{user?.displayName || user?.name || user?.email}</div>
           {(userRole === "MANAGER" || userRole === "FAMILY") && (
             <div className="mb-2"><RoleBadge role={userRole} /></div>
           )}
@@ -131,7 +131,7 @@ export default function DashboardShell({ children, user }: { children: React.Rea
         )}
 
         <div className="p-4 border-t border-gray-100">
-          <div className="text-sm font-medium text-gray-700 truncate">{user?.name || user?.email}</div>
+          <div className="text-sm font-medium text-gray-700 truncate">{user?.displayName || user?.name || user?.email}</div>
           {(userRole === "MANAGER" || userRole === "FAMILY") && (
             <div className="mb-2"><RoleBadge role={userRole} /></div>
           )}

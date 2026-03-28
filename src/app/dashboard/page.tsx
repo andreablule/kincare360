@@ -84,7 +84,7 @@ export default async function DashboardPage() {
       <h1 className="text-2xl font-bold text-navy mb-6">
         {(userRole === "FAMILY" || userRole === "MANAGER") && patients[0]?.patient
           ? `Viewing ${patients[0].patient.firstName} ${patients[0].patient.lastName}'s Care 💙`
-          : `Welcome back, ${session?.user?.name?.split(" ")[0] || "there"} 👋`}
+          : `Welcome back, ${patients[0]?.patient?.firstName || session?.user?.name?.split(" ")[0] || "there"} 👋`}
       </h1>
 
       {/* Onboarding card — shown when no patient record exists */}

@@ -29,7 +29,6 @@ export default function AddSecondParentCard() {
     dob: "",
     phone: "",
     gender: "",
-    preferredLanguage: "English",
     address: "",
     city: "",
     state: "",
@@ -149,18 +148,6 @@ export default function AddSecondParentCard() {
               <option value="other">Other</option>
             </select>
           </div>
-          <div>
-            <label className={labelClass}>Preferred Language</label>
-            <select className={inputClass} value={form.preferredLanguage} onChange={(e) => setForm({ ...form, preferredLanguage: e.target.value })}>
-              <option value="English">English</option>
-              <option value="Spanish">Spanish</option>
-              <option value="French">French</option>
-              <option value="Chinese">Chinese</option>
-              <option value="Korean">Korean</option>
-              <option value="Vietnamese">Vietnamese</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
         </div>
 
         <div>
@@ -178,30 +165,50 @@ export default function AddSecondParentCard() {
           <h3 className="text-sm font-semibold text-navy">Call Preferences</h3>
           <div>
             <label className={labelClass}>Preferred Check-In Time</label>
-            <select className={inputClass} value={form.checkInTime} onChange={(e) => setForm({ ...form, checkInTime: e.target.value })}>
-              {timeOptions.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
-            </select>
+            <label className="flex items-center gap-2 mb-2 text-sm text-gray-600 cursor-pointer">
+              <input type="checkbox" checked={form.checkInTime === ""} onChange={e => setForm({ ...form, checkInTime: e.target.checked ? "" : "09:00" })} className="rounded border-gray-300 text-teal focus:ring-teal" />
+              No check-in calls
+            </label>
+            {form.checkInTime !== "" && (
+              <select className={inputClass} value={form.checkInTime} onChange={(e) => setForm({ ...form, checkInTime: e.target.value })}>
+                {timeOptions.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+              </select>
+            )}
           </div>
 
           <div>
             <label className={labelClass}>Medication Reminder Times</label>
-            {form.medicationReminders.map((r, i) => (
-              <div key={i} className="flex items-center gap-2 mb-2">
-                <select className={inputClass} value={r.time} onChange={(e) => {
-                  const updated = [...form.medicationReminders];
-                  updated[i] = { time: e.target.value };
-                  setForm({ ...form, medicationReminders: updated });
-                }}>
-                  {timeOptions.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
-                </select>
-                {form.medicationReminders.length > 1 && (
-                  <button type="button" onClick={() => setForm({ ...form, medicationReminders: form.medicationReminders.filter((_, idx) => idx !== i) })} className="text-red-400 hover:text-red-600 text-sm font-bold px-2">&times;</button>
-                )}
-              </div>
-            ))}
-            <button type="button" onClick={() => setForm({ ...form, medicationReminders: [...form.medicationReminders, { time: "08:00" }] })} className="text-teal text-sm font-medium hover:underline mt-1">
-              + Add another reminder
-            </button>
+            <label className="flex items-center gap-2 mb-2 text-sm text-gray-600 cursor-pointer">
+              <input type="checkbox" checked={form.medicationReminders.length === 0} onChange={e => {
+                if (e.target.checked) {
+                  setForm({ ...form, medicationReminders: [] });
+                } else {
+                  setForm({ ...form, medicationReminders: [{ time: "08:00" }] });
+                }
+              }} className="rounded border-gray-300 text-teal focus:ring-teal" />
+              No medication reminders
+            </label>
+            {form.medicationReminders.length > 0 && (
+              <>
+                {form.medicationReminders.map((r, i) => (
+                  <div key={i} className="flex items-center gap-2 mb-2">
+                    <select className={inputClass} value={r.time} onChange={(e) => {
+                      const updated = [...form.medicationReminders];
+                      updated[i] = { time: e.target.value };
+                      setForm({ ...form, medicationReminders: updated });
+                    }}>
+                      {timeOptions.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+                    </select>
+                    {form.medicationReminders.length > 1 && (
+                      <button type="button" onClick={() => setForm({ ...form, medicationReminders: form.medicationReminders.filter((_, idx) => idx !== i) })} className="text-red-400 hover:text-red-600 text-sm font-bold px-2">&times;</button>
+                    )}
+                  </div>
+                ))}
+                <button type="button" onClick={() => setForm({ ...form, medicationReminders: [...form.medicationReminders, { time: "08:00" }] })} className="text-teal text-sm font-medium hover:underline mt-1">
+                  + Add another reminder
+                </button>
+              </>
+            )}
           </div>
 
           <div>

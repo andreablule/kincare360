@@ -37,7 +37,6 @@ export default function ProfilePage() {
     preferredCallTime: "",
     medicationReminderTime: "",
     checkInDays: "",
-    preferredLanguage: "English",
     gender: "",
   });
   const [medTimes, setMedTimes] = useState<string[]>([""]);
@@ -60,7 +59,6 @@ export default function ProfilePage() {
             preferredCallTime: data.patient.preferredCallTime || "",
             medicationReminderTime: data.patient.medicationReminderTime || "",
             checkInDays: data.patient.checkInDays || "",
-            preferredLanguage: data.patient.preferredLanguage || "English",
             gender: data.patient.gender || "",
           });
           // Split comma-separated med times into array
@@ -87,7 +85,8 @@ export default function ProfilePage() {
     setSuccess(false);
     const payload = {
       ...form,
-      medicationReminderTime: medTimes.filter(Boolean).join(','),
+      preferredCallTime: form.preferredCallTime === "NONE" ? "" : form.preferredCallTime,
+      medicationReminderTime: medTimes[0] === "NONE" ? "" : medTimes.filter(Boolean).join(','),
       gender: form.gender || null,
     };
     const patchUrl = patientQuery ? `/api/patient?${patientQuery}` : "/api/patient";
@@ -179,38 +178,58 @@ export default function ProfilePage() {
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-navy mb-1">Preferred Call Time</label>
-            <select className={inputClass} value={form.preferredCallTime} onChange={(e) => setForm({ ...form, preferredCallTime: e.target.value })}>
-              <option value="">Select a time</option>
-              {timeOptions.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
-            </select>
+            <label className="flex items-center gap-2 mb-2 text-sm text-gray-600 cursor-pointer">
+              <input type="checkbox" checked={form.preferredCallTime === "NONE"} onChange={e => setForm({ ...form, preferredCallTime: e.target.checked ? "NONE" : "" })} className="rounded border-gray-300 text-teal focus:ring-teal" />
+              No check-in calls
+            </label>
+            {form.preferredCallTime !== "NONE" && (
+              <select className={inputClass} value={form.preferredCallTime} onChange={(e) => setForm({ ...form, preferredCallTime: e.target.value })}>
+                <option value="">Select a time</option>
+                {timeOptions.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+              </select>
+            )}
             <p className="text-xs text-gray-400 mt-1">When should Lily call for the daily check-in?</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-navy mb-1">Medication Reminder Times</label>
-            {medTimes.map((t, i) => (
-              <div key={i} className="flex items-center gap-2 mb-2">
-                <select
-                  className={inputClass}
-                  value={t}
-                  onChange={e => {
-                    const updated = [...medTimes];
-                    updated[i] = e.target.value;
-                    setMedTimes(updated);
-                  }}
-                >
-                  <option value="">Select a time</option>
-                  {timeOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-                </select>
-                {medTimes.length > 1 && (
-                  <button type="button" onClick={() => setMedTimes(medTimes.filter((_, idx) => idx !== i))}
-                    className="text-red-400 hover:text-red-600 text-lg font-bold px-1 flex-shrink-0">✕</button>
-                )}
-              </div>
-            ))}
-            <button type="button" onClick={() => setMedTimes([...medTimes, ""])}
-              className="text-teal text-sm font-medium hover:underline mt-1">
-              + Add another reminder time
-            </button>
+            <label className="flex items-center gap-2 mb-2 text-sm text-gray-600 cursor-pointer">
+              <input type="checkbox" checked={medTimes.length === 0 || (medTimes.length === 1 && medTimes[0] === "NONE")} onChange={e => {
+                if (e.target.checked) {
+                  setMedTimes(["NONE"]);
+                } else {
+                  setMedTimes([""]);
+                }
+              }} className="rounded border-gray-300 text-teal focus:ring-teal" />
+              No medication reminders
+            </label>
+            {!(medTimes.length === 0 || (medTimes.length === 1 && medTimes[0] === "NONE")) && (
+              <>
+                {medTimes.map((t, i) => (
+                  <div key={i} className="flex items-center gap-2 mb-2">
+                    <select
+                      className={inputClass}
+                      value={t}
+                      onChange={e => {
+                        const updated = [...medTimes];
+                        updated[i] = e.target.value;
+                        setMedTimes(updated);
+                      }}
+                    >
+                      <option value="">Select a time</option>
+                      {timeOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                    </select>
+                    {medTimes.length > 1 && (
+                      <button type="button" onClick={() => setMedTimes(medTimes.filter((_, idx) => idx !== i))}
+                        className="text-red-400 hover:text-red-600 text-lg font-bold px-1 flex-shrink-0">✕</button>
+                    )}
+                  </div>
+                ))}
+                <button type="button" onClick={() => setMedTimes([...medTimes, ""])}
+                  className="text-teal text-sm font-medium hover:underline mt-1">
+                  + Add another reminder time
+                </button>
+              </>
+            )}
             <p className="text-xs text-gray-400 mt-1">Lily will call at each time to remind about medications</p>
           </div>
         </div>

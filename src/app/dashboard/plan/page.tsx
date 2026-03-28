@@ -99,6 +99,7 @@ export default function PlanPage() {
   const [trialEnd, setTrialEnd] = useState<string | null>(null);
   const [pendingPlan, setPendingPlan] = useState<string | null>(null);
   const [pendingPlanDate, setPendingPlanDate] = useState<string | null>(null);
+  const [patientNames, setPatientNames] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [upgrading, setUpgrading] = useState<string | null>(null);
   const [cancelingDowngrade, setCancelingDowngrade] = useState(false);
@@ -112,6 +113,7 @@ export default function PlanPage() {
         setTrialEnd(data.trialEnd || null);
         setPendingPlan(data.pendingPlan || null);
         setPendingPlanDate(data.pendingPlanDate || null);
+        setPatientNames(data.patientNames || []);
         setLoading(false);
       });
   }
@@ -247,6 +249,12 @@ export default function PlanPage() {
       )}
 
       <h1 className="text-2xl font-bold text-navy mb-2">Plan Management</h1>
+
+      {patientNames.length > 0 && (
+        <p className="text-sm text-gray-500 mb-4">
+          {patientNames.length > 1 ? "Account Holders" : "Account Holder"}: <span className="font-semibold text-navy">{patientNames.join(" & ")}</span>
+        </p>
+      )}
 
       {/* Current plan status banner */}
       <div className="bg-white rounded-2xl border border-gray-100 p-5 mb-6 max-w-2xl">

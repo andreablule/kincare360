@@ -293,28 +293,48 @@ export default function IntakePage() {
               <div className="border border-teal/20 rounded-xl p-4 space-y-4 bg-teal/5 mt-2">
                 <h3 className="text-sm font-semibold text-navy">📞 Call Preferences</h3>
                 <div>
-                  <label className={labelClass}>Daily Wellness Check-In Time *</label>
-                  <select className={inputClass} value={form.checkInTime} onChange={e => update('checkInTime', e.target.value)}>
-                    {timeOptions.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
-                  </select>
+                  <label className={labelClass}>Daily Wellness Check-In Time</label>
+                  <label className="flex items-center gap-2 mb-2 text-sm text-gray-600 cursor-pointer">
+                    <input type="checkbox" checked={form.checkInTime === ""} onChange={e => update('checkInTime', e.target.checked ? "" : "09:00")} className="rounded border-gray-300 text-teal focus:ring-teal" />
+                    No check-in calls
+                  </label>
+                  {form.checkInTime !== "" && (
+                    <select className={inputClass} value={form.checkInTime} onChange={e => update('checkInTime', e.target.value)}>
+                      {timeOptions.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+                    </select>
+                  )}
                 </div>
 
                 {/* Multiple Medication Reminders */}
                 <div>
-                  <label className={labelClass}>Medication Reminder Times *</label>
-                  {form.medicationReminders.map((reminder, index) => (
-                    <div key={index} className="flex items-center gap-2 mb-2">
-                      <select className={inputClass} value={reminder.time} onChange={e => updateMedicationReminder(index, e.target.value)}>
-                        {timeOptions.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
-                      </select>
-                      {form.medicationReminders.length > 1 && (
-                        <button type="button" onClick={() => removeMedicationReminder(index)} className="text-red-400 hover:text-red-600 text-sm font-bold px-2">✕</button>
-                      )}
-                    </div>
-                  ))}
-                  <button type="button" onClick={addMedicationReminder} className="text-teal text-sm font-medium hover:underline mt-1">
-                    + Add another reminder time
-                  </button>
+                  <label className={labelClass}>Medication Reminder Times</label>
+                  <label className="flex items-center gap-2 mb-2 text-sm text-gray-600 cursor-pointer">
+                    <input type="checkbox" checked={form.medicationReminders.length === 0} onChange={e => {
+                      if (e.target.checked) {
+                        setForm(prev => ({ ...prev, medicationReminders: [] }));
+                      } else {
+                        setForm(prev => ({ ...prev, medicationReminders: [{ time: "08:00" }] }));
+                      }
+                    }} className="rounded border-gray-300 text-teal focus:ring-teal" />
+                    No medication reminders
+                  </label>
+                  {form.medicationReminders.length > 0 && (
+                    <>
+                      {form.medicationReminders.map((reminder, index) => (
+                        <div key={index} className="flex items-center gap-2 mb-2">
+                          <select className={inputClass} value={reminder.time} onChange={e => updateMedicationReminder(index, e.target.value)}>
+                            {timeOptions.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+                          </select>
+                          {form.medicationReminders.length > 1 && (
+                            <button type="button" onClick={() => removeMedicationReminder(index)} className="text-red-400 hover:text-red-600 text-sm font-bold px-2">✕</button>
+                          )}
+                        </div>
+                      ))}
+                      <button type="button" onClick={addMedicationReminder} className="text-teal text-sm font-medium hover:underline mt-1">
+                        + Add another reminder time
+                      </button>
+                    </>
+                  )}
                   <p className="text-xs text-gray-400 mt-1">Lily will call at each time to remind about medications</p>
                 </div>
 
