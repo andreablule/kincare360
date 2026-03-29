@@ -75,23 +75,43 @@ export async function POST(req: NextRequest) {
         <p style="color:#999;font-size:12px;">— KinCare360 Automated Emergency Alert</p>
       </div>`;
 
-    // Send SMS and email to all family members
+    // Send alerts to all family members via SMS + email + VAPI call
     let alerted = 0;
     for (const member of patient.familyMembers) {
+      // Try SMS (may fail if A2P 10DLC not approved yet)
       if (member.phone) {
         const digits = member.phone.replace(/\D/g, "").slice(-10);
         if (digits.length === 10) {
-          await sendSMS(`+1${digits}`, smsMsg);
+          try { await sendSMS(`+1${digits}`, smsMsg); } catch (e) { console.error(`[emergency-alert] SMS failed for ${member.name}:`, e); }
+          // Also make an emergency VAPI call to the family member
+          try {
+            await fetch("https://api.vapi.ai/call/phone", {
+              method: "POST",
+              headers: { "Authorization": "Bearer 3e6bdfb6-fc6f-4c60-a584-16cfa60e6846", "Content-Type": "application/json" },
+              body: JSON.stringify({
+                phoneNumberId: "8354bde3-c67c-4316-b181-95c227479b58",
+                customer: { number: `+1${digits}` },
+                assistantId: "8dc06b99-9533-4b28-b379-7ed4f07768aa",
+                assistantOverrides: {
+                  firstMessage: `This is an emergency alert from KinCare360. ${patientName} ${description}. Please check on them immediately or call nine one one. This is an automated emergency notification.`,
+                  maxDurationSeconds: 60
+                }
+              })
+            });
+            console.log(`[emergency-alert] Emergency call placed to ${member.name} at +1${digits}`);
+          } catch (e) { console.error(`[emergency-alert] VAPI call failed for ${member.name}:`, e); }
           alerted++;
         }
       }
+      // Always send email
       if (member.email) {
-        await sendEmail(member.email, `🚨 Emergency Alert: ${patientName}`, emailHtml);
+        try { await sendEmail(member.email, `🚨 Emergency Alert: ${patientName}`, emailHtml); } catch (e) { console.error(`[emergency-alert] Email failed for ${member.name}:`, e); }
       }
     }
 
-    // Always alert Andrea (the owner)
-    await sendSMS(`+1${alertPhone.replace(/\D/g, "").slice(-10)}`, smsMsg);
+    // Always alert Andrea (the owner) — SMS + call
+    const ownerDigits = alertPhone.replace(/\D/g, "").slice(-10);
+    try { await sendSMS(`+1${ownerDigits}`, smsMsg); } catch (e) { console.error("[emergency-alert] Owner SMS failed:", e); }
     alerted++;
 
     console.log(`[emergency-alert] Sent to ${alerted} contacts for ${patientName}: ${description}`);
