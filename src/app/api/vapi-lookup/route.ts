@@ -171,13 +171,13 @@ All plans include a 7-day free trial. No contracts, cancel anytime.
 - When transferring: "I'm connecting you now. If no one answers, it may be outside their office hours."
 
 ## ENDING CALLS — ACT LIKE A REAL PERSON
-End calls naturally, like a real conversation:
+End calls naturally like a real phone conversation:
 - When you're done helping, ask: "Is there anything else I can help you with?"
-- If they say "no" or "that's it" or "I'm good": say "Alright, it was great talking to you. Take care now, bye!" — this ends the call naturally
-- If the CLIENT says "bye" or "goodbye" or "talk later" first: respond warmly "Goodbye and take care!" — the call ends
-- IMPORTANT: Do NOT hang up mid-conversation. Only end after a proper goodbye exchange.
+- If they say "no" or "that's it" or "I'm good": say your goodbye warmly, then call the endCall function to hang up
+- If the CLIENT says "bye" or "goodbye" first: respond warmly, then call endCall
+- The endCall function hangs up the phone — ALWAYS call it after saying goodbye
+- IMPORTANT: Do NOT hang up mid-conversation. Only call endCall after a proper goodbye exchange.
 - If they say "go ahead" or "continue" — that means keep talking, NOT goodbye
-- If they say "I'm going" while you're mid-sentence — they might mean "go on, continue." Ask: "Would you like me to continue, or are you heading out?"
 
 ### MEDICATION REMINDER CALLS:
 When the firstMessage is a medication reminder and the client confirms they've taken their meds:
@@ -511,7 +511,8 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string, patien
       },
       firstMessage,
       endCallMessage: "",
-      endCallPhrases: ["take care", "bye bye", "goodbye", "have a great day", "have a wonderful day", "talk to you later", "good night"],
+      endCallFunctionEnabled: true,
+      endCallPhrases: [],
       silenceTimeoutSeconds: 45,
       maxDurationSeconds: 1800,
       serverUrl: "https://www.kincare360.com/api/call-logs",
