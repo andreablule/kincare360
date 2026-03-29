@@ -197,19 +197,23 @@ NOT every pain or discomfort is an emergency. Use good judgment:
 - Client explicitly says "call 911" or "I need help"
 - Stroke symptoms (slurred speech, face drooping, arm weakness)
 
-**NOT EMERGENCIES (handle normally, do NOT alert family):**
+**CONCERNS (NOT emergencies — send concern alert to family via email):**
 - General aches and pains (ankle, knee, back, hip pain)
 - Headache, stomach ache
 - Feeling tired or not well
 - Missed medications
-- Any pain they can describe calmly and are managing
+- Not eating or poor appetite
+- Feeling lonely, sad, or anxious
+- Any pain they can describe calmly
 
-For non-emergency pain:
+For concerns:
 1. Ask follow-up questions (where, how bad, how long, what helps)
 2. Suggest they contact their doctor if it persists
 3. Offer to connect them to their doctor's office
-4. Do NOT call sendEmergencyAlert
-5. Do NOT automatically transfer to family — only if they ASK
+4. Call sendConcernAlert to notify family via email — they should know about ANY health concern
+5. Use riskLevel: "low" (minor ache, feeling tired), "medium" (significant pain, missed meds), or "high" (severe pain, multiple missed meds, confusion)
+6. Do NOT call sendEmergencyAlert — that's for true emergencies only
+7. Do NOT automatically transfer to family — only if they ASK
 
 For true emergencies:
 1. Call sendEmergencyAlert with a description
@@ -356,6 +360,22 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string, patien
           required: ["emergencyDescription"],
           properties: {
             emergencyDescription: { type: "string", description: "Brief description of the emergency, e.g. 'had a fall and cannot get up'" },
+          },
+        },
+      },
+    },
+    {
+      type: "function",
+      server: { url: "https://www.kincare360.com/api/concern-alert" },
+      function: {
+        name: "sendConcernAlert",
+        description: "Send a non-emergency concern update to family members via email. Use for: pain, missed medications, not eating, feeling unwell, sadness, loneliness, or any health concern that is NOT an emergency. Family should be aware of ALL concerns — that is what they are paying for.",
+        parameters: {
+          type: "object",
+          required: ["concernDescription", "riskLevel"],
+          properties: {
+            concernDescription: { type: "string", description: "Brief description, e.g. 'reported ankle pain rated 8/10, started this morning'" },
+            riskLevel: { type: "string", enum: ["low", "medium", "high"], description: "low = minor (tired, small ache), medium = notable (significant pain, missed meds), high = serious but not emergency (severe pain, confusion, multiple missed doses)" },
           },
         },
       },
@@ -631,7 +651,7 @@ Be natural and conversational — these are NOT rapid-fire questions. Listen to 
 
 After covering all topics, end warmly: 'It was wonderful talking with you. Have a wonderful day!'
 
-IMPORTANT: Regular pain (ankle, back, hip, headache) is NOT an emergency. Ask follow-up questions, suggest contacting their doctor, offer to connect them. Only trigger the emergency protocol for TRUE emergencies: falls where they can't get up, chest pain, breathing difficulty, stroke symptoms, or if they explicitly ask for help/911.`);
+IMPORTANT: Regular pain (ankle, back, hip, headache) is NOT an emergency. Ask follow-up questions, suggest contacting their doctor, offer to connect them. Use sendConcernAlert to notify family about ANY health concern — pain, missed meds, not eating, feeling unwell. Only trigger sendEmergencyAlert for TRUE emergencies: falls where they can't get up, chest pain, breathing difficulty, stroke symptoms, or if they explicitly ask for help/911.`);
         firstMessage = `Good ${greeting}, ${patient.firstName}! This is Lily from KinCare360 with your daily check-in. How are you feeling today?`;
         console.log(`[vapi-lookup] Check-in call for: ${patient.firstName} ${patient.lastName} (${digits})`);
       } else if (callType === 'medication') {

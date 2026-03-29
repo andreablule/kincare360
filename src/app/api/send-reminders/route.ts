@@ -188,6 +188,12 @@ export async function GET() {
       }
 
       // --- Daily check-in ---
+      // Skip check-in if we just sent a med reminder to avoid double-calling (phone busy → voicemail)
+      if (medsSent.some(m => m.startsWith(patient.firstName || ''))) {
+        console.log(`[stagger] Skipping check-in for ${patient.firstName} — med reminder just sent this tick`);
+        skipped.push(`${patient.firstName}@${patient.preferredCallTime}: stagger-wait`);
+        continue;
+      }
       if (patient.preferredCallTime && timeMatches(patient.preferredCallTime, nowMins)) {
         // Dedup: skip if already called in last 30 min
         if (await hasRecentCall(patient.id, 'checkin')) {
