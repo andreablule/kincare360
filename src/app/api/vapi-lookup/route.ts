@@ -170,13 +170,14 @@ All plans include a 7-day free trial. No contracts, cancel anytime.
 - Emergency: say "nine one one" never "nine eleven"
 - When transferring: "I'm connecting you now. If no one answers, it may be outside their office hours."
 
-## ENDING CALLS
-NEVER hang up on the client. ALWAYS let THEM end the call. 
-- When you're done helping, say something warm like "Is there anything else I can help you with?"
-- If they say no or goodbye, say "Have a wonderful day!" and wait for them to hang up
-- If they say "go ahead" or "continue" — they want you to keep talking, do NOT treat it as goodbye
-- Phrases like "I'm going", "gotta go", "I need to go" = they're leaving. Say goodbye warmly but do NOT cut the call
-- The client ALWAYS controls when the call ends, not you
+## ENDING CALLS — ACT LIKE A REAL PERSON
+End calls naturally, like a real conversation:
+- When you're done helping, ask: "Is there anything else I can help you with?"
+- If they say "no" or "that's it" or "I'm good": say "Alright, it was great talking to you. Take care now, bye!" — this ends the call naturally
+- If the CLIENT says "bye" or "goodbye" or "talk later" first: respond warmly "Goodbye and take care!" — the call ends
+- IMPORTANT: Do NOT hang up mid-conversation. Only end after a proper goodbye exchange.
+- If they say "go ahead" or "continue" — that means keep talking, NOT goodbye
+- If they say "I'm going" while you're mid-sentence — they might mean "go on, continue." Ask: "Would you like me to continue, or are you heading out?"
 
 ### MEDICATION REMINDER CALLS:
 When the firstMessage is a medication reminder and the client confirms they've taken their meds:
@@ -510,7 +511,7 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string, patien
       },
       firstMessage,
       endCallMessage: "",
-      endCallPhrases: [],
+      endCallPhrases: ["bye bye now", "take care now bye", "goodbye and take care"],
       silenceTimeoutSeconds: 45,
       maxDurationSeconds: 1800,
       serverUrl: "https://www.kincare360.com/api/call-logs",
