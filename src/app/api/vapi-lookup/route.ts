@@ -511,7 +511,7 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string, patien
       },
       firstMessage,
       endCallMessage: "",
-      endCallPhrases: ["bye bye now", "take care now bye", "goodbye and take care"],
+      endCallPhrases: ["take care", "bye bye", "goodbye", "have a great day", "have a wonderful day", "talk to you later", "good night"],
       silenceTimeoutSeconds: 45,
       maxDurationSeconds: 1800,
       serverUrl: "https://www.kincare360.com/api/call-logs",
