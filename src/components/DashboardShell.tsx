@@ -113,7 +113,7 @@ export default function DashboardShell({ children, user }: { children: React.Rea
         </nav>
 
         {(user?.role === "ADMIN" || user?.email === "hello@kincare360.com") && (
-          <div className="px-4 pt-2">
+          <div className="px-4 pt-2 space-y-1">
             <Link
               href="/admin"
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
@@ -126,6 +126,19 @@ export default function DashboardShell({ children, user }: { children: React.Rea
                 <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" />
               </svg>
               Admin
+            </Link>
+            <Link
+              href="/admin/calls"
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                pathname === "/admin/calls"
+                  ? "bg-teal/10 text-teal"
+                  : "text-gray-600 hover:bg-gray-50 hover:text-navy"
+              }`}
+            >
+              <svg className={`w-5 h-5 ${pathname === "/admin/calls" ? "text-teal" : "text-gray-400"}`} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+              </svg>
+              Call Logs
             </Link>
           </div>
         )}
