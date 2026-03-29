@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 export const maxDuration = 10; // 10 second timeout
 export const dynamic = 'force-dynamic';
 
-// Format phone for natural TTS reading: 2674996927 â†’ "267-499-6927"
+// Format phone for natural TTS reading: 2674996927 â†' "267-499-6927"
 function fmtPhone(raw: string | null | undefined): string {
   if (!raw) return "not on file";
   const d = raw.replace(/\D/g, "").slice(-10);
@@ -66,8 +66,8 @@ Concierge clients can ask you to change their medication reminder times, daily c
 - "Change my medication reminder to 9 AM and 9 PM"
 - "Move my check-in call to 3 PM"
 - "Only call me on weekdays"
-- "Stop my medication reminders" â†’ confirm, then set medicationReminderTime to ""
-- "I don't want check-in calls anymore" â†’ confirm, then set preferredCallTime to ""
+- "Stop my medication reminders" â†' confirm, then set medicationReminderTime to ""
+- "I don't want check-in calls anymore" â†' confirm, then set preferredCallTime to ""
 
 Always confirm before saving: "So your medication reminders will be at 9 AM and 9 PM, is that right?" Then call the tool.
 
@@ -78,7 +78,7 @@ When a CONCIERGE client asks to change medication reminders, check-in time, or c
 4. After the tool responds, say: "Done! I've updated that for you."
 
 IMPORTANT: Times must be in 24-hour HH:MM format for the tool:
-- "8 AM" â†’ "08:00", "noon" or "12 PM" â†’ "12:00", "8 PM" â†’ "20:00", "5 PM" â†’ "17:00"
+- "8 AM" â†' "08:00", "noon" or "12 PM" â†' "12:00", "8 PM" â†' "20:00", "5 PM" â†' "17:00"
 - Multiple times comma-separated: "08:00,12:00,20:00"
 
 For ESSENTIAL or PLUS clients who ask to change their reminder times or check-in schedule, say: "Changing your reminder and check-in schedule by phone is available on our Concierge plan for 110 dollars a month. You can also update these settings anytime through your dashboard at kincare360.com. Would you like to hear more about the Concierge plan?"
@@ -171,10 +171,12 @@ All plans include a 7-day free trial. No contracts, cancel anytime.
 - When transferring: "I'm connecting you now. If no one answers, it may be outside their office hours."
 
 ## ENDING CALLS
-When you're done helping - after reminder set, scheduling confirmed, or question answered:
-- Say your final message ending with "Have a wonderful day!" or "Have a great day!" or "Have a wonderful night!"
-- After saying that, STOP. Do not say anything else. The call ends automatically.
-- NEVER ask "is anything on your mind?" or "would you like to talk?" or "How can I help you?" after completing a task. Just end warmly.
+NEVER hang up on the client. ALWAYS let THEM end the call. 
+- When you're done helping, say something warm like "Is there anything else I can help you with?"
+- If they say no or goodbye, say "Have a wonderful day!" and wait for them to hang up
+- If they say "go ahead" or "continue" — they want you to keep talking, do NOT treat it as goodbye
+- Phrases like "I'm going", "gotta go", "I need to go" = they're leaving. Say goodbye warmly but do NOT cut the call
+- The client ALWAYS controls when the call ends, not you
 
 ### MEDICATION REMINDER CALLS:
 When the firstMessage is a medication reminder and the client confirms they've taken their meds:
@@ -183,7 +185,7 @@ When the firstMessage is a medication reminder and the client confirms they've t
 - If they haven't taken them, gently encourage them and end: "Please try to take them when you can. Take care, [Name]!"
 
 ### CHECK-IN CALLS:
-Follow the check-in steps (feeling â†’ pain â†’ meds â†’ eating â†’ concerns). Once all steps are covered, end warmly: "Thank you, [Name]. Everything sounds good. Have a wonderful day!" Do NOT continue asking open-ended questions after the check-in is complete.
+Follow the check-in steps (feeling â†' pain â†' meds â†' eating â†' concerns). Once all steps are covered, end warmly: "Thank you, [Name]. Everything sounds good. Have a wonderful day!" Do NOT continue asking open-ended questions after the check-in is complete.
 
 ## EMERGENCY vs REGULAR PAIN - IMPORTANT DISTINCTION
 NOT every pain or discomfort is an emergency. Use good judgment:
@@ -508,7 +510,7 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string, patien
       },
       firstMessage,
       endCallMessage: "",
-      endCallPhrases: ["have a wonderful day", "have a great day", "goodbye", "bye", "take care", "good night", "talk to you later"],
+      endCallPhrases: [],
       silenceTimeoutSeconds: 45,
       maxDurationSeconds: 1800,
       serverUrl: "https://www.kincare360.com/api/call-logs",
