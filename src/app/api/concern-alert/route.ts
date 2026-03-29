@@ -2,6 +2,23 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import nodemailer from "nodemailer";
 
+const twilioSid = process.env.TWILIO_ACCOUNT_SID!;
+const twilioToken = process.env.TWILIO_AUTH_TOKEN!;
+const twilioPhone = process.env.TWILIO_PHONE_NUMBER!;
+
+async function sendSMS(to: string, body: string) {
+  const auth = Buffer.from(`${twilioSid}:${twilioToken}`).toString("base64");
+  try {
+    await fetch(`https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`, {
+      method: "POST",
+      headers: { Authorization: `Basic ${auth}`, "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ To: to, From: twilioPhone, Body: body }).toString(),
+    });
+  } catch (e) {
+    console.error("[concern-alert] SMS failed:", e);
+  }
+}
+
 async function sendEmail(to: string, subject: string, html: string) {
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com", port: 587, secure: false,
@@ -83,18 +100,29 @@ export async function POST(req: NextRequest) {
 
     const subject = `${config.emoji} ${patientName} — ${config.label}: ${description.substring(0, 50)}`;
 
-    // Send email to all family members
+    // Send SMS + email to all family members
+    const smsMsg = `${config.emoji} KinCare360 — ${config.label}\n\n${patientName} ${description}.\n\nTime: ${now}\n\n${level === "high" ? "This may need attention soon." : "Keeping you informed."}\n\nView dashboard: kincare360.com/dashboard`;
+
     let alerted = 0;
     for (const member of patient.familyMembers) {
+      // SMS
+      if (member.phone) {
+        const digits = member.phone.replace(/\D/g, "").slice(-10);
+        if (digits.length === 10) {
+          await sendSMS(`+1${digits}`, smsMsg);
+          console.log(`[concern-alert] SMS sent to ${member.name} (+1${digits})`);
+        }
+      }
+      // Email
       if (member.email) {
         try {
           await sendEmail(member.email, subject, emailHtml);
-          alerted++;
           console.log(`[concern-alert] Email sent to ${member.name} (${member.email})`);
         } catch (e) {
           console.error(`[concern-alert] Email failed for ${member.name}:`, e);
         }
       }
+      alerted++;
     }
 
     console.log(`[concern-alert] ${config.label} alert for ${patientName}: ${description} — notified ${alerted} family members`);
