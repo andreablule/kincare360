@@ -36,6 +36,9 @@ function PartnersContent() {
   const [stats, setStats] = useState<ReferralStats | null>(null);
   const [connectLoading, setConnectLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showLookup, setShowLookup] = useState(false);
+  const [lookupValue, setLookupValue] = useState("");
+  const [lookupLoading, setLookupLoading] = useState(false);
 
   // If code in URL, load stats
   useEffect(() => {
@@ -294,6 +297,57 @@ ${result.link}
             </div>
           </div>
         ) : (
+          {/* Returning partner lookup */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-4">
+            <button
+              type="button"
+              onClick={() => setShowLookup(!showLookup)}
+              className="w-full flex items-center justify-between text-sm font-medium text-navy"
+            >
+              <span>Already a partner? Check your referrals</span>
+              <svg className={`w-4 h-4 transition-transform ${showLookup ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+            </button>
+            {showLookup && (
+              <div className="mt-3 flex gap-2">
+                <input
+                  type="text"
+                  value={lookupValue}
+                  onChange={(e) => setLookupValue(e.target.value)}
+                  placeholder="Your code or email"
+                  className="flex-1 border border-gray-300 rounded-xl px-4 py-2.5 text-navy text-sm focus:outline-none focus:ring-2 focus:ring-teal"
+                />
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (!lookupValue.trim()) return;
+                    setLookupLoading(true);
+                    try {
+                      // Try as code first, then as email
+                      let res = await fetch(`/api/referral?code=${encodeURIComponent(lookupValue.trim())}`);
+                      if (!res.ok && lookupValue.includes("@")) {
+                        res = await fetch(`/api/referral?email=${encodeURIComponent(lookupValue.trim())}`);
+                      }
+                      const data = await res.json();
+                      if (data.code) {
+                        setStats(data);
+                        setResult({ code: data.code, link: `https://kincare360.com/register?ref=${data.code}` });
+                      } else {
+                        setError("No referral found. Check your code or email.");
+                      }
+                    } catch {
+                      setError("Something went wrong. Try again.");
+                    }
+                    setLookupLoading(false);
+                  }}
+                  disabled={lookupLoading}
+                  className="bg-teal text-white px-5 py-2.5 rounded-xl font-semibold text-sm hover:bg-teal-dark transition-colors disabled:opacity-40"
+                >
+                  {lookupLoading ? "..." : "Go"}
+                </button>
+              </div>
+            )}
+          </div>
+
           <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
             <p className="text-sm text-gray-600 mb-2">
               Sign up below to get your unique partner referral code. Earn $50 for every new KinCare360 subscription.

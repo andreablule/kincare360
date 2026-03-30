@@ -185,14 +185,24 @@ ${link}
 export async function GET(req: NextRequest) {
   try {
     const code = new URL(req.url).searchParams.get("code");
-    if (!code) {
-      return NextResponse.json({ error: "Code is required" }, { status: 400 });
+    const email = new URL(req.url).searchParams.get("email");
+
+    if (!code && !email) {
+      return NextResponse.json({ error: "Code or email is required" }, { status: 400 });
     }
 
-    const referral = await prisma.referral.findUnique({
-      where: { code },
-      include: { conversions: true },
-    });
+    let referral;
+    if (code) {
+      referral = await prisma.referral.findUnique({
+        where: { code },
+        include: { conversions: true },
+      });
+    } else if (email) {
+      referral = await prisma.referral.findFirst({
+        where: { referrerEmail: email },
+        include: { conversions: true },
+      });
+    }
 
     if (!referral) {
       return NextResponse.json({ error: "Referral code not found" }, { status: 404 });
