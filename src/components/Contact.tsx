@@ -10,7 +10,7 @@ export default function Contact() {
         <img
           src="/lily-avatar.png"
           alt="Lily - KinCare360 AI Care Concierge"
-          className="w-36 h-36 sm:w-44 sm:h-44 rounded-full ring-4 ring-teal shadow-xl object-cover mx-auto mb-6"
+          className="w-48 h-60 sm:w-56 sm:h-72 object-cover object-top rounded-3xl shadow-xl ring-4 ring-teal mx-auto mb-6"
         />
         <p className="text-xl font-semibold text-navy mb-2">Talk to Lily</p>
         <p className="text-gray-500 text-lg mb-10">

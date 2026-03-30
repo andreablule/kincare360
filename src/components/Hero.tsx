@@ -12,45 +12,40 @@ export default function Hero() {
               appointment coordination for your aging parent — 24/7, every single day.
               Automated care. Total peace of mind. Starting at $99/month.
             </p>
-            {/* Meet Lily - prominent avatar */}
-            <div className="mt-8 flex flex-col items-center sm:items-start gap-5">
-              <div className="flex items-center gap-5">
-                <img
-                  src="/lily-avatar.png"
-                  alt="Lily - KinCare360 AI Care Concierge"
-                  className="w-28 h-28 sm:w-36 sm:h-36 rounded-full ring-4 ring-teal shadow-xl object-cover flex-shrink-0"
-                />
-                <div>
-                  <p className="text-lg sm:text-xl font-bold text-navy">Meet Lily</p>
-                  <p className="text-sm sm:text-base text-gray-500">Your AI care concierge</p>
-                  <p className="text-xs text-teal font-medium mt-1">Available 24/7 · Always caring</p>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <a
-                  href="/register"
-                  className="bg-teal text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-teal-dark transition-colors shadow-lg"
-                >
-                  Start Your Free Trial &rarr;
-                </a>
-                <a
-                  href="#how-it-works"
-                  className="border-2 border-teal text-teal px-8 py-4 rounded-full font-semibold text-lg hover:bg-teal hover:text-white transition-colors"
-                >
-                  See How It Works
-                </a>
-              </div>
+            {/* CTA buttons */}
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a
+                href="/register"
+                className="bg-teal text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-teal-dark transition-colors shadow-lg"
+              >
+                Start Your Free Trial &rarr;
+              </a>
+              <a
+                href="#how-it-works"
+                className="border-2 border-teal text-teal px-8 py-4 rounded-full font-semibold text-lg hover:bg-teal hover:text-white transition-colors"
+              >
+                See How It Works
+              </a>
             </div>
             <p className="mt-3 text-sm text-gray-400">7-day free trial · No contracts · Cancel anytime</p>
+
+            {/* Lily mobile - visible only on small screens */}
+            <div className="mt-8 md:hidden flex justify-center">
+              <img
+                src="/lily-avatar.png"
+                alt="Lily - KinCare360 AI Care Concierge"
+                className="w-64 h-80 object-cover object-top rounded-3xl shadow-xl"
+              />
+            </div>
           </div>
 
-          {/* Hero image */}
+          {/* Lily - Hero portrait */}
           <div className="hidden md:block animate-fade-in">
             <div className="relative w-full max-w-md mx-auto">
               <img
-                src="/hero-family.png"
-                alt="Adult family member caring for elderly parent at home"
-                className="w-full h-[600px] object-cover rounded-3xl shadow-2xl"
+                src="/lily-avatar.png"
+                alt="Lily - KinCare360 AI Care Concierge"
+                className="w-full h-[600px] object-cover object-top rounded-3xl shadow-2xl"
               />
               {/* Floating badge bottom left */}
               <div className="absolute -bottom-5 -left-5 bg-white rounded-2xl shadow-lg px-5 py-4 flex items-center gap-3">
