@@ -91,11 +91,11 @@ export default function Services() {
               className="animate-on-scroll bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
             >
               {/* Service Image */}
-              <div className="relative overflow-hidden h-48">
+              <div className="relative overflow-hidden h-56">
                 <img
                   src={service.image}
                   alt={service.alt}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover object-top"
                   loading="lazy"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-navy/60 to-transparent" />
