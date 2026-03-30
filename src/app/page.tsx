@@ -4,7 +4,7 @@ import Problem from "@/components/Problem";
 import HowItWorks from "@/components/HowItWorks";
 import Services from "@/components/Services";
 import Pricing from "@/components/Pricing";
-import CTASection from "@/components/CTASection";
+
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import ScrollObserver from "@/components/ScrollObserver";
@@ -71,7 +71,6 @@ export default function Home() {
             </p>
           </div>
         </section>
-        <CTASection />
         <Contact />
       </main>
       <Footer />

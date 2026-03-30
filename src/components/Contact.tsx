@@ -2,34 +2,35 @@
 
 export default function Contact() {
   return (
-    <section id="contact" className="bg-white py-16 md:py-24">
+    <section id="contact" className="bg-navy py-16 md:py-24">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 className="text-3xl md:text-4xl font-bold text-navy mb-4">
-          Ready to get started?
-        </h2>
         <img
           src="/lily-avatar.png"
           alt="Lily - KinCare360 AI Care Concierge"
-          className="w-48 h-60 sm:w-56 sm:h-72 object-cover object-top rounded-3xl shadow-xl ring-4 ring-teal mx-auto mb-6"
+          className="w-60 h-72 sm:w-72 sm:h-[22rem] object-cover object-top rounded-3xl shadow-2xl ring-4 ring-teal mx-auto mb-8"
         />
-        <p className="text-xl font-semibold text-navy mb-2">Talk to Lily</p>
-        <p className="text-gray-500 text-lg mb-10">
-          Call Lily — our AI concierge — and she&apos;ll walk you through everything, answer your questions, and get your loved one set up. Available 24 hours a day, 7 days a week.
+
+        <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">
+          Start protecting your parent today.
+        </h2>
+        <p className="text-lg font-medium text-teal mb-2">Talk to Lily — she&apos;ll walk you through everything.</p>
+        <p className="text-white/70 text-lg mb-8">
+          7-day free trial. No contracts. Cancel anytime.
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-10">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
           <a
             href="tel:+18125155252"
-            className="flex items-center gap-3 bg-teal text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-teal-dark transition-colors"
+            className="flex items-center justify-center gap-3 bg-teal text-white px-10 py-4 rounded-full text-lg font-semibold hover:bg-teal-dark transition-colors"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
             </svg>
-            (812) 515-5252
+            Call Lily — (812) 515-5252
           </a>
           <a
             href="mailto:hello@kincare360.com"
-            className="flex items-center gap-3 border-2 border-teal text-teal px-8 py-4 rounded-full text-lg font-semibold hover:bg-teal hover:text-white transition-colors"
+            className="flex items-center justify-center gap-3 border-2 border-white text-white px-10 py-4 rounded-full text-lg font-semibold hover:bg-white hover:text-navy transition-colors"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
@@ -38,11 +39,12 @@ export default function Contact() {
           </a>
         </div>
 
-        <p className="text-gray-400 text-sm">
+        <p className="text-white/50 text-sm mb-6">Available 24/7 · No hold times · Speak to Lily instantly</p>
+
+        <p className="text-white/40 text-sm">
           Already a member? <a href="/login" className="text-teal font-medium hover:underline">Log in to your dashboard →</a>
         </p>
       </div>
     </section>
   );
 }
-
