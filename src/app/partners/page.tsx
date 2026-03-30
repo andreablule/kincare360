@@ -137,7 +137,7 @@ function PartnersContent() {
               style={{ objectPosition: 'center 15%' }}
             />
             <p className="text-sm text-navy font-medium text-left">
-              Your patients will talk to <span className="font-bold text-teal">Lily</span>, our AI care concierge — friendly, reliable, available 24/7.
+              People you refer will talk to <span className="font-bold text-teal">Lily</span>, our AI care concierge — friendly, reliable, available 24/7.
             </p>
           </div>
         </div>
