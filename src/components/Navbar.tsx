@@ -6,7 +6,6 @@ const navLinks = [
   { label: "How It Works", href: "#how-it-works" },
   { label: "Services", href: "#services" },
   { label: "Pricing", href: "#pricing" },
-  { label: "Earn $50/Referral", href: "/partners" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -37,6 +36,17 @@ export default function Navbar() {
                 {link.label}
               </a>
             ))}
+            {/* Referral - eye catching */}
+            <a
+              href="/partners"
+              className="relative text-sm font-bold text-white bg-gradient-to-r from-emerald-500 to-teal px-4 py-2 rounded-full hover:shadow-lg hover:scale-105 transition-all animate-pulse-slow"
+            >
+              <span className="mr-1">💰</span> Earn $50/Referral
+              <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-yellow-400"></span>
+              </span>
+            </a>
             <a
               href="/login"
               className="text-sm font-medium text-navy hover:text-teal transition-colors"
@@ -90,6 +100,13 @@ export default function Navbar() {
                 {link.label}
               </a>
             ))}
+            <a
+              href="/partners"
+              onClick={() => setMobileOpen(false)}
+              className="text-sm font-bold text-white bg-gradient-to-r from-emerald-500 to-teal px-4 py-2 rounded-full text-center"
+            >
+              💰 Earn $50/Referral
+            </a>
             <a
               href="/login"
               onClick={() => setMobileOpen(false)}
