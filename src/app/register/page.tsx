@@ -22,11 +22,13 @@ function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id") || "";
+  const refParam = searchParams.get("ref") || "";
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [referralCode, setReferralCode] = useState(refParam);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -73,7 +75,7 @@ function RegisterForm() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, name, stripeCustomerId, plan }),
+        body: JSON.stringify({ email, password, name, stripeCustomerId, plan, referralCode: referralCode || undefined }),
       });
 
       const data = await res.json();
@@ -220,6 +222,17 @@ function RegisterForm() {
         {!passwordsMatch && confirm.length > 0 && (
           <p className="text-xs text-red-500 mt-1">Passwords do not match</p>
         )}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-navy mb-1">Referral Code <span className="text-gray-400 font-normal">(optional)</span></label>
+        <input
+          type="text"
+          value={referralCode}
+          onChange={(e) => setReferralCode(e.target.value)}
+          className="w-full border border-gray-300 rounded-xl px-4 py-3 text-navy focus:outline-none focus:ring-2 focus:ring-teal text-sm"
+          placeholder="e.g. SMIT-A1B2"
+        />
       </div>
 
       <button

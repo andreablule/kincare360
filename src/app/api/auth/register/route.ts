@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, password, name, stripeCustomerId, plan } = await req.json();
+    const { email, password, name, stripeCustomerId, plan, referralCode } = await req.json();
 
     if (!email || !password) {
       return NextResponse.json({ error: 'Email and password are required' }, { status: 400 });
@@ -32,12 +32,37 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    // Validate referral code if provided
+    let validReferralCode: string | null = null;
+    if (referralCode) {
+      const referral = await prisma.referral.findUnique({ where: { code: referralCode } });
+      if (referral) {
+        validReferralCode = referral.code;
+        // Credit the referrer: $50 per doctor referral
+        if (referral.type === "doctor") {
+          await prisma.referral.update({
+            where: { code: referral.code },
+            data: {
+              earnings: { increment: 50 },
+              referralCount: { increment: 1 },
+            },
+          });
+        } else {
+          await prisma.referral.update({
+            where: { code: referral.code },
+            data: { referralCount: { increment: 1 } },
+          });
+        }
+      }
+    }
+
     // Create a default patient record
     await prisma.patient.create({
       data: {
         userId: user.id,
         firstName: name ? name.split(' ')[0] : email.split('@')[0],
         lastName: name ? name.split(' ').slice(1).join(' ') : '',
+        referralCode: validReferralCode,
       },
     });
 

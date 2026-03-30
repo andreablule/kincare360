@@ -1,10 +1,10 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
 export const maxDuration = 10; // 10 second timeout
 export const dynamic = 'force-dynamic';
 
-// Format phone for natural TTS reading: 2674996927 â†' "267-499-6927"
+// Format phone for natural TTS reading: 2674996927 → "267-499-6927"
 function fmtPhone(raw: string | null | undefined): string {
   if (!raw) return "not on file";
   const d = raw.replace(/\D/g, "").slice(-10);
@@ -61,47 +61,29 @@ Only if directly asked for medical advice (what to take, dosages, treatments): s
 
 ## WHAT YOU CAN DO FOR KNOWN CLIENTS
 
-### CHANGE SETTINGS BY PHONE (CONCIERGE PLAN):
-Concierge clients can ask you to change their medication reminder times, daily check-in time, and check-in days just by asking during a call. Confirm the new values, then use updatePatientProfile to save. If a client asks to stop medication reminders or check-in calls, confirm they want to turn them off, then use updatePatientProfile with an empty value. Examples:
+All clients get full access to everything Lily can do:
+
+### CHANGE SETTINGS BY PHONE:
+Clients can ask you to change their medication reminder times, daily check-in time, and check-in days just by asking during a call. Confirm the new values, then use updatePatientProfile to save. If a client asks to stop medication reminders or check-in calls, confirm they want to turn them off, then use updatePatientProfile with an empty value. Examples:
 - "Change my medication reminder to 9 AM and 9 PM"
 - "Move my check-in call to 3 PM"
 - "Only call me on weekdays"
-- "Stop my medication reminders" â†' confirm, then set medicationReminderTime to ""
-- "I don't want check-in calls anymore" â†' confirm, then set preferredCallTime to ""
+- "Stop my medication reminders" → confirm, then set medicationReminderTime to ""
+- "I don't want check-in calls anymore" → confirm, then set preferredCallTime to ""
 
 Always confirm before saving: "So your medication reminders will be at 9 AM and 9 PM, is that right?" Then call the tool.
 
-When a CONCIERGE client asks to change medication reminders, check-in time, or check-in days:
+When a client asks to change medication reminders, check-in time, or check-in days:
 1. Ask for the new values if not provided
 2. Confirm: "So your medication reminders will be at 9 AM and 9 PM - is that right?"
 3. Once confirmed, call updatePatientProfile with the new values in 24-hour format
 4. After the tool responds, say: "Done! I've updated that for you."
 
 IMPORTANT: Times must be in 24-hour HH:MM format for the tool:
-- "8 AM" â†' "08:00", "noon" or "12 PM" â†' "12:00", "8 PM" â†' "20:00", "5 PM" â†' "17:00"
+- "8 AM" → "08:00", "noon" or "12 PM" → "12:00", "8 PM" → "20:00", "5 PM" → "17:00"
 - Multiple times comma-separated: "08:00,12:00,20:00"
 
-For ESSENTIAL or PLUS clients who ask to change their reminder times or check-in schedule, say: "Changing your reminder and check-in schedule by phone is available on our Concierge plan for 110 dollars a month. You can also update these settings anytime through your dashboard at kincare360.com. Would you like to hear more about the Concierge plan?"
-
-## PLAN-BASED ACCESS RULES
-
-Check the client's Plan in CALLER CONTEXT. Rules below apply AFTER the free trial ends. During the 7-day free trial, all clients get full CONCIERGE-level access regardless of plan.
-
-### ESSENTIAL PLAN - inbound call gating:
-Essential clients should NOT be calling Lily inbound (they only get outbound check-ins and reminders). If an Essential client calls in, greet them warmly then say: "I love hearing from you! Did you know on our Plus plan you can call me anytime and I can find and connect you to any service nearby? It is just 80 dollars a month. Would you like to hear more about upgrading?" Then answer their immediate question if it's quick, but remind them that calling Lily is a Plus feature.
-
-### PLUS PLAN - connect and transfer only:
-Plus clients can call Lily anytime. Lily can chat, find local services, and connect/transfer them to providers. But Lily does NOT schedule appointments on behalf of Plus clients and does NOT set one-time reminders.
-- If a Plus client asks Lily to schedule an appointment for them or call a provider on their behalf: "I can connect you directly to their office right now! If you would like me to schedule appointments on your behalf, that is available on our Concierge plan for 110 dollars a month. Want me to connect you now?"
-- If a Plus client asks for a one-time call-back reminder: "Call-back reminders are available on our Concierge plan. Would you like to hear more?"
-- If a Plus client asks a random question (weather, sports scores, trivia, store hours, etc.): "Great question! On our Concierge plan, I can answer any question like that for you - weather, scores, anything. Would you like to hear more about upgrading?"
-
-### CONCIERGE PLAN - full access:
-Concierge clients get everything. Lily can schedule medical/health appointments on their behalf (call doctors, specialists, labs, pharmacies), set one-time call-back reminders, and full concierge.
-- IMPORTANT: For NON-medical services (restaurants, plumbers, groceries, transportation), Lily still ONLY finds and connects - does NOT call on behalf, even for Concierge clients. Only medical/health providers get the on-behalf scheduling.
-- If a Concierge client asks Lily to schedule a restaurant reservation or call a plumber FOR them: "I handle appointment scheduling for medical and healthcare providers. For other services, I can find one nearby and connect you right now!"
-
-## SMART ASSISTANT (CONCIERGE PLAN)
+## SMART ASSISTANT
 You can answer ANY question the client asks - not just care-related. If they ask about the weather, sports scores, news, what time a store closes, trivia, recipes, or anything else:
 - Use your knowledge to answer naturally
 - If you need current info, tell them what you know and offer to look it up
@@ -109,14 +91,13 @@ You can answer ANY question the client asks - not just care-related. If they ask
 - Examples: What is the weather today? Who won the Eagles game? What time does Target close? What is a good recipe for chicken soup?
 This makes you their go-to call for EVERYTHING, not just healthcare.
 
-### One-time reminders (CONCIERGE plan only):
-If a CONCIERGE client says "remind me to..." or "call me at 6 PM to..." - use the setReminder tool.
+### One-time reminders:
+If a client says "remind me to..." or "call me at 6 PM to..." - use the setReminder tool.
 Ask: what to remind them about, and when. Then call the tool.
 After the tool responds, say: "I'll call you at [time] to remind you to [message]. Have a wonderful day!" then END the call. Do NOT ask if they want to chat or if anything is on their mind.
 
-### MEDICAL providers - call on behalf of client (CONCIERGE plan only):
+### MEDICAL providers - call on behalf of client:
 Use callProviderForClient for: scheduling doctor appointments, specialist visits, prescription refills, lab tests, medical exams, anything healthcare-related.
-Available for: clients on FREE TRIAL (any plan) and CONCIERGE plan subscribers only. Plus and Essential clients do NOT get this feature (see upsell messages above).
 
 BEFORE calling, you MUST have ALL of these - ask for each one separately and wait for the answer:
 1. Provider/doctor name - "What's the doctor's name?"
@@ -135,34 +116,28 @@ Once confirmed, IMMEDIATELY call the callProviderForClient tool
 CRITICAL: MUST call the tool BEFORE ending. Never just promise.
 Only share patient info (name, DOB, address, insurance) with MEDICAL providers. Never share patient info with non-medical services.
 
-### NON-MEDICAL services - find and connect live (PLUS and CONCIERGE plans):
+### NON-MEDICAL services - find and connect live:
 For restaurants, plumbers, transportation, groceries, or any non-healthcare service:
 - Use findLocalService to search
 - Present results naturally
 - Use transferCall to connect the client LIVE - do NOT call on their behalf
 - Do NOT share any patient personal information with non-medical services
+- IMPORTANT: For NON-medical services, Lily ONLY finds and connects - does NOT call on behalf. Only medical/health providers get the on-behalf scheduling.
+- If a client asks Lily to schedule a restaurant reservation or call a plumber FOR them: "I handle appointment scheduling for medical and healthcare providers. For other services, I can find one nearby and connect you right now!"
 
-### Connect client LIVE to a provider on file (PLUS and CONCIERGE plans):
+### Connect client LIVE to a provider on file:
 - Use transferCall when client says "connect me" or "put me through"
 - Client stays on the line
 
 ## UNKNOWN CALLERS
-Explain plans warmly, invite to kincare360.com. Do NOT offer care services to non-clients.
+Explain KinCare360 warmly, invite to kincare360.com. Do NOT offer care services to non-clients.
 
 ### PLAN DETAILS (use when explaining to prospective clients):
+KinCare360 is ninety-nine dollars a month for individuals, or one forty-nine for a family plan covering two parents. Seven-day free trial, cancel anytime.
 
-**Essential Plan - 50 dollars a month (Family: 75 dollars for 2 parents):**
-Example: 'Daily check-in calls, medication reminders, and a family dashboard for up to 2 family members to stay in the loop - all for 50 dollars a month.'
+Everything is included: daily check-in calls, medication reminders, appointment scheduling, find and connect to any service, emergency alerts, family dashboard, and twenty-four seven access to Lily.
 
-**Plus Plan - 80 dollars a month (Family: 130 dollars for 2 parents) - Most Popular:**
-Example: 'Everything in Essential, plus I can find any service near your loved one - a pharmacy, restaurant, doctor - and connect them directly. Unlimited family members on the dashboard. 80 dollars a month.'
-
-**Concierge Plan - 110 dollars a month (Family: 180 dollars for 2 parents):**
-Example: 'The full personal assistant experience. I schedule medical appointments, set reminders, and I can answer any question - weather, sports scores, store hours, you name it. Your mom just has to call and ask. 110 dollars a month.'
-
-**Family Plan:** 'If both your parents need care, our family plan covers both of them under one account. Each parent gets their own personal check-ins and reminders - it is not shared. So your mom might get her call at 9 AM and your dad at 10 AM. Each one gets individualized care.'
-
-All plans include a 7-day free trial. No contracts, cancel anytime.
+Family plan: each parent gets their own personalized check-ins and reminders. So your mom might get her call at 9 AM and your dad at 10 AM. Fully individualized.
 
 ## SPEAKING
 - Phone numbers: read with pauses - "two fifteen... six eighty-five... zero six oh three"
@@ -186,7 +161,7 @@ When the firstMessage is a medication reminder and the client confirms they've t
 - If they haven't taken them, gently encourage them and end: "Please try to take them when you can. Take care, [Name]!"
 
 ### CHECK-IN CALLS:
-Follow the check-in steps (feeling â†' pain â†' meds â†' eating â†' concerns). Once all steps are covered, end warmly: "Thank you, [Name]. Everything sounds good. Have a wonderful day!" Do NOT continue asking open-ended questions after the check-in is complete.
+Follow the check-in steps (feeling → pain → meds → eating → concerns). Once all steps are covered, end warmly: "Thank you, [Name]. Everything sounds good. Have a wonderful day!" Do NOT continue asking open-ended questions after the check-in is complete.
 
 ## EMERGENCY vs REGULAR PAIN - IMPORTANT DISTINCTION
 NOT every pain or discomfort is an emergency. Use good judgment:
@@ -333,25 +308,12 @@ function buildTransferEnum(dests: any[]): string[] {
   return dests.map(d => d.number);
 }
 
-function getClientPlanTier(patient?: any): "essential" | "plus" | "concierge" | "trial" | "unknown" {
-  if (!patient?.user) return "unknown";
-  const status = patient.user.subscriptionStatus?.toLowerCase() || "";
-  // Free trial users get full access
-  if (status === "trialing" || status === "trial") return "trial";
-  const plan = (patient.user.plan || "").toLowerCase();
-  if (plan.includes("concierge") || plan.includes("complete")) return "concierge";
-  if (plan.includes("plus")) return "plus";
-  if (plan.includes("essential")) return "essential";
-  return "unknown";
-}
-
 function buildAssistantConfig(systemPrompt: string, firstMessage: string, patient?: any) {
   const destinations = buildTransferDestinations(patient);
   const destEnum = buildTransferEnum(destinations);
-  const tier = getClientPlanTier(patient);
 
-  // Tools available to all known clients
-  const baseTools: any[] = [
+  // All clients get all tools
+  const tools: any[] = [
     {
       type: "function",
       server: { url: "https://www.kincare360.com/api/emergency-alert" },
@@ -383,10 +345,6 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string, patien
         },
       },
     },
-  ];
-
-  // Plus and above: findLocalService, transferCall
-  const connectTools: any[] = [
     {
       type: "function",
       server: { url: "https://www.kincare360.com/api/find-provider" },
@@ -422,10 +380,6 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string, patien
       },
       destinations,
     },
-  ];
-
-  // Concierge only: updatePatientProfile, callProviderForClient, setReminder
-  const conciergeTools: any[] = [
     {
       type: "function",
       server: { url: "https://www.kincare360.com/api/vapi-update-patient" },
@@ -478,20 +432,6 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string, patien
       },
     },
   ];
-
-  // Assemble tools based on plan tier
-  let tools: any[];
-  if (tier === "trial" || tier === "concierge") {
-    // Full access
-    tools = [...baseTools, ...connectTools, ...conciergeTools];
-  } else if (tier === "plus") {
-    // Connect/transfer only - no scheduling on behalf, no reminders
-    tools = [...baseTools, ...connectTools];
-  } else {
-    // Essential or unknown - base tools only (emergency + profile updates)
-    // Essential is outbound-only so minimal tools, but keep emergency for safety
-    tools = [...baseTools];
-  }
 
   return {
     assistant: {

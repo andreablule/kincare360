@@ -6,19 +6,23 @@ const SK = process.env.STRIPE_SECRET_KEY!;
 
 // Hardcoded price IDs — these are the live Stripe prices
 const PRICE_MAP: Record<string, string> = {
-  essential: 'price_1TFgeLJlUr03cRD7PP0gW8gW',         // $50/mo
-  plus: 'price_1TFgeMJlUr03cRD7fTOu4j0y',              // $80/mo
-  concierge: 'price_1TFgeOJlUr03cRD7Mli4BYhX',         // $110/mo
-  essential_family: 'price_1TFgePJlUr03cRD7o3hb9ZGN',   // $75/mo
-  plus_family: 'price_1TFgeRJlUr03cRD7OIIRu8kg',        // $130/mo
-  concierge_family: 'price_1TFgeSJlUr03cRD7BAJ0XDzT',   // $180/mo
+  individual: 'price_1TGVNLJlUr03cRD7PhMXGx9x',     // $99/mo
+  family: 'price_1TGVNTJlUr03cRD7F9F5mgHh',          // $149/mo
   // Legacy aliases for existing subscribers
+  essential: 'price_1TFgeLJlUr03cRD7PP0gW8gW',
+  plus: 'price_1TFgeMJlUr03cRD7fTOu4j0y',
+  concierge: 'price_1TFgeOJlUr03cRD7Mli4BYhX',
+  essential_family: 'price_1TFgePJlUr03cRD7o3hb9ZGN',
+  plus_family: 'price_1TFgeRJlUr03cRD7OIIRu8kg',
+  concierge_family: 'price_1TFgeSJlUr03cRD7BAJ0XDzT',
   complete: 'price_1TFgeOJlUr03cRD7Mli4BYhX',
   complete_family: 'price_1TFgeSJlUr03cRD7BAJ0XDzT',
 };
 
 // Map price IDs back to plan names for DB storage
 const PLAN_NAME_MAP: Record<string, string> = {
+  individual: 'INDIVIDUAL',
+  family: 'FAMILY',
   essential: 'ESSENTIAL',
   plus: 'PLUS',
   concierge: 'CONCIERGE',

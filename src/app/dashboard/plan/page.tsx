@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 
 const PLAN_PRICE_CENTS: Record<string, number> = {
+  INDIVIDUAL: 9900,
+  FAMILY: 14900,
+  // Legacy
   ESSENTIAL: 5000,
   PLUS: 8000,
   CONCIERGE: 11000,
@@ -11,84 +14,34 @@ const PLAN_PRICE_CENTS: Record<string, number> = {
   CONCIERGE_FAMILY: 18000,
 };
 
-const INDIVIDUAL_PLANS = [
+const PLANS = [
   {
-    key: "ESSENTIAL",
-    stripeKey: "essential",
-    name: "Essential",
-    price: "$50/mo",
+    key: "INDIVIDUAL",
+    stripeKey: "individual",
+    name: "Individual",
+    price: "$99/mo",
     features: [
       "Daily wellness check-in calls",
       "Medication reminders",
-      "Family dashboard (up to 2 members)",
+      "Appointment scheduling (Lily calls for you)",
+      "Find & connect to any service",
       "Emergency detection and family alerts",
+      "Family dashboard",
+      "24/7 access to Lily",
     ],
   },
   {
-    key: "PLUS",
-    stripeKey: "plus",
-    name: "Plus",
-    price: "$80/mo",
-    popular: true,
+    key: "FAMILY",
+    stripeKey: "family",
+    name: "Family (2 Parents)",
+    price: "$149/mo",
     features: [
-      "Everything in Essential",
-      "Medication reminders",
-      "Family dashboard (unlimited members)",
-      "Local service search & live connect",
-      "Weekly care summaries",
-    ],
-  },
-  {
-    key: "CONCIERGE",
-    stripeKey: "concierge",
-    name: "Concierge",
-    price: "$110/mo",
-    features: [
-      "Everything in Plus",
-      "Medical appointment scheduling (Lily calls for you)",
-      "One-time call-back reminders",
-      "Lily answers any question — weather, sports, news, anything",
-      "Detailed weekly care reports",
-    ],
-  },
-];
-
-const FAMILY_PLANS = [
-  {
-    key: "ESSENTIAL_FAMILY",
-    stripeKey: "essential_family",
-    name: "Essential Family",
-    price: "$75/mo",
-    features: [
-      "Everything in Essential — for 2 parents",
-      "Daily wellness check-in calls (each parent)",
-      "Medication reminders (each parent)",
-      "Family dashboard + emergency alerts",
-    ],
-  },
-  {
-    key: "PLUS_FAMILY",
-    stripeKey: "plus_family",
-    name: "Plus Family",
-    price: "$130/mo",
-    popular: true,
-    features: [
-      "Everything in Plus — for 2 parents",
-      "Family dashboard (unlimited members)",
-      "Local service search & live connect",
-      "Weekly care summaries",
-    ],
-  },
-  {
-    key: "CONCIERGE_FAMILY",
-    stripeKey: "concierge_family",
-    name: "Concierge Family",
-    price: "$180/mo",
-    features: [
-      "Everything in Concierge — for 2 parents",
-      "Medical appointment scheduling (each parent)",
-      "One-time call-back reminders (each parent)",
-      "Detailed weekly reports (per parent)",
+      "Everything included — for 2 parents",
+      "Each parent gets their own personalized calls",
+      "Separate medication reminders per parent",
+      "Appointment scheduling for both parents",
+      "Family dashboard with all care info",
+      "24/7 access to Lily for both parents",
     ],
   },
 ];
@@ -122,21 +75,26 @@ export default function PlanPage() {
     fetchPlan();
   }, []);
 
-  const [planTab, setPlanTab] = useState<"individual" | "family">(
-    plan?.includes("FAMILY") ? "family" : "individual"
-  );
-  const PLANS = planTab === "individual" ? INDIVIDUAL_PLANS : FAMILY_PLANS;
-  const ALL_PLANS = [...INDIVIDUAL_PLANS, ...FAMILY_PLANS];
-
   const [showSwitchConfirm, setShowSwitchConfirm] = useState<string | null>(null);
 
+  // Normalize legacy plan names to new ones for display
+  function normalizePlan(p: string | null): string | null {
+    if (!p) return p;
+    const upper = p.toUpperCase();
+    if (upper.includes("FAMILY")) return "FAMILY";
+    return "INDIVIDUAL";
+  }
+
+  const normalizedPlan = normalizePlan(plan);
+  const currentPlan = PLANS.find((p) => p.key === normalizedPlan);
+  const pendingPlanObj = PLANS.find((p) => p.key === pendingPlan);
+
   function getPlanLabel(targetStripeKey: string): "upgrade" | "downgrade" | "current" | null {
-    if (!plan) return null;
-    const normalizedCurrent = plan.replace("COMPLETE_FAMILY", "CONCIERGE_FAMILY").replace("COMPLETE", "CONCIERGE");
-    const targetPlanObj = ALL_PLANS.find(p => p.stripeKey === targetStripeKey);
+    if (!normalizedPlan) return null;
+    const targetPlanObj = PLANS.find(p => p.stripeKey === targetStripeKey);
     if (!targetPlanObj) return null;
-    if (targetPlanObj.key === normalizedCurrent) return "current";
-    const currentPrice = PLAN_PRICE_CENTS[normalizedCurrent] || 0;
+    if (targetPlanObj.key === normalizedPlan) return "current";
+    const currentPrice = PLAN_PRICE_CENTS[normalizedPlan] || 0;
     const targetPrice = PLAN_PRICE_CENTS[targetPlanObj.key] || 0;
     return targetPrice > currentPrice ? "upgrade" : "downgrade";
   }
@@ -191,10 +149,6 @@ export default function PlanPage() {
 
   if (loading) return <div className="text-gray-400">Loading...</div>;
 
-  const normalizedPlan = plan?.replace("COMPLETE_FAMILY", "CONCIERGE_FAMILY").replace("COMPLETE", "CONCIERGE") || plan;
-  const currentPlan = ALL_PLANS.find((p) => p.key === normalizedPlan);
-  const pendingPlanObj = ALL_PLANS.find((p) => p.key === pendingPlan);
-
   const trialEndDate = trialEnd
     ? new Date(trialEnd).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
     : null;
@@ -203,7 +157,7 @@ export default function PlanPage() {
     ? new Date(pendingPlanDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
     : null;
 
-  const confirmPlan = ALL_PLANS.find(p => p.stripeKey === showSwitchConfirm);
+  const confirmPlan = PLANS.find(p => p.stripeKey === showSwitchConfirm);
   const confirmLabel = showSwitchConfirm ? getPlanLabel(showSwitchConfirm) : null;
 
   return (
@@ -313,29 +267,7 @@ export default function PlanPage() {
         {plan ? "Switch Plan" : "Choose a Plan"}
       </h2>
 
-      {/* Individual / Family toggle */}
-      <div className="flex mb-4">
-        <div className="inline-flex bg-gray-100 rounded-full p-1">
-          <button
-            onClick={() => setPlanTab("individual")}
-            className={`px-5 py-1.5 rounded-full text-sm font-semibold transition-colors ${
-              planTab === "individual" ? "bg-white text-navy shadow-sm" : "text-gray-500 hover:text-navy"
-            }`}
-          >
-            Individual
-          </button>
-          <button
-            onClick={() => setPlanTab("family")}
-            className={`px-5 py-1.5 rounded-full text-sm font-semibold transition-colors ${
-              planTab === "family" ? "bg-white text-navy shadow-sm" : "text-gray-500 hover:text-navy"
-            }`}
-          >
-            Family (2 Parents)
-          </button>
-        </div>
-      </div>
-
-      <div className="grid sm:grid-cols-3 gap-4 max-w-4xl mb-6">
+      <div className="grid sm:grid-cols-2 gap-4 max-w-3xl mb-6">
         {PLANS.map((p) => {
           const isCurrent = p.key === normalizedPlan;
           const label = getPlanLabel(p.stripeKey);
@@ -343,14 +275,9 @@ export default function PlanPage() {
             <div
               key={p.key}
               className={`bg-white rounded-2xl border p-5 flex flex-col relative ${
-                p.popular ? "border-teal shadow-sm" : "border-gray-100"
+                isCurrent ? "border-teal shadow-sm" : "border-gray-100"
               }`}
             >
-              {p.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-teal text-white text-xs font-bold px-3 py-1 rounded-full">
-                  Most Popular
-                </div>
-              )}
               {isCurrent && (
                 <div className="absolute -top-3 right-4 bg-navy text-white text-xs font-bold px-3 py-1 rounded-full">
                   Current
@@ -384,9 +311,7 @@ export default function PlanPage() {
                     ? "bg-green-600 text-white hover:bg-green-700"
                     : label === "downgrade"
                     ? "border border-gray-300 text-gray-600 hover:bg-gray-50"
-                    : p.popular
-                    ? "bg-teal text-white hover:bg-teal-dark"
-                    : "border border-teal text-teal hover:bg-teal hover:text-white"
+                    : "bg-teal text-white hover:bg-teal-dark"
                 }`}
               >
                 {upgrading === p.stripeKey

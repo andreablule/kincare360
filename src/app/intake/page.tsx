@@ -64,7 +64,7 @@ export default function IntakePage() {
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
-  const [planTab, setPlanTab] = useState<"individual" | "family">("individual");
+  const [planTab, setPlanTab] = useState<"individual" | "family">("individual"); // kept for family flow detection
   const [step1Error, setStep1Error] = useState("");
   const [step2Error, setStep2Error] = useState("");
   const [step3Error, setStep3Error] = useState("");
@@ -150,7 +150,7 @@ export default function IntakePage() {
     }));
   }
 
-  const isFamilyPlanSelected = planTab === "family" || form.selectedPlan.includes("_family");
+  const isFamilyPlanSelected = form.selectedPlan === "family";
 
   async function handleSubmit() {
     setSubmitting(true);
@@ -494,38 +494,15 @@ export default function IntakePage() {
               {/* Plan Selection */}
               <div>
                 <h3 className="text-sm font-semibold text-navy mb-3">Choose Your Plan</h3>
-
-                {/* Individual / Family toggle */}
-                <div className="flex mb-4">
-                  <div className="inline-flex bg-gray-100 rounded-full p-1">
-                    <button type="button" onClick={() => { setPlanTab("individual"); update("selectedPlan", ""); }}
-                      className={`px-5 py-1.5 rounded-full text-sm font-semibold transition-colors ${planTab === "individual" ? "bg-white text-navy shadow-sm" : "text-gray-500 hover:text-navy"}`}>
-                      Individual
-                    </button>
-                    <button type="button" onClick={() => { setPlanTab("family"); update("selectedPlan", ""); }}
-                      className={`px-5 py-1.5 rounded-full text-sm font-semibold transition-colors ${planTab === "family" ? "bg-white text-navy shadow-sm" : "text-gray-500 hover:text-navy"}`}>
-                      Family (2 Parents)
-                    </button>
-                  </div>
-                </div>
-
                 <div className="grid gap-3">
-                  {(planTab === "family" ? [
-                    { id: 'essential_family', name: 'Essential Family', price: '$75/mo', desc: 'Daily check-ins + medication reminders for 2 parents + family dashboard' },
-                    { id: 'plus_family', name: 'Plus Family', price: '$130/mo', desc: 'Essential Family + local service search + unlimited family members + weekly summaries', popular: true },
-                    { id: 'concierge_family', name: 'Concierge Family', price: '$180/mo', desc: 'Plus Family + appointment scheduling + Lily answers any question for both parents' },
-                  ] : [
-                    { id: 'essential', name: 'Essential', price: '$50/mo', desc: 'Daily check-ins + medication reminders + family dashboard (2 members)' },
-                    { id: 'plus', name: 'Plus', price: '$80/mo', desc: 'Essential + local service search & live connect + unlimited family members + weekly summaries', popular: true },
-                    { id: 'concierge', name: 'Concierge', price: '$110/mo', desc: 'Plus + appointment scheduling + reminders + Lily answers any question' },
-                  ]).map(plan => (
+                  {[
+                    { id: 'individual', name: 'Individual', price: '$99/mo', desc: 'Daily check-ins, medication reminders, appointment scheduling, find & connect to any service, emergency alerts, family dashboard, 24/7 access to Lily' },
+                    { id: 'family', name: 'Family (2 Parents)', price: '$149/mo', desc: 'Everything included — for 2 parents. Each gets their own personalized calls and reminders.' },
+                  ].map(plan => (
                     <label key={plan.id} className={`flex items-center gap-4 cursor-pointer p-4 rounded-xl border-2 transition-colors ${form.selectedPlan === plan.id ? 'border-teal bg-teal/5' : 'border-gray-200 hover:border-teal/50'}`}>
                       <input type="radio" name="plan" value={plan.id} checked={form.selectedPlan === plan.id} onChange={() => update('selectedPlan', plan.id)} className="w-4 h-4 accent-teal flex-shrink-0" />
                       <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-navy text-sm">{plan.name}</span>
-                          {plan.popular && <span className="text-xs bg-teal text-white px-2 py-0.5 rounded-full">Most Popular</span>}
-                        </div>
+                        <span className="font-semibold text-navy text-sm">{plan.name}</span>
                         <p className="text-xs text-gray-500 mt-0.5">{plan.desc}</p>
                       </div>
                       <span className="font-bold text-teal text-sm">{plan.price}</span>

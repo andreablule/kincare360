@@ -47,6 +47,8 @@ model Patient {
   insuranceMemberId    String?
   insuranceGroupNumber String?
   insurancePolicyHolder String?
+  referralCode         String?
+  referral             Referral? @relation("ReferredBy", fields: [referralCode], references: [code])
   createdAt            DateTime  @default(now())
   doctors           Doctor[]
   pharmacies        Pharmacy[]
@@ -138,4 +140,18 @@ model CallLog {
   callType           String?
   servicesRequested  String?  // JSON: [{service, providerName, providerPhone, outcome}]
   createdAt          DateTime @default(now())
+}
+
+model Referral {
+  id            String    @id @default(cuid())
+  code          String    @unique
+  type          String    // 'doctor' or 'client'
+  referrerName  String
+  referrerEmail String?
+  referrerPhone String?
+  practiceName  String?   // for doctors
+  earnings      Float     @default(0)
+  referralCount Int       @default(0)
+  createdAt     DateTime  @default(now())
+  patients      Patient[] @relation("ReferredBy")
 }

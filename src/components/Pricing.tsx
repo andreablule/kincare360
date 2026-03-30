@@ -1,323 +1,93 @@
 "use client";
 
-import { useState } from "react";
-
-const individualPlans = [
-  {
-    key: "essential",
-    label: "Getting Started",
-    name: "Essential",
-    price: "$50",
-    tagline: "Best for families just getting started",
-    features: [
-      {
-        text: "Daily wellness check-in calls",
-        detail: "Lily calls your loved one every day at their preferred time to check on their mood, health, and how they're feeling.",
-      },
-      {
-        text: "Medication reminders",
-        detail: "Lily calls at scheduled medication times to remind your loved one to take their medications — as many times per day as needed.",
-      },
-      {
-        text: "Family dashboard (up to 2 members)",
-        detail: "Up to 2 family members can view check-in history, medication status, and care notes through a shared dashboard — updated after every call.",
-      },
-      {
-        text: "Emergency detection and family alerts",
-        detail: "If your loved one reports a fall, injury, or emergency during a call, Lily immediately sends SMS and email alerts to all family members.",
-      },
-    ],
-    dark: false,
-    popular: false,
-    cta: "Start Free Trial",
-    href: "/register",
-  },
-  {
-    key: "plus",
-    label: "Best Value",
-    name: "Plus",
-    price: "$80",
-    tagline: "Full care coordination for your family",
-    features: [
-      {
-        text: "Everything in Essential",
-        detail: "All daily check-in calls, medication reminders, family dashboard, and emergency alerts included.",
-      },
-      {
-        text: "Medication reminders",
-        detail: "Lily calls as many times as needed throughout the day to match your loved one's medication schedule.",
-      },
-      {
-        text: "Family dashboard (unlimited members)",
-        detail: "Unlimited family members can view check-in history, medication status, and care notes through a shared dashboard — updated after every call.",
-      },
-      {
-        text: "Local service search & live connect",
-        detail: "Lily finds nearby services — pharmacies, restaurants, transportation — and connects your loved one directly to them on a live call.",
-      },
-      {
-        text: "Connect to your doctors & pharmacies",
-        detail: "Lily transfers your loved one directly to their doctors and pharmacies listed on the dashboard — no searching for numbers.",
-      },
-      {
-        text: "Weekly care summaries",
-        detail: "Every week, family members receive an automated summary of how their loved one has been doing — mood trends, medications, and any concerns.",
-      },
-    ],
-    dark: false,
-    popular: true,
-    cta: "Start Free Trial",
-    href: "/register",
-  },
-  {
-    key: "concierge",
-    label: "Full Service",
-    name: "Concierge",
-    price: "$110",
-    tagline: "Your personal assistant for everything",
-    features: [
-      {
-        text: "Everything in Plus",
-        detail: "All check-ins, medication reminders, service search, live connect, family dashboard, and weekly summaries included.",
-      },
-      {
-        text: "Medical appointment scheduling (Lily calls for you)",
-        detail: "Lily calls doctors, specialists, labs, and pharmacies on behalf of your loved one to schedule appointments and request refills — they just ask and Lily handles it.",
-      },
-      {
-        text: "One-time call-back reminders",
-        detail: "Your loved one tells Lily 'remind me to...' or 'call me at 6 PM to...' and Lily calls them back at the chosen time with the reminder.",
-      },
-      {
-        text: "Lily answers any question — weather, sports, news, anything",
-        detail: "Your loved one can ask Lily absolutely anything — weather, sports scores, store hours, recipes, trivia, news. She's their personal assistant, not just a care coordinator.",
-      },
-      {
-        text: "Detailed weekly care reports",
-        detail: "Comprehensive weekly reports delivered to all family members: wellness trends, mood analysis, medication adherence, appointments, services used, and any concerns.",
-      },
-    ],
-    dark: true,
-    popular: false,
-    cta: "Start Free Trial",
-    href: "/register",
-  },
+const features = [
+  "Daily check-in calls",
+  "Medication reminders",
+  "Appointment scheduling",
+  "Find & connect to any service",
+  "Emergency family alerts",
+  "Family dashboard",
+  "24/7 access to Lily",
+  "Cancel anytime",
 ];
 
-const familyPlans = [
+const plans = [
   {
-    key: "essential_family",
-    label: "Getting Started",
-    name: "Essential Family",
-    price: "$75",
-    tagline: "Care for both parents under one plan",
-    features: [
-      {
-        text: "Everything in Essential — for 2 parents",
-        detail: "Each parent gets their own personalized daily check-ins and medication reminders. Mom might get her call at 9 AM and Dad at 10 AM — fully individualized.",
-      },
-      {
-        text: "Daily wellness check-in calls (each parent)",
-        detail: "Lily calls each parent separately at their preferred time to check on mood, health, and how they're feeling.",
-      },
-      {
-        text: "Medication reminders (each parent)",
-        detail: "Each parent gets their own medication reminder schedule — as many times per day as needed.",
-      },
-      {
-        text: "Family dashboard (up to 2 members) + emergency alerts",
-        detail: "Up to 2 family members can view check-in history and care notes for both parents. Emergency detection and family alerts active for both.",
-      },
-    ],
-    dark: false,
-    popular: false,
-    cta: "Start Free Trial",
+    key: "individual",
+    name: "Individual",
+    price: "$99",
+    desc: "1 parent",
     href: "/register",
   },
   {
-    key: "plus_family",
-    label: "Best Value",
-    name: "Plus Family",
-    price: "$130",
-    tagline: "Full coordination for both parents",
-    features: [
-      {
-        text: "Everything in Plus — for 2 parents",
-        detail: "All Plus features for both parents: medication reminders, service search, live connect, and weekly summaries.",
-      },
-      {
-        text: "Family dashboard (unlimited members)",
-        detail: "Unlimited family members can view check-in history, medication tracking, and care notes for both parents.",
-      },
-      {
-        text: "Local service search & live connect",
-        detail: "Lily finds nearby services for either parent and connects them directly on a live call.",
-      },
-      {
-        text: "Weekly care summaries",
-        detail: "Combined weekly care summaries for both parents delivered to the family.",
-      },
-    ],
-    dark: false,
-    popular: true,
-    cta: "Start Free Trial",
-    href: "/register",
-  },
-  {
-    key: "concierge_family",
-    label: "Full Service",
-    name: "Concierge Family",
-    price: "$180",
-    tagline: "Full personal assistant care for both parents",
-    features: [
-      {
-        text: "Everything in Concierge — for 2 parents",
-        detail: "Full personal assistant for both parents. Each gets individualized care, medical scheduling, reminders, and detailed reports.",
-      },
-      {
-        text: "Medical appointment scheduling (each parent)",
-        detail: "Lily calls doctors, specialists, labs, and pharmacies on behalf of either parent to schedule appointments and handle refills.",
-      },
-      {
-        text: "One-time call-back reminders (each parent)",
-        detail: "Either parent can ask Lily to call them back at a specific time with a reminder.",
-      },
-      {
-        text: "Detailed weekly reports (per parent)",
-        detail: "Separate detailed weekly care reports for each parent, plus a combined family overview.",
-      },
-    ],
-    dark: true,
-    popular: false,
-    cta: "Start Free Trial",
+    key: "family",
+    name: "Family",
+    price: "$149",
+    desc: "2 parents — each gets their own calls",
     href: "/register",
   },
 ];
 
 export default function Pricing() {
-  const [expanded, setExpanded] = useState<string | null>(null);
-  const [tab, setTab] = useState<"individual" | "family">("individual");
-
-  const plans = tab === "individual" ? individualPlans : familyPlans;
-
   return (
     <section id="pricing" className="bg-white py-16 md:py-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-3xl md:text-4xl font-bold text-navy text-center mb-4">
           Simple, transparent pricing
         </h2>
-        <p className="text-gray-500 text-center mb-4">Cancel anytime. No contracts.</p>
+        <p className="text-gray-500 text-center mb-8">
+          Everything included. No tiers, no upsells. Cancel anytime.
+        </p>
 
-        {/* Individual / Family toggle */}
-        <div className="flex justify-center mb-6">
-          <div className="inline-flex bg-gray-100 rounded-full p-1">
-            <button
-              onClick={() => setTab("individual")}
-              className={`px-6 py-2 rounded-full text-sm font-semibold transition-colors ${
-                tab === "individual" ? "bg-white text-navy shadow-sm" : "text-gray-500 hover:text-navy"
-              }`}
-            >
-              Individual
-            </button>
-            <button
-              onClick={() => setTab("family")}
-              className={`px-6 py-2 rounded-full text-sm font-semibold transition-colors ${
-                tab === "family" ? "bg-white text-navy shadow-sm" : "text-gray-500 hover:text-navy"
-              }`}
-            >
-              Family (2 parents)
-            </button>
-          </div>
+        <div className="flex flex-wrap justify-center gap-3 mb-10">
+          <span className="bg-teal/10 text-teal text-sm font-semibold px-4 py-2 rounded-full">
+            7-day free trial — No charge until day 8
+          </span>
+          <span className="bg-gray-100 text-gray-600 text-sm font-semibold px-4 py-2 rounded-full">
+            No contracts
+          </span>
         </div>
 
-        <div className="flex flex-wrap justify-center gap-3 mb-12">
-          <span className="bg-teal/10 text-teal text-sm font-semibold px-4 py-2 rounded-full">7-day free trial on all plans — No charge until day 8</span>
-          <span className="bg-gray-100 text-gray-600 text-sm font-semibold px-4 py-2 rounded-full">Cancel anytime</span>
-          <span className="bg-gray-100 text-gray-600 text-sm font-semibold px-4 py-2 rounded-full">No contracts</span>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        {/* Plan cards */}
+        <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto mb-10">
           {plans.map((plan) => (
             <div
               key={plan.key}
-              className={`rounded-2xl border-2 p-7 flex flex-col relative ${
-                plan.dark
-                  ? "bg-navy border-navy"
-                  : plan.popular
-                  ? "bg-white border-teal shadow-lg"
-                  : "bg-white border-gray-200"
-              }`}
+              className="rounded-2xl border-2 border-teal bg-white shadow-sm p-7 flex flex-col"
             >
-              {plan.popular && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-teal text-white text-xs font-bold px-4 py-1.5 rounded-full whitespace-nowrap">
-                  Most Popular
-                </div>
-              )}
-
-              <div className="mb-4 mt-2">
-                <span className={`text-xs font-bold uppercase tracking-wide px-3 py-1 rounded-full ${plan.dark ? "text-white/60 bg-white/10" : "text-teal bg-teal/10"}`}>
-                  {plan.label}
-                </span>
-              </div>
-
-              <h3 className={`text-xl font-bold ${plan.dark ? "text-white" : "text-navy"}`}>{plan.name}</h3>
-              <div className="mt-3 flex items-baseline gap-1">
-                <span className={`text-4xl font-extrabold ${plan.dark ? "text-white" : "text-navy"}`}>{plan.price}</span>
-                <span className={plan.dark ? "text-white/60" : "text-gray-500"}>/month</span>
+              <h3 className="text-xl font-bold text-navy">{plan.name}</h3>
+              <p className="text-sm text-gray-500 mt-1">{plan.desc}</p>
+              <div className="mt-4 flex items-baseline gap-1">
+                <span className="text-4xl font-extrabold text-navy">{plan.price}</span>
+                <span className="text-gray-500">/month</span>
               </div>
               <p className="text-sm text-teal font-medium mt-1">First 7 days free</p>
-              <p className={`text-xs mt-1 ${plan.dark ? "text-white/50" : "text-gray-400"}`}>{plan.tagline}</p>
 
               <ul className="mt-6 space-y-3 flex-1">
-                {plan.features.map((feature) => {
-                  const key = `${plan.key}-${feature.text}`;
-                  const isOpen = expanded === key;
-                  return (
-                    <li key={feature.text} className="text-sm">
-                      <button
-                        onClick={() => setExpanded(isOpen ? null : key)}
-                        className="flex items-start gap-2 w-full text-left group"
-                      >
-                        <svg className="w-4 h-4 text-teal flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                        <span className={`flex-1 ${plan.dark ? "text-white/80" : "text-gray-600"} group-hover:text-teal transition-colors`}>
-                          {feature.text}
-                        </span>
-                        <svg className={`w-3.5 h-3.5 flex-shrink-0 mt-0.5 transition-transform ${isOpen ? "rotate-180" : ""} ${plan.dark ? "text-white/40" : "text-gray-400"}`} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </button>
-                      {isOpen && (
-                        <p className={`mt-2 ml-6 text-xs leading-relaxed ${plan.dark ? "text-white/60" : "text-gray-500"}`}>
-                          {feature.detail}
-                        </p>
-                      )}
-                    </li>
-                  );
-                })}
+                {features.map((f) => (
+                  <li key={f} className="flex items-start gap-2 text-sm text-gray-600">
+                    <svg className="w-4 h-4 text-teal flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    {f}
+                  </li>
+                ))}
               </ul>
 
               <a
                 href={plan.href}
-                className={`mt-7 block w-full text-center px-6 py-3 rounded-full font-semibold transition-colors text-sm ${
-                  plan.popular
-                    ? "bg-teal text-white hover:bg-teal-dark"
-                    : plan.dark
-                    ? "bg-teal text-white hover:bg-teal-dark"
-                    : "bg-white border-2 border-teal text-teal hover:bg-teal hover:text-white"
-                }`}
+                className="mt-7 block w-full text-center px-6 py-3 rounded-full font-semibold transition-colors text-sm bg-teal text-white hover:bg-teal-dark"
               >
-                {plan.cta}
+                Start 7-Day Free Trial
               </a>
             </div>
           ))}
         </div>
 
-        <p className="text-center text-sm text-gray-400 mt-8">
-          Questions about which plan is right for you?{" "}
+        <p className="text-center text-sm text-gray-400">
+          Questions?{" "}
           <a href="tel:+18125155252" className="text-teal hover:underline">Call Lily at (812) 515-5252</a>
-          {" "}— she&apos;ll help you choose.
+          {" "}&mdash; she&apos;ll help you get started.
         </p>
       </div>
     </section>
