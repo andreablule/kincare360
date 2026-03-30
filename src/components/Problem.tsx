@@ -42,9 +42,9 @@ export default function Problem() {
           <p className="mt-6 text-lg text-gray-600 leading-relaxed">
             Caring for an aging parent from a distance is exhausting. You worry
             about missed medications, forgotten appointments, and whether
-            they&apos;re really okay. KinCare360&apos;s AI concierge Lily is your eyes and ears &mdash;
-            daily check-ins, automated coordination, and real-time family
-            updates so you always know Mom is safe.
+            they&apos;re really okay. KinCare360&apos;s AI concierge Lily helps you stay informed &mdash;
+            with daily check-ins, automated coordination, and real-time family
+            updates so you can act faster when something seems off.
           </p>
         </div>
 
