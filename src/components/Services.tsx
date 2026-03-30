@@ -27,8 +27,8 @@ const services = [
     title: "Appointment Coordination",
     description:
       "Your parent never sits on hold again. Lily calls the doctor's office, schedules the appointment, confirms it, and reminds your parent before and after. No hold music, no frustration, no calling the kids for help.",
-    image: "https://images.unsplash.com/photo-1666214280557-f1b5022eb634?w=600&q=80&auto=format&fit=crop",
-    alt: "Doctor and patient at medical appointment",
+    image: "/appointment-coordination.png",
+    alt: "Lily scheduling a doctor appointment on screen while nurse confirms by phone",
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
