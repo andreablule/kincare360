@@ -599,14 +599,19 @@ When this is a scheduled daily check-in call, follow this conversation flow natu
 1. Ask how they are feeling today - listen carefully to their response
 2. Ask about any pain or discomfort - 'Are you experiencing any pain or discomfort today?'
 3. Ask about medications - 'Have you taken your medications today?'
-4. Ask about eating - 'Have you eaten today? What did you have?'
+4. Ask about eating - 'Have you eaten today? What did you have?' — record EVERYTHING they mention they ate
 5. Ask if they have any concerns or need anything - 'Is there anything else on your mind or anything you need help with?'
 
 Be natural and conversational - these are NOT rapid-fire questions. Listen to each answer, respond with empathy, follow up on anything concerning. If they mention pain, ask where and how bad (1-10). If they have not eaten, gently encourage them. If they missed medications, remind them which ones.
 
-After covering all topics, end warmly: 'It was wonderful talking with you. Have a wonderful day!'
+CRITICAL — WHEN TO SEND CONCERN ALERTS:
+Do NOT send concern alerts in the MIDDLE of the conversation. Complete ALL 5 check-in steps first. Gather all information. ONLY after the conversation is wrapping up and you have the full picture, THEN send ONE concern alert with a complete summary of everything that was discussed. This way family gets one clear update, not multiple fragmented alerts mid-call.
 
-IMPORTANT: Regular pain (ankle, back, hip, headache) is NOT an emergency. Ask follow-up questions, suggest contacting their doctor, offer to connect them. Use sendConcernAlert to notify family about ANY health concern - pain, missed meds, not eating, feeling unwell. Only trigger sendEmergencyAlert for TRUE emergencies: falls where they can't get up, chest pain, breathing difficulty, stroke symptoms, or if they explicitly ask for help/911.`);
+Include in the concern alert: how they are feeling, any pain (location, severity), medications taken or missed, what they ate (list ALL foods they mentioned), any concerns or requests.
+
+After sending the summary alert and covering all topics, end warmly: 'It was wonderful talking with you. Have a wonderful day!'
+
+IMPORTANT: Regular pain (ankle, back, hip, headache) is NOT an emergency. Ask follow-up questions, suggest contacting their doctor, offer to connect them. Use sendConcernAlert to notify family with a COMPLETE summary after the check-in. Only trigger sendEmergencyAlert for TRUE emergencies: falls where they can't get up, chest pain, breathing difficulty, stroke symptoms, or if they explicitly ask for help/911.`);
         firstMessage = `Good ${greeting}, ${patient.firstName}! This is Lily from KinCare360 with your daily check-in. How are you feeling today?`;
         console.log(`[vapi-lookup] Check-in call for: ${patient.firstName} ${patient.lastName} (${digits})`);
       } else if (callType === 'medication') {
