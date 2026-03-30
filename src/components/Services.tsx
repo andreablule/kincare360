@@ -26,7 +26,7 @@ const services = [
   {
     title: "Appointment Coordination",
     description:
-      "Lily schedules, confirms, and follows up on all medical appointments automatically — so nothing falls through the cracks.",
+      "Your parent never sits on hold again. Lily calls the doctor's office, schedules the appointment, confirms it, and reminds your parent before and after. No hold music, no frustration, no calling the kids for help.",
     image: "https://images.unsplash.com/photo-1666214280557-f1b5022eb634?w=600&q=80&auto=format&fit=crop",
     alt: "Doctor and patient at medical appointment",
     icon: (

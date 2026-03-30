@@ -13,7 +13,7 @@ const features = [
   },
   {
     name: "Appointment scheduling",
-    detail: "Lily helps coordinate and schedule medical appointments — from finding available times to confirming visits. She follows up before and after appointments to make sure nothing is missed.",
+    detail: "Your parent never has to call a doctor's office and sit on hold for 45 minutes again. Lily handles it all — she calls the office, finds available times, schedules the appointment, and confirms it. Before the visit, she reminds your parent. After the visit, she follows up. No hold music. No frustration. No calling the kids for help. Lily does what used to take your parent an entire afternoon in under 5 minutes.",
   },
   {
     name: "Find & connect to any service",
