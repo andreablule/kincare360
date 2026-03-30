@@ -19,7 +19,7 @@ export default function Hero() {
                 href="/register"
                 className="bg-teal text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-teal-dark transition-colors shadow-lg"
               >
-                Start Your Free Trial &rarr;
+                Start Free Trial &mdash; Set Up in 5 Minutes &rarr;
               </a>
               <a
                 href="#how-it-works"

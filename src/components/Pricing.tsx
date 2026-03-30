@@ -71,6 +71,19 @@ export default function Pricing() {
           Everything included. No tiers, no upsells. Cancel anytime.
         </p>
 
+        {/* Value anchoring */}
+        <div className="flex flex-wrap justify-center gap-3 mb-6">
+          <span className="bg-navy/5 text-navy text-sm font-medium px-4 py-2 rounded-full">
+            Less than $3.30/day
+          </span>
+          <span className="bg-navy/5 text-navy text-sm font-medium px-4 py-2 rounded-full">
+            Replaces hours of daily phone calls
+          </span>
+          <span className="bg-navy/5 text-navy text-sm font-medium px-4 py-2 rounded-full">
+            Can help prevent costly ER visits and hospital readmissions
+          </span>
+        </div>
+
         <div className="flex flex-wrap justify-center gap-3 mb-10">
           <span className="bg-teal/10 text-teal text-sm font-semibold px-4 py-2 rounded-full">
             7-day free trial — No charge until day 8
@@ -126,7 +139,7 @@ export default function Pricing() {
                 href={plan.href}
                 className="mt-7 block w-full text-center px-6 py-3 rounded-full font-semibold transition-colors text-sm bg-teal text-white hover:bg-teal-dark"
               >
-                Start 7-Day Free Trial
+                Start Free Trial &mdash; First Call Today
               </a>
             </div>
           ))}

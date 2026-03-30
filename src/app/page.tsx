@@ -2,6 +2,9 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import Problem from "@/components/Problem";
 import CallExample from "@/components/CallExample";
+import WhoItsFor from "@/components/WhoItsFor";
+import AIReassurance from "@/components/AIReassurance";
+import BeforeAfter from "@/components/BeforeAfter";
 import HowItWorks from "@/components/HowItWorks";
 import Services from "@/components/Services";
 import FounderStory from "@/components/FounderStory";
@@ -42,6 +45,9 @@ export default function Home() {
         <Hero />
         <Problem />
         <CallExample />
+        <WhoItsFor />
+        <AIReassurance />
+        <BeforeAfter />
         <HowItWorks />
         <Services />
         <FounderStory />
