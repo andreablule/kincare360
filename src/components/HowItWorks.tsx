@@ -44,13 +44,7 @@ export default function HowItWorks() {
               <h3 className="text-lg font-semibold text-navy mb-3">
                 {step.title}
               </h3>
-              {step.number === "3" && (
-                <img
-                  src="/lily-avatar.png"
-                  alt="Lily - KinCare360 AI Care Concierge"
-                  className="w-16 h-16 rounded-full ring-2 ring-teal object-cover mx-auto mb-3"
-                />
-              )}
+
               <p className="text-gray-600 text-sm">{step.description}</p>
             </div>
           ))}

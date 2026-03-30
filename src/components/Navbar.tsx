@@ -45,13 +45,8 @@ export default function Navbar() {
             </a>
             <a
               href="tel:+18125155252"
-              className="bg-teal text-white px-5 py-2 rounded-full text-sm font-semibold hover:bg-teal-dark transition-colors flex items-center gap-2"
+              className="bg-teal text-white px-5 py-2 rounded-full text-sm font-semibold hover:bg-teal-dark transition-colors"
             >
-              <img
-                src="/lily-avatar.png"
-                alt="Lily - KinCare360 AI Care Concierge"
-                className="w-8 h-8 rounded-full ring-2 ring-white object-cover"
-              />
               Call (812) 515-5252
             </a>
           </div>
