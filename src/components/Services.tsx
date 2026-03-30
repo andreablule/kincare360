@@ -95,7 +95,7 @@ export default function Services() {
                 <img
                   src={service.image}
                   alt={service.alt}
-                  className={`w-full h-full object-cover ${service.image === '/emergency-alert.png' ? 'object-center' : 'object-top'}`}
+                  className={`w-full h-full ${service.image === '/family-dashboard.png' ? 'object-contain' : service.image === '/emergency-alert.png' ? 'object-cover object-center' : 'object-cover object-top'}`}
                   loading="lazy"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-navy/60 to-transparent" />
