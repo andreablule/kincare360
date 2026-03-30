@@ -100,37 +100,40 @@ export async function POST(req: NextRequest) {
 
     const subject = `${config.emoji} ${patientName} — ${config.label}: ${description.substring(0, 50)}`;
 
-    // Send SMS + email to all family members
-    const smsMsg = `${config.emoji} KinCare360 — ${config.label}\n\n${patientName} ${description}.\n\nTime: ${now}\n\n${level === "high" ? "This may need attention soon." : "Keeping you informed."}\n\nView dashboard: kincare360.com/dashboard`;
+    // Log concern to call log — family will receive it in their daily digest
+    await prisma.callLog.create({
+      data: {
+        patientId: patient.id,
+        callDate: new Date(),
+        callType: 'concern',
+        summary: `${config.emoji} ${config.label}: ${description}`,
+        urgent: level === 'high',
+      }
+    });
 
-    let alerted = 0;
-    for (const member of patient.familyMembers) {
-      // SMS
-      if (member.phone) {
-        const digits = member.phone.replace(/\D/g, "").slice(-10);
-        if (digits.length === 10) {
-          await sendSMS(`+1${digits}`, smsMsg);
-          console.log(`[concern-alert] SMS sent to ${member.name} (+1${digits})`);
+    console.log(`[concern-alert] ${config.label} logged for ${patientName}: ${description} — family will get it in daily digest`);
+
+    // For HIGH risk: also send immediately to family members who have alerts enabled
+    if (level === 'high') {
+      const smsMsg = `${config.emoji} KinCare360 — ${config.label}\n\n${patientName} ${description}.\n\nTime: ${now}\n\nThis may need attention soon.\n\nView dashboard: kincare360.com/dashboard`;
+
+      for (const member of patient.familyMembers) {
+        if (member.email) {
+          try { await sendEmail(member.email, subject, emailHtml); } catch (e) { console.error(`[concern-alert] Email failed:`, e); }
+        }
+        if (member.phone) {
+          const digits = member.phone.replace(/\D/g, "").slice(-10);
+          if (digits.length === 10) { try { await sendSMS(`+1${digits}`, smsMsg); } catch (e) {} }
         }
       }
-      // Email
-      if (member.email) {
-        try {
-          await sendEmail(member.email, subject, emailHtml);
-          console.log(`[concern-alert] Email sent to ${member.name} (${member.email})`);
-        } catch (e) {
-          console.error(`[concern-alert] Email failed for ${member.name}:`, e);
-        }
-      }
-      alerted++;
     }
-
-    console.log(`[concern-alert] ${config.label} alert for ${patientName}: ${description} — notified ${alerted} family members`);
 
     return NextResponse.json({
       results: [{
         toolCallId: toolCall?.id || "",
-        result: `I've noted your concern and sent an update to your family so they're aware. They'll receive an email with the details.`
+        result: level === 'high' 
+          ? `I've noted your concern and notified your family right away since this seems important.`
+          : `I've noted everything. Your family will receive a summary in their daily update.`
       }]
     });
 

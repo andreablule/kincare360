@@ -1,8 +1,6 @@
 {
   "crons": [
-    {
-      "path": "/api/send-reminders",
-      "schedule": "* * * * *"
-    }
+    { "path": "/api/send-reminders", "schedule": "* * * * *" },
+    { "path": "/api/send-digest", "schedule": "*/15 * * * *" }
   ]
 }

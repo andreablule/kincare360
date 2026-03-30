@@ -104,17 +104,21 @@ model Condition {
 }
 
 model FamilyMember {
-  id            String  @id @default(cuid())
-  patientId     String
-  patient       Patient @relation(fields: [patientId], references: [id])
-  name          String
-  gender        String?
-  relationship  String?
-  phone         String?
-  email         String?
-  notifyUpdates Boolean @default(true)
-  userId        String?  @unique
-  user          User?    @relation("UserFamilyProfile", fields: [userId], references: [id])
+  id              String  @id @default(cuid())
+  patientId       String
+  patient         Patient @relation(fields: [patientId], references: [id])
+  name            String
+  gender          String?
+  relationship    String?
+  phone           String?
+  email           String?
+  notifyUpdates   Boolean @default(true)
+  userId          String?  @unique
+  user            User?    @relation("UserFamilyProfile", fields: [userId], references: [id])
+  alertMode       String  @default("email")    // email | text | both | none
+  summaryTime     String  @default("18:00")    // HH:MM 24h — when daily digest is sent
+  alertsEnabled   Boolean @default(true)       // opt in/out of non-emergency alerts
+  lastDigestSent  DateTime?                     // prevent duplicate digests
 }
 
 model ServiceRequest {
