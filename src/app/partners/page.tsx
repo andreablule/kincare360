@@ -319,6 +319,7 @@ ${result.link}
             </div>
           </div>
         ) : (
+          <>
           {/* Returning partner lookup */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-4">
             <button
@@ -450,6 +451,7 @@ ${result.link}
               {loading ? "Creating..." : "Get My Partner Code"}
             </button>
           </form>
+          </>
         )}
 
         <p className="text-center text-xs text-gray-400 mt-6">
