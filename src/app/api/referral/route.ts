@@ -166,3 +166,26 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const { code } = await req.json();
+    if (!code) {
+      return NextResponse.json({ error: "Code is required" }, { status: 400 });
+    }
+
+    const referral = await prisma.referral.findUnique({ where: { code } });
+    if (!referral) {
+      return NextResponse.json({ error: "Referral not found" }, { status: 404 });
+    }
+
+    // Delete conversions first (foreign key), then the referral
+    await prisma.referralConversion.deleteMany({ where: { referralId: referral.id } });
+    await prisma.referral.delete({ where: { code } });
+
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error("Referral delete error:", err);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
+  }
+}

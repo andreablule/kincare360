@@ -180,6 +180,7 @@ function RegisterForm() {
           onChange={(e) => setName(e.target.value)}
           className="w-full border border-gray-300 rounded-xl px-4 py-3 text-navy focus:outline-none focus:ring-2 focus:ring-teal text-sm"
           placeholder="Your full name"
+          autoComplete="off"
         />
       </div>
 
@@ -192,6 +193,7 @@ function RegisterForm() {
           onChange={(e) => setEmail(e.target.value)}
           className="w-full border border-gray-300 rounded-xl px-4 py-3 text-navy focus:outline-none focus:ring-2 focus:ring-teal text-sm"
           placeholder="you@example.com"
+          autoComplete="off"
         />
       </div>
 
@@ -205,6 +207,7 @@ function RegisterForm() {
             onChange={(e) => setPassword(e.target.value)}
             className="w-full border border-gray-300 rounded-xl px-4 py-3 pr-12 text-navy focus:outline-none focus:ring-2 focus:ring-teal text-sm"
             placeholder="Min 8 characters"
+            autoComplete="new-password"
           />
           <button
             type="button"
@@ -245,6 +248,7 @@ function RegisterForm() {
             !passwordsMatch ? "border-red-400" : "border-gray-300"
           }`}
           placeholder="Confirm your password"
+          autoComplete="new-password"
         />
         {!passwordsMatch && confirm.length > 0 && (
           <p className="text-xs text-red-500 mt-1">Passwords do not match</p>

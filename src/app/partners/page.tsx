@@ -234,6 +234,34 @@ function PartnersContent() {
             <p className="text-xs text-gray-400 text-center">
               You earn $50 for each new subscriber who uses your code.
             </p>
+
+            {/* Cancel participation */}
+            <div className="text-center mt-4">
+              <button
+                onClick={async () => {
+                  if (!confirm("Are you sure you want to leave the referral program? Your code will be deactivated.")) return;
+                  try {
+                    const res = await fetch("/api/referral", {
+                      method: "DELETE",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ code: result.code }),
+                    });
+                    if (res.ok) {
+                      setResult(null);
+                      setStats(null);
+                      alert("You have been removed from the referral program.");
+                    } else {
+                      setError("Failed to cancel. Please email hello@kincare360.com");
+                    }
+                  } catch {
+                    setError("Network error. Please try again.");
+                  }
+                }}
+                className="text-xs text-gray-400 hover:text-red-500 underline transition-colors"
+              >
+                Leave the referral program
+              </button>
+            </div>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
