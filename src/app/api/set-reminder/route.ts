@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-const VAPI_KEY = "3e6bdfb6-fc6f-4c60-a584-16cfa60e6846";
-const PHONE_NUMBER_ID = "8354bde3-c67c-4316-b181-95c227479b58";
-
 // VAPI tool endpoint — Lily calls this to set a one-time reminder for a client
-// Lily provides: message (what to remind), reminderTime (when to call), patientPhone
+// Saves to DB → picked up by /api/send-reminders cron every minute
 
 export async function POST(req: NextRequest) {
   try {
@@ -58,15 +55,23 @@ export async function POST(req: NextRequest) {
       if (period === "pm" && hours < 12) hours += 12;
       if (period === "am" && hours === 12) hours = 0;
 
-      // Use Eastern time
-      const et = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
-      reminderDate = new Date(et);
+      // Build the date in UTC but representing ET
+      // Get current ET time for comparison
+      const etNow = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
+      
+      // Create reminder date in ET
+      reminderDate = new Date(etNow);
       reminderDate.setHours(hours, minutes, 0, 0);
 
       // If the time has already passed today, schedule for tomorrow
-      if (reminderDate <= et) {
+      if (reminderDate <= etNow) {
         reminderDate.setDate(reminderDate.getDate() + 1);
       }
+
+      // Convert back to UTC for storage
+      // ET offset: calculate difference between UTC and our ET-based date
+      const utcOffset = now.getTime() - etNow.getTime();
+      reminderDate = new Date(reminderDate.getTime() + utcOffset);
     }
 
     // Handle "in X minutes/hours"
@@ -83,7 +88,6 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const msUntilReminder = reminderDate.getTime() - now.getTime();
     const formattedTime = reminderDate.toLocaleTimeString("en-US", {
       timeZone: "America/New_York",
       hour: "numeric",
@@ -97,45 +101,17 @@ export async function POST(req: NextRequest) {
       day: "numeric",
     });
 
-    const patientFirstName = patient.firstName;
-    const patientPhone = patient.phone;
+    // Save reminder to database — cron picks it up at the right time
+    await prisma.reminder.create({
+      data: {
+        patientId: patient.id,
+        message: reminderMessage,
+        scheduledAt: reminderDate,
+        status: "pending",
+      },
+    });
 
-    // Schedule the reminder call
-    setTimeout(async () => {
-      try {
-        await fetch("https://api.vapi.ai/call/phone", {
-          method: "POST",
-          headers: { "Content-Type": "application/json", Authorization: `Bearer ${VAPI_KEY}` },
-          body: JSON.stringify({
-            phoneNumberId: PHONE_NUMBER_ID,
-            customer: { number: `+1${patientPhone}` },
-            assistant: {
-              name: "Lily - Reminder",
-              model: {
-                provider: "openai",
-                model: "gpt-4o-mini",
-                messages: [{
-                  role: "system",
-                  content: `You are Lily from KinCare360 calling ${patientFirstName} with a reminder they requested. The reminder is: "${reminderMessage}". Call them by name, deliver the reminder warmly, ask if they need anything else, then say goodbye and end the call.`
-                }],
-              },
-              voice: { provider: "11labs", voiceId: "paula" },
-              firstMessage: `Hi ${patientFirstName}, this is Lily from KinCare360. You asked me to remind you: ${reminderMessage}`,
-              endCallPhrases: ["have a wonderful day", "have a great day", "goodbye", "bye", "take care"],
-              serverUrl: "https://www.kincare360.com/api/call-logs",
-              backgroundSound: "off",
-              backgroundDenoisingEnabled: true,
-              backchannelingEnabled: false,
-            },
-          }),
-        });
-        console.log(`[set-reminder] Reminder fired for ${patientFirstName}: ${reminderMessage}`);
-      } catch (e) {
-        console.error("[set-reminder] Failed to fire reminder:", e);
-      }
-    }, msUntilReminder);
-
-    console.log(`[set-reminder] Reminder set for ${patientFirstName} at ${formattedTime} (${msUntilReminder}ms): ${reminderMessage}`);
+    console.log(`[set-reminder] Saved reminder for ${patient.firstName} at ${formattedTime}: ${reminderMessage}`);
 
     const isToday = reminderDate.toDateString() === new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" })).toDateString();
 

@@ -1,10 +1,13 @@
-import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { NextRequest, NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
 
-const prisma = new PrismaClient();
+export const maxDuration = 55;
+export const dynamic = 'force-dynamic';
+
 const VAPI_KEY = '3e6bdfb6-fc6f-4c60-a584-16cfa60e6846';
 const PHONE_NUMBER_ID = '8354bde3-c67c-4316-b181-95c227479b58'; // (812) 515-5252
 const LILY_ASSISTANT_ID = '8dc06b99-9533-4b28-b379-7ed4f07768aa';
+const CRON_SECRET = process.env.CRON_SECRET || 'kc360-cron-x9f2m7k4p1';
 
 function getEtTime(): { etTime: string; nowMins: number } {
   const now = new Date();
@@ -50,7 +53,6 @@ async function logCall(patientId: string, callType: string, callId: string): Pro
 }
 
 async function getAssistantConfig(phone: string, callType: string): Promise<any> {
-  // Call our own vapi-lookup to get the full dynamic assistant config with patient context
   const baseUrl = process.env.NEXTAUTH_URL || 'https://www.kincare360.com';
   const formattedPhone = phone.replace(/\D/g, '').slice(-10);
   const fullPhone = `+1${formattedPhone}`;
@@ -78,7 +80,6 @@ async function vapiCheckinCall(phone: string, firstName: string): Promise<string
   const rawPhone = phone.replace(/\D/g, '');
   const formattedPhone = rawPhone.length === 10 ? `+1${rawPhone}` : `+${rawPhone}`;
   
-  // Get full dynamic assistant config from vapi-lookup (with patient context, tools, etc.)
   const assistantConfig = await getAssistantConfig(phone, 'checkin');
   
   const callBody: any = {
@@ -86,8 +87,6 @@ async function vapiCheckinCall(phone: string, firstName: string): Promise<string
     customer: { number: formattedPhone },
   };
   
-  // Voicemail detection — hang up if voicemail answers
-
   if (assistantConfig) {
     callBody.assistant = {
       ...assistantConfig,
@@ -118,7 +117,6 @@ async function vapiMedicationCall(phone: string, firstName: string): Promise<str
   const callBody: any = {
     phoneNumberId: PHONE_NUMBER_ID,
     customer: { number: formattedPhone },
-  
   };
   
   if (assistantConfig) {
@@ -142,7 +140,55 @@ async function vapiMedicationCall(phone: string, firstName: string): Promise<str
   return result.id || result.error || JSON.stringify(result).substring(0, 100);
 }
 
-export async function GET() {
+async function vapiReminderCall(phone: string, firstName: string, message: string): Promise<string> {
+  const rawPhone = phone.replace(/\D/g, '');
+  const formattedPhone = rawPhone.length === 10 ? `+1${rawPhone}` : `+${rawPhone}`;
+
+  const callBody = {
+    phoneNumberId: PHONE_NUMBER_ID,
+    customer: { number: formattedPhone },
+    assistant: {
+      name: "Lily - Reminder",
+      model: {
+        provider: "openai",
+        model: "gpt-4o-mini",
+        messages: [{
+          role: "system",
+          content: `You are Lily from KinCare360 calling ${firstName} with a reminder they requested. The reminder is: "${message}". Call them by name, deliver the reminder warmly, ask if they need anything else, then say goodbye and end the call.`
+        }],
+      },
+      voice: { provider: "11labs", voiceId: "paula" },
+      firstMessage: `Hi ${firstName}, this is Lily from KinCare360. You asked me to remind you: ${message}`,
+      endCallFunctionEnabled: true,
+      serverUrl: "https://www.kincare360.com/api/call-logs",
+      backgroundSound: "off",
+      backgroundDenoisingEnabled: true,
+      backchannelingEnabled: false,
+    },
+  };
+
+  const res = await fetch('https://api.vapi.ai/call/phone', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${VAPI_KEY}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(callBody)
+  });
+  const result = await res.json();
+  return result.id || result.error || JSON.stringify(result).substring(0, 100);
+}
+
+export async function GET(req: NextRequest) {
+  // Auth check — require CRON_SECRET via header or Vercel cron header
+  const authHeader = req.headers.get('authorization');
+  const vercelCronHeader = req.headers.get('x-vercel-cron');
+
+  if (!vercelCronHeader) {
+    // Not a Vercel cron call — check Bearer token
+    const token = authHeader?.replace('Bearer ', '');
+    if (token !== CRON_SECRET) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+  }
+
   try {
     const { etTime, nowMins } = getEtTime();
 
@@ -160,6 +206,7 @@ export async function GET() {
 
     const medsSent: string[] = [];
     const checkinSent: string[] = [];
+    const remindersSent: string[] = [];
     const skipped: string[] = [];
 
     for (const patient of patients) {
@@ -170,7 +217,6 @@ export async function GET() {
         const times = patient.medicationReminderTime.split(',').map(t => t.trim());
         for (const t of times) {
           if (timeMatches(t, nowMins)) {
-            // Dedup: skip if already called in last 30 min
             if (await hasRecentCall(patient.id, 'medication')) {
               console.log(`[dedup] Skipping medication reminder for ${patient.firstName} - already called in last 30min`);
               skipped.push(`${patient.firstName}@${t}: dedup-medication`);
@@ -182,20 +228,18 @@ export async function GET() {
             }
             console.log(`[med-reminder] ${patient.firstName} @ ${t} → ${callId}`);
             medsSent.push(`${patient.firstName}@${t}: ${callId}`);
-            break; // only one call per patient per minute
+            break;
           }
         }
       }
 
       // --- Daily check-in ---
-      // Skip check-in if we just sent a med reminder to avoid double-calling (phone busy → voicemail)
       if (medsSent.some(m => m.startsWith(patient.firstName || ''))) {
         console.log(`[stagger] Skipping check-in for ${patient.firstName} — med reminder just sent this tick`);
         skipped.push(`${patient.firstName}@${patient.preferredCallTime}: stagger-wait`);
         continue;
       }
       if (patient.preferredCallTime && timeMatches(patient.preferredCallTime, nowMins)) {
-        // Dedup: skip if already called in last 30 min
         if (await hasRecentCall(patient.id, 'checkin')) {
           console.log(`[dedup] Skipping check-in for ${patient.firstName} - already called in last 30min`);
           skipped.push(`${patient.firstName}@${patient.preferredCallTime}: dedup-checkin`);
@@ -210,18 +254,56 @@ export async function GET() {
       }
     }
 
-    await prisma.$disconnect();
+    // --- Process pending reminders ---
+    const pendingReminders = await prisma.reminder.findMany({
+      where: {
+        status: 'pending',
+        scheduledAt: { lte: new Date() },
+      },
+      include: {
+        patient: { select: { firstName: true, phone: true } },
+      },
+    });
+
+    for (const reminder of pendingReminders) {
+      if (!reminder.patient.phone) {
+        await prisma.reminder.update({ where: { id: reminder.id }, data: { status: 'failed' } });
+        continue;
+      }
+
+      try {
+        const callId = await vapiReminderCall(
+          reminder.patient.phone,
+          reminder.patient.firstName || 'there',
+          reminder.message
+        );
+
+        if (callId && !callId.includes('Bad Request') && !callId.includes('error')) {
+          await logCall(reminder.patientId, 'reminder', callId);
+          await prisma.reminder.update({ where: { id: reminder.id }, data: { status: 'sent' } });
+          remindersSent.push(`${reminder.patient.firstName}: ${reminder.message} → ${callId}`);
+          console.log(`[reminder] ${reminder.patient.firstName}: "${reminder.message}" → ${callId}`);
+        } else {
+          await prisma.reminder.update({ where: { id: reminder.id }, data: { status: 'failed' } });
+          console.error(`[reminder] Failed for ${reminder.patient.firstName}: ${callId}`);
+        }
+      } catch (e) {
+        await prisma.reminder.update({ where: { id: reminder.id }, data: { status: 'failed' } });
+        console.error(`[reminder] Error for ${reminder.patient.firstName}:`, e);
+      }
+    }
+
     return NextResponse.json({
       ok: true,
       time: etTime,
       medReminders: medsSent.length,
       dailyCheckins: checkinSent.length,
+      reminders: remindersSent.length,
       skipped: skipped.length,
-      sent: { medReminders: medsSent, dailyCheckins: checkinSent, skipped }
+      sent: { medReminders: medsSent, dailyCheckins: checkinSent, reminders: remindersSent, skipped }
     });
   } catch (e) {
     console.error('[send-reminders] Error:', e);
-    await prisma.$disconnect();
     return NextResponse.json({ ok: false, error: String(e) }, { status: 500 });
   }
 }

@@ -57,6 +57,7 @@ model Patient {
   familyMembers     FamilyMember[]
   serviceRequests   ServiceRequest[]
   callLogs          CallLog[]
+  reminders         Reminder[]
 }
 
 model Doctor {
@@ -159,6 +160,16 @@ model Referral {
   createdAt       DateTime  @default(now())
   conversions     ReferralConversion[]
   patients        Patient[] @relation("ReferredBy")
+}
+
+model Reminder {
+  id          String   @id @default(cuid())
+  patientId   String
+  patient     Patient  @relation(fields: [patientId], references: [id])
+  message     String
+  scheduledAt DateTime
+  status      String   @default("pending") // pending | sent | failed
+  createdAt   DateTime @default(now())
 }
 
 model ReferralConversion {
