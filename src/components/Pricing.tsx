@@ -1,14 +1,40 @@
 "use client";
 
+import { useState } from "react";
+
 const features = [
-  "Daily check-in calls",
-  "Medication reminders",
-  "Appointment scheduling",
-  "Find & connect to any service",
-  "Emergency family alerts",
-  "Family dashboard",
-  "24/7 access to Lily",
-  "Cancel anytime",
+  {
+    name: "Daily check-in calls",
+    detail: "Every day, Lily calls your loved one at their preferred time. She asks how they're feeling, checks on their mood, and makes sure everything is okay. You get a summary after every call — so you always know how Mom or Dad is doing, even from miles away.",
+  },
+  {
+    name: "Medication reminders",
+    detail: "Lily calls at each scheduled medication time to remind your parent exactly which pills to take. Multiple reminders per day if needed. No more missed doses, no more guessing if they took their morning meds.",
+  },
+  {
+    name: "Appointment scheduling",
+    detail: "Lily helps coordinate and schedule medical appointments — from finding available times to confirming visits. She follows up before and after appointments to make sure nothing is missed.",
+  },
+  {
+    name: "Find & connect to any service",
+    detail: "Need a plumber? A pharmacy? A ride to the store? Your parent just tells Lily what they need. She searches, finds a local provider, and connects them directly by phone — no apps, no internet needed. Like having a personal assistant on call 24/7.",
+  },
+  {
+    name: "Emergency family alerts",
+    detail: "If Lily detects something concerning during a call — confusion, distress, a fall, or a missed check-in — your family is alerted instantly via text and email. Every second counts, and Lily makes sure you know right away.",
+  },
+  {
+    name: "Family dashboard",
+    detail: "A private online portal where you and your family can see daily call summaries, health trends, medication tracking, care notes, and more — all in real time. Invite unlimited family members so everyone stays in the loop.",
+  },
+  {
+    name: "24/7 access to Lily",
+    detail: "Your parent can call Lily anytime — day or night — at (812) 515-5252. Whether they need help, have a question, feel lonely, or just want to chat, Lily is always there. No hold times, no voicemail, no waiting.",
+  },
+  {
+    name: "Cancel anytime",
+    detail: "No contracts, no commitments, no cancellation fees. If KinCare360 isn't right for your family, cancel with one click from your dashboard. We believe you should stay because you love the service, not because you're locked in.",
+  },
 ];
 
 const plans = [
@@ -29,6 +55,12 @@ const plans = [
 ];
 
 export default function Pricing() {
+  const [expanded, setExpanded] = useState<string | null>(null);
+
+  function toggle(name: string) {
+    setExpanded(expanded === name ? null : name);
+  }
+
   return (
     <section id="pricing" className="bg-white py-16 md:py-24">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -63,13 +95,29 @@ export default function Pricing() {
               </div>
               <p className="text-sm text-teal font-medium mt-1">First 7 days free</p>
 
-              <ul className="mt-6 space-y-3 flex-1">
+              <ul className="mt-6 space-y-1 flex-1">
                 {features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm text-gray-600">
-                    <svg className="w-4 h-4 text-teal flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    {f}
+                  <li key={f.name}>
+                    <button
+                      onClick={() => toggle(plan.key + f.name)}
+                      className="w-full flex items-start gap-2 text-sm text-gray-600 hover:text-navy transition-colors py-2 text-left group"
+                    >
+                      <svg className="w-4 h-4 text-teal flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      <span className="flex-1 font-medium group-hover:text-navy">{f.name}</span>
+                      <svg
+                        className={`w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5 transition-transform ${expanded === plan.key + f.name ? "rotate-180" : ""}`}
+                        fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    {expanded === plan.key + f.name && (
+                      <div className="ml-6 mb-3 text-xs text-gray-500 leading-relaxed bg-gray-50 rounded-lg p-3 border border-gray-100">
+                        {f.detail}
+                      </div>
+                    )}
                   </li>
                 ))}
               </ul>
