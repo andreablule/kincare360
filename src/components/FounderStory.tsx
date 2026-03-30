@@ -56,9 +56,6 @@ export default function FounderStory() {
             <div className="mt-8 pt-4 border-t border-gray-200">
               <p className="text-lg font-semibold text-navy">Andrea Lule</p>
               <p className="text-sm text-teal font-medium">Founder, KinCare360</p>
-              <p className="text-sm text-gray-500 tracking-wide mt-1">
-                Foreign Medical Graduate &bull; Certified Nursing Assistant &bull; Elderly Care Advocate
-              </p>
             </div>
           </div>
         </div>
