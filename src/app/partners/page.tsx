@@ -176,6 +176,28 @@ function PartnersContent() {
               </button>
             </div>
 
+            {/* Printable Flyer */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 text-center">
+              <h3 className="text-sm font-bold text-navy mb-2">🖨️ Printable Flyer</h3>
+              <p className="text-xs text-gray-500 mb-3">Download and print for waiting rooms, offices, and community boards.</p>
+              <button
+                onClick={async () => {
+                  const res = await fetch(`/api/referral/flyer?code=${result.code}`);
+                  const html = await res.text();
+                  const blob = new Blob([html], { type: 'text/html' });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `KinCare360-Flyer-${result.code}.html`;
+                  a.click();
+                  URL.revokeObjectURL(url);
+                }}
+                className="bg-teal text-white px-6 py-2.5 rounded-full font-semibold text-sm hover:bg-teal-dark transition-colors"
+              >
+                Download Flyer
+              </button>
+            </div>
+
             {/* Ready-to-post social media */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
               <h3 className="text-sm font-bold text-navy mb-3">📱 Ready to Post on Social Media</h3>

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import nodemailer from "nodemailer";
+import { generateFlyer } from "./generate-flyer";
 
 function generateCode(name: string): string {
   const prefix = name
@@ -105,10 +106,19 @@ export async function POST(req: NextRequest) {
 
         const firstName = name.split(" ")[0] || "there";
 
+        const flyerHtml = generateFlyer(name, referral.code, link);
+
         await transporter.sendMail({
           from: '"KinCare360 Partners" <hello@kincare360.com>',
           to: email,
           subject: `Welcome to the KinCare360 Referral Program, ${firstName}! 🎉`,
+          attachments: [
+            {
+              filename: 'KinCare360-Referral-Flyer.html',
+              content: flyerHtml,
+              contentType: 'text/html',
+            },
+          ],
           html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
               <img src="https://kincare360.com/kincare360-logo.png" alt="KinCare360" style="height: 60px; margin-bottom: 20px;" />
@@ -141,6 +151,11 @@ export async function POST(req: NextRequest) {
 
               <p style="color: #555; font-size: 16px; line-height: 1.6;">
                 To receive payouts directly to your bank, click "Connect Your Bank" on your partner page.
+              </p>
+
+              <h2 style="color: #0F2147; font-size: 18px; margin-top: 30px;">🖨️ Printable Flyer Attached</h2>
+              <p style="color: #555; font-size: 14px; line-height: 1.6;">
+                We've attached a ready-to-print flyer with your referral code. Open the attached HTML file in your browser, then print it. Perfect for doctor's offices, waiting rooms, community boards, home care agencies, or anywhere families gather.
               </p>
 
               <h2 style="color: #0F2147; font-size: 18px; margin-top: 30px;">📱 Ready-to-Post on Social Media</h2>
