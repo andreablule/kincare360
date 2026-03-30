@@ -86,11 +86,6 @@ async function vapiCheckinCall(phone: string, firstName: string): Promise<string
   const callBody: any = {
     phoneNumberId: PHONE_NUMBER_ID,
     customer: { number: formattedPhone },
-    // Voicemail detection: hang up if voicemail answers instead of talking to machine
-    transport: {
-      assistantDestinations: [],
-      provider: "twilio",
-    },
   };
   
   if (assistantConfig) {
@@ -137,10 +132,6 @@ async function vapiMedicationCall(phone: string, firstName: string): Promise<str
   const callBody: any = {
     phoneNumberId: PHONE_NUMBER_ID,
     customer: { number: formattedPhone },
-    transport: {
-      assistantDestinations: [],
-      provider: "twilio",
-    },
   };
   
   if (assistantConfig) {
@@ -185,10 +176,6 @@ async function vapiReminderCall(phone: string, firstName: string, message: strin
   const callBody = {
     phoneNumberId: PHONE_NUMBER_ID,
     customer: { number: formattedPhone },
-    transport: {
-      assistantDestinations: [],
-      provider: "twilio",
-    },
     assistant: {
       name: "Lily - Reminder",
       voicemailDetection: {
