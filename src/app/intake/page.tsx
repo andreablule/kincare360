@@ -62,6 +62,7 @@ export default function IntakePage() {
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [agreedToSms, setAgreedToSms] = useState(false);
   const [planTab, setPlanTab] = useState<"individual" | "family">("individual"); // kept for family flow detection
   const [step1Error, setStep1Error] = useState("");
   const [step2Error, setStep2Error] = useState("");
@@ -520,6 +521,14 @@ export default function IntakePage() {
                 <p className="text-xs text-gray-400 mt-2 text-center">7-day free trial • No charge until day 8 • Cancel anytime</p>
               </div>
 
+              {/* SMS Consent — required for A2P 10DLC carrier approval */}
+              <label className="flex items-start gap-3 cursor-pointer p-4 rounded-xl border-2 border-gray-200 hover:border-teal transition-colors bg-blue-50/30">
+                <input type="checkbox" checked={agreedToSms} onChange={e => setAgreedToSms(e.target.checked)} className="w-5 h-5 mt-0.5 accent-teal flex-shrink-0" />
+                <span className="text-xs text-gray-600">
+                  <strong className="text-navy">SMS Consent:</strong> By checking this box, I consent to receive SMS text messages from KinCare360 at the phone number provided above. Messages may include daily wellness check-in confirmations, medication reminders, appointment notifications, prescription refill alerts, and emergency family alerts. Message frequency varies. Message and data rates may apply. Reply <strong>STOP</strong> to unsubscribe at any time. Reply <strong>HELP</strong> for assistance. View our <a href="/privacy" target="_blank" className="text-teal underline">Privacy Policy</a> and <a href="/terms" target="_blank" className="text-teal underline">Terms of Service</a>.
+                </span>
+              </label>
+
               {/* Terms */}
               <label className="flex items-start gap-3 cursor-pointer p-4 rounded-xl border-2 border-gray-200 hover:border-teal transition-colors">
                 <input type="checkbox" checked={agreedToTerms} onChange={e => setAgreedToTerms(e.target.checked)} className="w-5 h-5 mt-0.5 accent-teal flex-shrink-0" />
@@ -530,7 +539,7 @@ export default function IntakePage() {
 
               <div className="flex gap-3">
                 <button onClick={() => setStep(2)} className="flex-1 border border-gray-200 text-navy py-3 rounded-full font-semibold hover:bg-gray-50">← Back</button>
-                <button onClick={handleSubmit} disabled={submitting || !agreedToTerms || !form.selectedPlan}
+                <button onClick={handleSubmit} disabled={submitting || !agreedToTerms || !agreedToSms || !form.selectedPlan}
                   className="flex-1 bg-teal text-white py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors disabled:opacity-40 flex items-center justify-center gap-2">
                   {submitting ? (
                     <>
