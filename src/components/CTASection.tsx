@@ -2,6 +2,11 @@ export default function CTASection() {
   return (
     <section className="bg-navy py-16 md:py-24">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <img
+          src="/lily-avatar.png"
+          alt="Lily - KinCare360 AI Care Concierge"
+          className="w-24 h-24 rounded-full ring-2 ring-teal object-cover mx-auto mb-6"
+        />
         <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
           Start protecting your parent today.
         </h2>

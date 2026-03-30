@@ -7,8 +7,13 @@ export default function Contact() {
         <h2 className="text-3xl md:text-4xl font-bold text-navy mb-4">
           Ready to get started?
         </h2>
+        <img
+          src="/lily-avatar.png"
+          alt="Lily - KinCare360 AI Care Concierge"
+          className="w-20 h-20 rounded-full ring-2 ring-teal object-cover mx-auto mb-4"
+        />
         <p className="text-gray-500 text-lg mb-10">
-          Call Lily — our AI concierge — and she'll walk you through everything, answer your questions, and get your loved one set up. Available 24 hours a day, 7 days a week.
+          Call Lily — our AI concierge — and she&apos;ll walk you through everything, answer your questions, and get your loved one set up. Available 24 hours a day, 7 days a week.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-10">

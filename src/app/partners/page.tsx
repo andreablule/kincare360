@@ -122,6 +122,16 @@ function PartnersContent() {
           <p className="text-gray-500 mt-2">
             Partner with KinCare360 and earn cash for every new subscriber.
           </p>
+          <div className="mt-6 flex items-center justify-center gap-3 bg-teal/5 rounded-xl px-5 py-4">
+            <img
+              src="/lily-avatar.png"
+              alt="Lily - KinCare360 AI Care Concierge"
+              className="w-14 h-14 rounded-full ring-2 ring-teal object-cover flex-shrink-0"
+            />
+            <p className="text-sm text-navy font-medium text-left">
+              Your patients will talk to <span className="font-bold text-teal">Lily</span>, our AI care concierge — friendly, reliable, available 24/7.
+            </p>
+          </div>
         </div>
 
         {connected && (

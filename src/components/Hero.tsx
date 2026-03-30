@@ -12,19 +12,29 @@ export default function Hero() {
               appointment coordination for your aging parent — 24/7, every single day.
               Automated care. Total peace of mind. Starting at $99/month.
             </p>
-            <div className="mt-8 flex flex-wrap gap-4">
-              <a
-                href="/register"
-                className="bg-teal text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-teal-dark transition-colors shadow-lg"
-              >
-                Start Your Free Trial &rarr;
-              </a>
-              <a
-                href="#how-it-works"
-                className="border-2 border-teal text-teal px-8 py-4 rounded-full font-semibold text-lg hover:bg-teal hover:text-white transition-colors"
-              >
-                See How It Works
-              </a>
+            <div className="mt-8 flex items-center gap-4">
+              <img
+                src="/lily-avatar.png"
+                alt="Lily - KinCare360 AI Care Concierge"
+                className="w-20 h-20 rounded-full ring-2 ring-teal object-cover flex-shrink-0"
+              />
+              <div>
+                <p className="text-sm font-semibold text-navy mb-2">Meet Lily, your AI care concierge</p>
+                <div className="flex flex-wrap gap-3">
+                  <a
+                    href="/register"
+                    className="bg-teal text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-teal-dark transition-colors shadow-lg"
+                  >
+                    Start Your Free Trial &rarr;
+                  </a>
+                  <a
+                    href="#how-it-works"
+                    className="border-2 border-teal text-teal px-8 py-4 rounded-full font-semibold text-lg hover:bg-teal hover:text-white transition-colors"
+                  >
+                    See How It Works
+                  </a>
+                </div>
+              </div>
             </div>
             <p className="mt-3 text-sm text-gray-400">7-day free trial · No contracts · Cancel anytime</p>
           </div>
