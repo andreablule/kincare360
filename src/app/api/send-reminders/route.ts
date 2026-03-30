@@ -27,7 +27,7 @@ function timeMatches(timeStr: string, nowMins: number): boolean {
   const rh = parseInt(parts[0], 10);
   const rm = parseInt(parts[1], 10);
   if (isNaN(rh) || isNaN(rm)) return false;
-  // Exact minute match only — no ±1 slop to prevent duplicate triggers
+  // Exact minute match only - no ±1 slop to prevent duplicate triggers
   return (rh * 60 + rm) === nowMins;
 }
 
@@ -57,7 +57,7 @@ async function getAssistantConfig(phone: string, callType: string): Promise<any>
   const baseUrl = process.env.NEXTAUTH_URL || 'https://www.kincare360.com';
   const formattedPhone = phone.replace(/\D/g, '').slice(-10);
   const fullPhone = `+1${formattedPhone}`;
-  
+
   try {
     const res = await fetch(`${baseUrl}/api/vapi-lookup?callType=${callType}`, {
       method: 'POST',
@@ -80,14 +80,14 @@ async function getAssistantConfig(phone: string, callType: string): Promise<any>
 async function vapiCheckinCall(phone: string, firstName: string): Promise<string> {
   const rawPhone = phone.replace(/\D/g, '');
   const formattedPhone = rawPhone.length === 10 ? `+1${rawPhone}` : `+${rawPhone}`;
-  
+
   const assistantConfig = await getAssistantConfig(phone, 'checkin');
-  
+
   const callBody: any = {
     phoneNumberId: PHONE_NUMBER_ID,
     customer: { number: formattedPhone },
   };
-  
+
   if (assistantConfig) {
     callBody.assistant = {
       ...assistantConfig,
@@ -113,7 +113,7 @@ async function vapiCheckinCall(phone: string, firstName: string): Promise<string
       },
     };
   }
-  
+
   const res = await fetch('https://api.vapi.ai/call/phone', {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${VAPI_KEY}`, 'Content-Type': 'application/json' },
@@ -126,18 +126,18 @@ async function vapiCheckinCall(phone: string, firstName: string): Promise<string
 async function vapiMedicationCall(phone: string, firstName: string): Promise<string> {
   const rawPhone = phone.replace(/\D/g, '');
   const formattedPhone = rawPhone.length === 10 ? `+1${rawPhone}` : `+${rawPhone}`;
-  
+
   const assistantConfig = await getAssistantConfig(phone, 'medication');
-  
+
   const callBody: any = {
     phoneNumberId: PHONE_NUMBER_ID,
     customer: { number: formattedPhone },
   };
-  
+
   if (assistantConfig) {
     callBody.assistant = {
       ...assistantConfig,
-      firstMessage: `Hi ${firstName}! This is Lily from KinCare360. This is your medication reminder — it's time to take your medications. Have you taken them yet?`,
+      firstMessage: `Hi ${firstName}! This is Lily from KinCare360. This is your medication reminder - it's time to take your medications. Have you taken them yet?`,
       voicemailDetection: {
         provider: "twilio",
         enabled: true,
@@ -149,7 +149,7 @@ async function vapiMedicationCall(phone: string, firstName: string): Promise<str
   } else {
     callBody.assistantId = LILY_ASSISTANT_ID;
     callBody.assistantOverrides = {
-      firstMessage: `Hi ${firstName}! This is Lily from KinCare360. This is your medication reminder — it's time to take your medications. Have you taken them yet?`,
+      firstMessage: `Hi ${firstName}! This is Lily from KinCare360. This is your medication reminder - it's time to take your medications. Have you taken them yet?`,
       voicemailDetection: {
         provider: "twilio",
         enabled: true,
@@ -159,7 +159,7 @@ async function vapiMedicationCall(phone: string, firstName: string): Promise<str
       },
     };
   }
-  
+
   const res = await fetch('https://api.vapi.ai/call/phone', {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${VAPI_KEY}`, 'Content-Type': 'application/json' },
@@ -213,12 +213,13 @@ async function vapiReminderCall(phone: string, firstName: string, message: strin
 }
 
 export async function GET(req: NextRequest) {
-  // Auth check — require CRON_SECRET via header or Vercel cron header
+  // Auth check - accept CRON_SECRET, Vercel cron header, or query param
   const authHeader = req.headers.get('authorization');
   const vercelCronHeader = req.headers.get('x-vercel-cron');
+  const url = new URL(req.url);
+  const querySecret = url.searchParams.get('secret');
 
-  if (!vercelCronHeader) {
-    // Not a Vercel cron call — check Bearer token
+  if (!vercelCronHeader && querySecret !== CRON_SECRET) {
     const token = authHeader?.replace('Bearer ', '');
     if (token !== CRON_SECRET) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -271,7 +272,7 @@ export async function GET(req: NextRequest) {
 
       // --- Daily check-in ---
       if (medsSent.some(m => m.startsWith(patient.firstName || ''))) {
-        console.log(`[stagger] Skipping check-in for ${patient.firstName} — med reminder just sent this tick`);
+        console.log(`[stagger] Skipping check-in for ${patient.firstName} - med reminder just sent this tick`);
         skipped.push(`${patient.firstName}@${patient.preferredCallTime}: stagger-wait`);
         continue;
       }
