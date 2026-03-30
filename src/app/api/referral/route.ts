@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import nodemailer from "nodemailer";
 
 function generateCode(name: string): string {
   const prefix = name
@@ -53,9 +54,80 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    const link = `https://kincare360.com/register?ref=${referral.code}`;
+    const dashLink = `https://kincare360.com/partners?code=${referral.code}`;
+
+    // Send confirmation email
+    if (email) {
+      try {
+        const transporter = nodemailer.createTransport({
+          host: "smtp.gmail.com",
+          port: 587,
+          secure: false,
+          auth: {
+            user: "hello@kincare360.com",
+            pass: process.env.GOOGLE_APP_PASSWORD || "rogvowrocfhdsasp",
+          },
+        });
+
+        const firstName = name.split(" ")[0] || "there";
+
+        await transporter.sendMail({
+          from: '"KinCare360 Partners" <hello@kincare360.com>',
+          to: email,
+          subject: `Welcome to the KinCare360 Referral Program, ${firstName}! 🎉`,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+              <img src="https://kincare360.com/kincare360-logo.png" alt="KinCare360" style="height: 60px; margin-bottom: 20px;" />
+
+              <h1 style="color: #0F2147; font-size: 24px;">You're in, ${firstName}!</h1>
+
+              <p style="color: #555; font-size: 16px; line-height: 1.6;">
+                Your referral partner code is:
+              </p>
+
+              <div style="background: #f0faf9; border: 2px solid #0EA5A0; padding: 20px; margin: 20px 0; border-radius: 12px; text-align: center;">
+                <p style="font-size: 28px; font-weight: bold; color: #0EA5A0; margin: 0; font-family: monospace;">${referral.code}</p>
+              </div>
+
+              <p style="color: #555; font-size: 16px; line-height: 1.6;">
+                Share this link with anyone who could use daily wellness check-ins for their aging parent:
+              </p>
+
+              <div style="background: #f5f5f5; padding: 12px 16px; border-radius: 8px; margin: 16px 0;">
+                <a href="${link}" style="color: #0EA5A0; font-weight: bold; word-break: break-all;">${link}</a>
+              </div>
+
+              <div style="background: #f0faf9; border-left: 4px solid #0EA5A0; padding: 16px; margin: 20px 0; border-radius: 0 8px 8px 0;">
+                <p style="margin: 0; color: #0F2147;"><strong>💰 You earn $50</strong> for every new subscriber who signs up using your code — after their 7-day trial ends and they pay their first bill.</p>
+              </div>
+
+              <p style="color: #555; font-size: 16px; line-height: 1.6;">
+                Track your referrals and earnings anytime: <a href="${dashLink}" style="color: #0EA5A0;">Your Partner Dashboard</a>
+              </p>
+
+              <p style="color: #555; font-size: 16px; line-height: 1.6;">
+                To receive payouts directly to your bank, click "Connect Your Bank" on your partner page.
+              </p>
+
+              <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;" />
+
+              <p style="color: #999; font-size: 12px;">
+                Questions? Call Lily at <a href="tel:+18125155252" style="color: #999;">(812) 515-5252</a> or email <a href="mailto:hello@kincare360.com" style="color: #999;">hello@kincare360.com</a>
+              </p>
+            </div>
+          `,
+        });
+        console.log("Partner welcome email sent to:", email);
+      } catch (emailErr) {
+        console.error("Partner email error:", emailErr);
+        // Don't fail the signup if email fails
+      }
+    }
+
     return NextResponse.json({
       code: referral.code,
-      link: `https://kincare360.com/register?ref=${referral.code}`,
+      link,
     });
   } catch (err) {
     console.error("Referral create error:", err);

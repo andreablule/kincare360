@@ -40,7 +40,6 @@ export async function POST(req: NextRequest) {
     const account = await stripeAPI("/v1/accounts", {
       type: "express",
       country: "US",
-      capabilities: { transfers: { requested: "true" } } as any,
       "capabilities[transfers][requested]": "true",
       ...(referral.referrerEmail ? { email: referral.referrerEmail } : {}),
     });

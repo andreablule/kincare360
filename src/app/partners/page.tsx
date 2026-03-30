@@ -34,6 +34,7 @@ function PartnersContent() {
   const [error, setError] = useState("");
   const [stats, setStats] = useState<ReferralStats | null>(null);
   const [connectLoading, setConnectLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   // If code in URL, load stats
   useEffect(() => {
@@ -107,6 +108,8 @@ function PartnersContent() {
   function copyLink() {
     if (!result) return;
     navigator.clipboard.writeText(result.link);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }
 
   return (
@@ -165,7 +168,7 @@ function PartnersContent() {
                 onClick={copyLink}
                 className="bg-teal text-white px-6 py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors text-sm w-full"
               >
-                Copy Referral Link
+                {copied ? '✅ Copied!' : 'Copy Referral Link'}
               </button>
             </div>
 
