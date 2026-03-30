@@ -5,12 +5,10 @@ import { useSession, signOut } from "next-auth/react";
 import PatientSwitcher from "@/components/PatientSwitcher";
 import { usePatientContext } from "@/components/PatientContext";
 
-const timeOptions = Array.from({ length: 48 }, (_, i) => {
-  const hour = Math.floor(i / 2);
-  const min = i % 2 === 0 ? "00" : "30";
+const timeOptions = Array.from({ length: 24 }, (_, hour) => {
   const h12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
   const ampm = hour >= 12 ? "PM" : "AM";
-  return { value: `${String(hour).padStart(2, "0")}:${min}`, label: `${h12}:${min} ${ampm}` };
+  return { value: `${String(hour).padStart(2, "0")}:00`, label: `${h12}:00 ${ampm}` };
 });
 
 export default function ProfilePage() {
@@ -183,12 +181,16 @@ export default function ProfilePage() {
               No check-in calls
             </label>
             {form.preferredCallTime !== "NONE" && (
-              <select className={inputClass} value={form.preferredCallTime} onChange={(e) => setForm({ ...form, preferredCallTime: e.target.value })}>
+              <select className={inputClass} value={form.preferredCallTime} onChange={(e) => {
+                const newTime = e.target.value;
+                if (medTimes.includes(newTime)) return;
+                setForm({ ...form, preferredCallTime: newTime });
+              }}>
                 <option value="">Select a time</option>
-                {timeOptions.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+                {timeOptions.map(t => <option key={t.value} value={t.value} disabled={medTimes.includes(t.value)}>{t.label}{medTimes.includes(t.value) ? ' (med reminder)' : ''}</option>)}
               </select>
             )}
-            <p className="text-xs text-gray-400 mt-1">When should Lily call for the daily check-in?</p>
+            <p className="text-xs text-gray-400 mt-1">Check-in and medication times cannot be the same hour</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-navy mb-1">Medication Reminder Times</label>
@@ -216,7 +218,7 @@ export default function ProfilePage() {
                       }}
                     >
                       <option value="">Select a time</option>
-                      {timeOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                      {timeOptions.map(opt => <option key={opt.value} value={opt.value} disabled={opt.value === form.preferredCallTime || medTimes.some((mt, mi) => mi !== i && mt === opt.value)}>{opt.label}{opt.value === form.preferredCallTime ? ' (check-in)' : ''}</option>)}
                     </select>
                     {medTimes.length > 1 && (
                       <button type="button" onClick={() => setMedTimes(medTimes.filter((_, idx) => idx !== i))}

@@ -6,12 +6,10 @@ import { useSession } from "next-auth/react";
 
 const steps = ["Patient Info", "Medical Info", "Family & Contacts", "Review & Submit", "Second Parent"];
 
-const timeOptions = Array.from({length: 48}, (_, i) => {
-  const hour = Math.floor(i / 2);
-  const min = i % 2 === 0 ? "00" : "30";
+const timeOptions = Array.from({length: 24}, (_, hour) => {
   const h12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
   const ampm = hour >= 12 ? "PM" : "AM";
-  return { value: `${String(hour).padStart(2,'0')}:${min}`, label: `${h12}:${min} ${ampm}` };
+  return { value: `${String(hour).padStart(2,'0')}:00`, label: `${h12}:00 ${ampm}` };
 });
 
 function AddressAutocomplete({ value, onChange, onSelect, className, placeholder }: { 
@@ -128,6 +126,8 @@ export default function IntakePage() {
   }
 
   function updateMedicationReminder(index: number, time: string) {
+    // Prevent overlap with check-in time
+    if (time === form.checkInTime) return;
     setForm(prev => ({
       ...prev,
       medicationReminders: prev.medicationReminders.map((r, i) => i === index ? { time } : r)
@@ -299,9 +299,17 @@ export default function IntakePage() {
                     No check-in calls
                   </label>
                   {form.checkInTime !== "" && (
-                    <select className={inputClass} value={form.checkInTime} onChange={e => update('checkInTime', e.target.value)}>
-                      {timeOptions.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
-                    </select>
+                    <>
+                      <select className={inputClass} value={form.checkInTime} onChange={e => {
+                        const newTime = e.target.value;
+                        // Prevent selecting a time already used by medication reminders
+                        if (form.medicationReminders.some(r => r.time === newTime)) return;
+                        update('checkInTime', newTime);
+                      }}>
+                        {timeOptions.map(t => <option key={t.value} value={t.value} disabled={form.medicationReminders.some(r => r.time === t.value)}>{t.label}{form.medicationReminders.some(r => r.time === t.value) ? ' (med reminder)' : ''}</option>)}
+                      </select>
+                      <p className="text-xs text-gray-400 mt-1">Check-in and medication times cannot overlap</p>
+                    </>
                   )}
                 </div>
 
@@ -323,7 +331,7 @@ export default function IntakePage() {
                       {form.medicationReminders.map((reminder, index) => (
                         <div key={index} className="flex items-center gap-2 mb-2">
                           <select className={inputClass} value={reminder.time} onChange={e => updateMedicationReminder(index, e.target.value)}>
-                            {timeOptions.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+                            {timeOptions.map(t => <option key={t.value} value={t.value} disabled={t.value === form.checkInTime || form.medicationReminders.some((r, ri) => ri !== index && r.time === t.value)}>{t.label}{t.value === form.checkInTime ? ' (check-in)' : ''}</option>)}
                           </select>
                           {form.medicationReminders.length > 1 && (
                             <button type="button" onClick={() => removeMedicationReminder(index)} className="text-red-400 hover:text-red-600 text-sm font-bold px-2">✕</button>
