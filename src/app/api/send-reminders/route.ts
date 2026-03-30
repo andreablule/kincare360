@@ -27,7 +27,8 @@ function timeMatches(timeStr: string, nowMins: number): boolean {
   const rh = parseInt(parts[0], 10);
   const rm = parseInt(parts[1], 10);
   if (isNaN(rh) || isNaN(rm)) return false;
-  return Math.abs(rh * 60 + rm - nowMins) <= 1;
+  // Exact minute match only — no ±1 slop to prevent duplicate triggers
+  return (rh * 60 + rm) === nowMins;
 }
 
 async function hasRecentCall(patientId: string, callType: string): Promise<boolean> {
@@ -85,17 +86,36 @@ async function vapiCheckinCall(phone: string, firstName: string): Promise<string
   const callBody: any = {
     phoneNumberId: PHONE_NUMBER_ID,
     customer: { number: formattedPhone },
+    // Voicemail detection: hang up if voicemail answers instead of talking to machine
+    transport: {
+      assistantDestinations: [],
+      provider: "twilio",
+    },
   };
   
   if (assistantConfig) {
     callBody.assistant = {
       ...assistantConfig,
-      firstMessage: `Hi ${firstName}! This is Lily from KinCare360 with your daily check-in. How are you feeling today?`
+      firstMessage: `Hi ${firstName}! This is Lily from KinCare360 with your daily check-in. How are you feeling today?`,
+      voicemailDetection: {
+        provider: "twilio",
+        enabled: true,
+        machineDetectionTimeout: 8,
+        machineDetectionSpeechThreshold: 3000,
+        machineDetectionSpeechEndThreshold: 2000,
+      },
     };
   } else {
     callBody.assistantId = LILY_ASSISTANT_ID;
     callBody.assistantOverrides = {
-      firstMessage: `Hi ${firstName}! This is Lily from KinCare360 with your daily check-in. How are you feeling today?`
+      firstMessage: `Hi ${firstName}! This is Lily from KinCare360 with your daily check-in. How are you feeling today?`,
+      voicemailDetection: {
+        provider: "twilio",
+        enabled: true,
+        machineDetectionTimeout: 8,
+        machineDetectionSpeechThreshold: 3000,
+        machineDetectionSpeechEndThreshold: 2000,
+      },
     };
   }
   
@@ -117,17 +137,35 @@ async function vapiMedicationCall(phone: string, firstName: string): Promise<str
   const callBody: any = {
     phoneNumberId: PHONE_NUMBER_ID,
     customer: { number: formattedPhone },
+    transport: {
+      assistantDestinations: [],
+      provider: "twilio",
+    },
   };
   
   if (assistantConfig) {
     callBody.assistant = {
       ...assistantConfig,
-      firstMessage: `Hi ${firstName}! This is Lily from KinCare360. This is your medication reminder — it's time to take your medications. Have you taken them yet?`
+      firstMessage: `Hi ${firstName}! This is Lily from KinCare360. This is your medication reminder — it's time to take your medications. Have you taken them yet?`,
+      voicemailDetection: {
+        provider: "twilio",
+        enabled: true,
+        machineDetectionTimeout: 8,
+        machineDetectionSpeechThreshold: 3000,
+        machineDetectionSpeechEndThreshold: 2000,
+      },
     };
   } else {
     callBody.assistantId = LILY_ASSISTANT_ID;
     callBody.assistantOverrides = {
-      firstMessage: `Hi ${firstName}! This is Lily from KinCare360. This is your medication reminder — it's time to take your medications. Have you taken them yet?`
+      firstMessage: `Hi ${firstName}! This is Lily from KinCare360. This is your medication reminder — it's time to take your medications. Have you taken them yet?`,
+      voicemailDetection: {
+        provider: "twilio",
+        enabled: true,
+        machineDetectionTimeout: 8,
+        machineDetectionSpeechThreshold: 3000,
+        machineDetectionSpeechEndThreshold: 2000,
+      },
     };
   }
   
@@ -147,8 +185,19 @@ async function vapiReminderCall(phone: string, firstName: string, message: strin
   const callBody = {
     phoneNumberId: PHONE_NUMBER_ID,
     customer: { number: formattedPhone },
+    transport: {
+      assistantDestinations: [],
+      provider: "twilio",
+    },
     assistant: {
       name: "Lily - Reminder",
+      voicemailDetection: {
+        provider: "twilio",
+        enabled: true,
+        machineDetectionTimeout: 8,
+        machineDetectionSpeechThreshold: 3000,
+        machineDetectionSpeechEndThreshold: 2000,
+      },
       model: {
         provider: "openai",
         model: "gpt-4o-mini",
