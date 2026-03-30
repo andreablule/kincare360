@@ -43,6 +43,7 @@ export default function Home() {
       <Navbar />
       <main>
         <Hero />
+        <FounderStory />
         <Problem />
         <CallExample />
         <WhoItsFor />
@@ -50,7 +51,6 @@ export default function Home() {
         <BeforeAfter />
         <HowItWorks />
         <Services />
-        <FounderStory />
         <Pricing />
         {/* Referral Program Banner */}
         <section className="py-16 bg-gradient-to-r from-teal/10 to-navy/5">
