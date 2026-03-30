@@ -1,8 +1,10 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import Problem from "@/components/Problem";
+import CallExample from "@/components/CallExample";
 import HowItWorks from "@/components/HowItWorks";
 import Services from "@/components/Services";
+import FounderStory from "@/components/FounderStory";
 import Pricing from "@/components/Pricing";
 
 import Contact from "@/components/Contact";
@@ -39,8 +41,10 @@ export default function Home() {
       <main>
         <Hero />
         <Problem />
+        <CallExample />
         <HowItWorks />
         <Services />
+        <FounderStory />
         <Pricing />
         {/* Referral Program Banner */}
         <section className="py-16 bg-gradient-to-r from-teal/10 to-navy/5">

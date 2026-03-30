@@ -80,9 +80,15 @@ export default function Services() {
         <h2 className="text-3xl md:text-4xl font-bold text-navy text-center mb-4">
           Everything your parent needs. Handled automatically.
         </h2>
-        <p className="text-gray-500 text-center mb-16 max-w-2xl mx-auto">
+        <p className="text-gray-500 text-center mb-6 max-w-2xl mx-auto">
           Lily, our AI care concierge, manages everything 24/7 — so you never have to worry.
         </p>
+        <div className="flex items-center justify-center gap-2 mb-16 text-xs text-gray-400 max-w-xl mx-auto text-center">
+          <svg className="w-4 h-4 flex-shrink-0 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+          </svg>
+          <p>Lily is an AI-powered concierge — not a replacement for medical care. She coordinates, reminds, and reports. For medical emergencies, always call 911.</p>
+        </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service) => (
