@@ -16,10 +16,10 @@ export default function FounderStory() {
 
           <div className="space-y-4 text-gray-600 leading-relaxed">
             <p>
-              After 5+ years as a Certified Nursing Assistant caring for elderly patients, I saw the
-              same story repeat: families torn between work and worry, seniors missing medications
-              because no one was there to remind them, and adult children calling every morning just
-              to check if Mom was okay.
+              We built KinCare360 because we lived it. Watching an aging parent from a distance,
+              wondering if they took their medication, if they made it to their appointment, if
+              they&apos;re eating well — it&apos;s a weight that never leaves you. We know what it&apos;s like to
+              call every single morning just to hear &ldquo;I&apos;m fine&rdquo; and finally breathe.
             </p>
             <p>
               KinCare360 was built to fill that gap. Lily makes the daily call so families can
