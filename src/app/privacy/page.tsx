@@ -51,7 +51,7 @@ export default function PrivacyPage() {
 
         <div>
           <h2 className="text-xl font-semibold text-navy mb-2">6. Your Rights</h2>
-          <p>You have the right to access, correct, or delete your personal information. To exercise these rights, contact us at <a href="mailto:support@kincare360.com" className="text-teal underline">support@kincare360.com</a>.</p>
+          <p>You have the right to access, correct, or delete your personal information. To exercise these rights, contact us at <a href="mailto:hello@kincare360.com" className="text-teal underline">hello@kincare360.com</a>.</p>
         </div>
 
         <div>
@@ -71,7 +71,7 @@ export default function PrivacyPage() {
 
         <div>
           <h2 className="text-xl font-semibold text-navy mb-2">10. Contact Us</h2>
-          <p>Questions about this Privacy Policy? Contact us at <a href="mailto:support@kincare360.com" className="text-teal underline">support@kincare360.com</a></p>
+          <p>Questions about this Privacy Policy? Contact us at <a href="mailto:hello@kincare360.com" className="text-teal underline">hello@kincare360.com</a></p>
         </div>
       </section>
     </main>

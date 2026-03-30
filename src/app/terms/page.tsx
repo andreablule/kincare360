@@ -55,10 +55,10 @@ export default function TermsPage() {
         </div>
 
         <div>
-          <h2 className="text-xl font-semibold text-navy mb-2">5. HIPAA & Privacy of Health Information</h2>
-          <p>KinCare360 is a care coordination service and functions as a <strong>Business Associate</strong> where applicable under HIPAA. We handle personal health information with care and implement reasonable administrative, technical, and physical safeguards.</p>
-          <p className="mt-2">However, KinCare360 is <strong>not a Covered Entity</strong> under HIPAA and does not guarantee full HIPAA compliance for all communications. By using our services, you consent to sharing relevant health information with KinCare360 solely for coordination purposes.</p>
-          <p className="mt-2">We will never sell your health information. Information shared is used only to coordinate the care services you have requested.</p>
+          <h2 className="text-xl font-semibold text-navy mb-2">5. Privacy & Health Information</h2>
+          <p>KinCare360 is a <strong>non-medical care coordination service</strong>. We are not a Covered Entity or Business Associate under HIPAA. We do not provide medical treatment, and the health-related information you share with us (such as medication names, appointment times, and general wellness notes) is used <strong>solely</strong> for coordination purposes.</p>
+          <p className="mt-2">We implement reasonable administrative, technical, and physical safeguards to protect your information. We treat all personal and health-related data with care and confidentiality.</p>
+          <p className="mt-2">We will <strong>never sell</strong> your personal or health-related information. Information shared is used only to provide the care coordination services you have requested. For full details, see our <a href="/privacy" className="text-teal underline">Privacy Policy</a>.</p>
         </div>
 
         <div>
