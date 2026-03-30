@@ -32,7 +32,7 @@ export default function Hero() {
             {/* Lily mobile - visible only on small screens */}
             <div className="mt-8 md:hidden flex justify-center">
               <img
-                src="/lily-avatar.png"
+                src="/lily-hero.png"
                 alt="Lily - KinCare360 AI Care Concierge"
                 className="w-64 h-80 object-cover object-top rounded-3xl shadow-xl"
               />
@@ -43,7 +43,7 @@ export default function Hero() {
           <div className="hidden md:block animate-fade-in">
             <div className="relative w-full max-w-md mx-auto">
               <img
-                src="/lily-avatar.png"
+                src="/lily-hero.png"
                 alt="Lily - KinCare360 AI Care Concierge"
                 className="w-full h-[600px] object-cover object-top rounded-3xl shadow-2xl"
               />
