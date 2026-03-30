@@ -83,6 +83,9 @@ export async function POST(req: NextRequest) {
       phone: body.phone,
       email: body.email,
       notifyUpdates: body.notifyUpdates ?? true,
+      alertMode: body.alertMode ?? 'email',
+      summaryTime: body.summaryTime ?? '18:00',
+      alertsEnabled: body.alertsEnabled ?? true,
     },
   });
 
@@ -151,6 +154,9 @@ export async function PUT(req: NextRequest) {
       phone: body.phone,
       email: body.email,
       notifyUpdates: body.notifyUpdates ?? true,
+      alertMode: body.alertMode ?? undefined,
+      summaryTime: body.summaryTime ?? undefined,
+      alertsEnabled: body.alertsEnabled ?? undefined,
     },
   });
   return Response.json({ item });

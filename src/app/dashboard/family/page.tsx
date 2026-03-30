@@ -19,6 +19,9 @@ interface FamilyMember {
   phone: string;
   email: string;
   notifyUpdates: boolean;
+  alertMode?: string;
+  summaryTime?: string;
+  alertsEnabled?: boolean;
   inviteStatus?: "none" | "pending" | "active";
   linkedRole?: string | null;
   user?: LinkedUser | null;
@@ -275,26 +278,71 @@ export default function FamilyPage() {
               </div>
             </div>
 
+            {/* Notification Preferences */}
+            <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Notification Preferences</p>
+              
+              <div className="flex flex-wrap gap-3">
+                {/* Alert Mode */}
+                <div className="flex-1 min-w-[140px]">
+                  <label className="text-xs text-gray-500 mb-1 block">Alert Method</label>
+                  <select
+                    value={member.alertMode || 'email'}
+                    onChange={(e) => { const u = [...members]; u[i] = { ...u[i], alertMode: e.target.value }; setMembers(u); }}
+                    className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white"
+                  >
+                    <option value="email">📧 Email only</option>
+                    <option value="text">📱 Text only</option>
+                    <option value="both">📧📱 Email + Text</option>
+                    <option value="none">🔕 None (emergencies only)</option>
+                  </select>
+                </div>
+
+                {/* Summary Time */}
+                <div className="flex-1 min-w-[140px]">
+                  <label className="text-xs text-gray-500 mb-1 block">Daily Summary Time</label>
+                  <select
+                    value={member.summaryTime || '18:00'}
+                    onChange={(e) => { const u = [...members]; u[i] = { ...u[i], summaryTime: e.target.value }; setMembers(u); }}
+                    className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white"
+                  >
+                    <option value="06:00">6:00 AM</option>
+                    <option value="07:00">7:00 AM</option>
+                    <option value="08:00">8:00 AM</option>
+                    <option value="09:00">9:00 AM</option>
+                    <option value="10:00">10:00 AM</option>
+                    <option value="12:00">12:00 PM</option>
+                    <option value="14:00">2:00 PM</option>
+                    <option value="16:00">4:00 PM</option>
+                    <option value="17:00">5:00 PM</option>
+                    <option value="18:00">6:00 PM</option>
+                    <option value="19:00">7:00 PM</option>
+                    <option value="20:00">8:00 PM</option>
+                    <option value="21:00">9:00 PM</option>
+                    <option value="22:00">10:00 PM</option>
+                  </select>
+                </div>
+
+                {/* Alerts toggle */}
+                <div className="flex-1 min-w-[140px]">
+                  <label className="text-xs text-gray-500 mb-1 block">Daily Updates</label>
+                  <button
+                    type="button"
+                    onClick={() => { const u = [...members]; u[i] = { ...u[i], alertsEnabled: !u[i].alertsEnabled }; setMembers(u); }}
+                    className={`w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      member.alertsEnabled !== false
+                        ? "bg-teal/10 text-teal border border-teal/30"
+                        : "bg-gray-100 text-gray-400 border border-gray-200"
+                    }`}
+                  >
+                    {member.alertsEnabled !== false ? "✅ Enabled" : "❌ Disabled"}
+                  </button>
+                </div>
+              </div>
+              <p className="text-xs text-gray-400">🚨 Emergency alerts are always on and cannot be disabled.</p>
+            </div>
+
             <div className="flex items-center justify-between flex-wrap gap-2">
-              {/* Notify toggle */}
-              <button
-                type="button"
-                disabled={userRole === "FAMILY" && member.user?.id !== (session?.user as any)?.id}
-                onClick={() => {
-                  if (userRole === "FAMILY" && member.user?.id !== (session?.user as any)?.id) return;
-                  const u = [...members]; u[i] = { ...u[i], notifyUpdates: !u[i].notifyUpdates }; setMembers(u);
-                }}
-                className={`flex items-center gap-2.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                  member.notifyUpdates
-                    ? "bg-teal/10 text-teal border border-teal/30"
-                    : "bg-gray-100 text-gray-400 border border-gray-200"
-                } disabled:opacity-50`}
-              >
-                <div className={`w-4 h-4 rounded-full flex-shrink-0 border-2 transition-colors ${
-                  member.notifyUpdates ? "bg-teal border-teal" : "bg-white border-gray-300"
-                }`} />
-                Notifications {member.notifyUpdates ? "ON" : "OFF"}
-              </button>
 
               {/* Action buttons */}
               <div className="flex gap-2 flex-wrap">
