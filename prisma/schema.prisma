@@ -143,15 +143,31 @@ model CallLog {
 }
 
 model Referral {
+  id              String    @id @default(cuid())
+  code            String    @unique
+  type            String    // client | family | partner
+  referrerName    String
+  referrerEmail   String?
+  referrerPhone   String?
+  practiceName    String?
+  userId          String?
+  familyMemberId  String?
+  stripeAccountId String?
+  payoutMethod    String?   // credit | stripe_connect
+  earnings        Float     @default(0)
+  referralCount   Int       @default(0)
+  createdAt       DateTime  @default(now())
+  conversions     ReferralConversion[]
+  patients        Patient[] @relation("ReferredBy")
+}
+
+model ReferralConversion {
   id            String    @id @default(cuid())
-  code          String    @unique
-  type          String    // 'doctor' or 'client'
-  referrerName  String
-  referrerEmail String?
-  referrerPhone String?
-  practiceName  String?   // for doctors
-  earnings      Float     @default(0)
-  referralCount Int       @default(0)
+  referralId    String
+  referral      Referral  @relation(fields: [referralId], references: [id])
+  newCustomerId String
+  status        String    @default("pending")
+  amount        Float     @default(50)
+  paidAt        DateTime?
   createdAt     DateTime  @default(now())
-  patients      Patient[] @relation("ReferredBy")
 }

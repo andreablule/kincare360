@@ -38,21 +38,11 @@ export async function POST(req: NextRequest) {
       const referral = await prisma.referral.findUnique({ where: { code: referralCode } });
       if (referral) {
         validReferralCode = referral.code;
-        // Credit the referrer: $25 per doctor referral
-        if (referral.type === "doctor") {
-          await prisma.referral.update({
-            where: { code: referral.code },
-            data: {
-              earnings: { increment: 25 },
-              referralCount: { increment: 1 },
-            },
-          });
-        } else {
-          await prisma.referral.update({
-            where: { code: referral.code },
-            data: { referralCount: { increment: 1 } },
-          });
-        }
+        // Track referral usage (earnings paid on first invoice via webhook)
+        await prisma.referral.update({
+          where: { code: referral.code },
+          data: { referralCount: { increment: 1 } },
+        });
       }
     }
 

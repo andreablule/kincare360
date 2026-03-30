@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
@@ -32,6 +32,19 @@ function RegisterForm() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [referrerName, setReferrerName] = useState("");
+
+  // Look up referrer name if ref code provided
+  useEffect(() => {
+    if (refParam) {
+      fetch(`/api/referral?code=${refParam}`)
+        .then((r) => r.json())
+        .then((d) => {
+          if (d.referrerName) setReferrerName(d.referrerName);
+        })
+        .catch(() => {});
+    }
+  }, [refParam]);
 
   const strength = getPasswordStrength(password);
   const passwordsMatch = confirm.length === 0 || password === confirm;
@@ -111,6 +124,20 @@ function RegisterForm() {
 
   return (
     <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+      {/* Referral badge */}
+      {refParam && (
+        <div className="bg-teal/10 border border-teal/20 rounded-xl px-4 py-3 text-center">
+          {referrerName && (
+            <p className="text-sm font-semibold text-teal">
+              Referred by {referrerName}
+            </p>
+          )}
+          <p className="text-sm text-navy font-medium mt-0.5">
+            $50 off your first bill!
+          </p>
+        </div>
+      )}
+
       {/* Google Sign Up — top */}
       <button
         type="button"

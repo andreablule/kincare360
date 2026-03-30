@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 function generateCode(name: string): string {
   const prefix = name
@@ -18,8 +20,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Type and name are required" }, { status: 400 });
     }
 
-    if (!["doctor", "client"].includes(type)) {
-      return NextResponse.json({ error: "Type must be 'doctor' or 'client'" }, { status: 400 });
+    if (!["client", "family", "partner", "doctor"].includes(type)) {
+      return NextResponse.json({ error: "Invalid referral type" }, { status: 400 });
+    }
+
+    // For client type, auto-link userId from session
+    let userId: string | null = null;
+    if (type === "client") {
+      const session = await getServerSession(authOptions);
+      userId = (session?.user as any)?.id || null;
     }
 
     // Generate a unique code
@@ -40,6 +49,7 @@ export async function POST(req: NextRequest) {
         referrerEmail: email || null,
         referrerPhone: phone || null,
         practiceName: practiceName || null,
+        userId,
       },
     });
 
@@ -62,22 +72,23 @@ export async function GET(req: NextRequest) {
 
     const referral = await prisma.referral.findUnique({
       where: { code },
-      select: {
-        code: true,
-        type: true,
-        referrerName: true,
-        practiceName: true,
-        earnings: true,
-        referralCount: true,
-        createdAt: true,
-      },
+      include: { conversions: true },
     });
 
     if (!referral) {
       return NextResponse.json({ error: "Referral code not found" }, { status: 404 });
     }
 
-    return NextResponse.json(referral);
+    return NextResponse.json({
+      code: referral.code,
+      type: referral.type,
+      referrerName: referral.referrerName,
+      practiceName: referral.practiceName,
+      earnings: referral.earnings,
+      referralCount: referral.referralCount,
+      createdAt: referral.createdAt,
+      conversions: referral.conversions,
+    });
   } catch (err) {
     console.error("Referral lookup error:", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });

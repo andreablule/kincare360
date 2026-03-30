@@ -33,6 +33,9 @@ const PLAN_NAME_MAP: Record<string, string> = {
   complete_family: 'CONCIERGE_FAMILY',
 };
 
+// Referral coupon ID — created via Stripe API
+const REFERRAL_COUPON_ID = 'referral_50_off';
+
 async function stripeAPI(path: string, body: Record<string, string>) {
   const auth = Buffer.from(`${SK}:`).toString('base64');
   const res = await fetch(`https://api.stripe.com${path}`, {
@@ -46,9 +49,36 @@ async function stripeAPI(path: string, body: Record<string, string>) {
   return res.json();
 }
 
+async function stripeGet(path: string) {
+  const auth = Buffer.from(`${SK}:`).toString('base64');
+  const res = await fetch(`https://api.stripe.com${path}`, {
+    headers: { 'Authorization': `Basic ${auth}` },
+  });
+  return res.json();
+}
+
+async function ensureReferralCoupon(): Promise<string> {
+  // Check if coupon already exists
+  const existing = await stripeGet(`/v1/coupons/${REFERRAL_COUPON_ID}`);
+  if (existing.id && !existing.error) {
+    return existing.id;
+  }
+
+  // Create the coupon
+  const coupon = await stripeAPI('/v1/coupons', {
+    id: REFERRAL_COUPON_ID,
+    amount_off: '5000',
+    currency: 'usd',
+    duration: 'once',
+    name: 'Referral Discount',
+  });
+
+  return coupon.id;
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const { plan, priceId, email } = await req.json();
+    const { plan, priceId, email, ref } = await req.json();
     const baseUrl = process.env.NEXT_PUBLIC_URL || 'https://kincare360.com';
 
     // Resolve price ID from plan name or direct priceId
@@ -76,6 +106,17 @@ export async function POST(req: NextRequest) {
       'metadata[userId]': userId,
       'metadata[plan]': planName,
     };
+
+    // If referral code provided, apply $50 off coupon and save ref in metadata
+    if (ref && typeof ref === 'string' && ref.trim()) {
+      const couponId = await ensureReferralCoupon();
+      if (couponId) {
+        params['discounts[0][coupon]'] = couponId;
+        params['metadata[ref]'] = ref.trim();
+        // Cannot use allow_promotion_codes with discounts
+        delete params['allow_promotion_codes'];
+      }
+    }
 
     if (email && email.trim()) {
       params['customer_email'] = email.trim();

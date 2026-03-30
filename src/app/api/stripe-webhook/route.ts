@@ -6,6 +6,7 @@ const twilioSid = process.env.TWILIO_ACCOUNT_SID!;
 const twilioToken = process.env.TWILIO_AUTH_TOKEN!;
 const twilioPhone = process.env.TWILIO_PHONE_NUMBER!;
 const alertPhone = process.env.ALERT_PHONE_NUMBER || '+12674996927';
+const SK = process.env.STRIPE_SECRET_KEY!;
 
 async function sendSMS(to: string, body: string) {
   const auth = Buffer.from(`${twilioSid}:${twilioToken}`).toString('base64');
@@ -19,6 +20,27 @@ async function sendSMS(to: string, body: string) {
   } catch (e) {
     console.error('SMS error:', e);
   }
+}
+
+async function stripeAPI(path: string, body: Record<string, string>) {
+  const auth = Buffer.from(`${SK}:`).toString('base64');
+  const res = await fetch(`https://api.stripe.com${path}`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Basic ${auth}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: new URLSearchParams(body).toString(),
+  });
+  return res.json();
+}
+
+async function stripeGet(path: string) {
+  const auth = Buffer.from(`${SK}:`).toString('base64');
+  const res = await fetch(`https://api.stripe.com${path}`, {
+    headers: { 'Authorization': `Basic ${auth}` },
+  });
+  return res.json();
 }
 
 async function sendWelcomeEmail(to: string, customerName: string, trialEnd: string) {
@@ -93,6 +115,8 @@ async function sendWelcomeEmail(to: string, customerName: string, trialEnd: stri
 // Map Stripe price IDs to plan names
 function planFromPriceId(priceId: string): string {
   const map: Record<string, string> = {
+    'price_1TGVNLJlUr03cRD7PhMXGx9x': 'INDIVIDUAL',
+    'price_1TGVNTJlUr03cRD7F9F5mgHh': 'FAMILY',
     'price_1TFgeLJlUr03cRD7PP0gW8gW': 'ESSENTIAL',
     'price_1TFgeMJlUr03cRD7fTOu4j0y': 'PLUS',
     'price_1TFgeOJlUr03cRD7Mli4BYhX': 'CONCIERGE',
@@ -101,6 +125,75 @@ function planFromPriceId(priceId: string): string {
     'price_1TFgeSJlUr03cRD7BAJ0XDzT': 'CONCIERGE_FAMILY',
   };
   return map[priceId] || 'ESSENTIAL';
+}
+
+async function processReferralReward(refCode: string, newCustomerId: string) {
+  try {
+    const referral = await prisma.referral.findUnique({ where: { code: refCode } });
+    if (!referral) return;
+
+    // Check if already processed for this customer
+    const existing = await prisma.referralConversion.findFirst({
+      where: { referralId: referral.id, newCustomerId },
+    });
+    if (existing) return;
+
+    // For subscriber referrers (have userId): add $50 credit to their Stripe customer balance
+    if (referral.userId) {
+      const referrerUser = await prisma.user.findUnique({ where: { id: referral.userId } });
+      if (referrerUser?.stripeCustomerId) {
+        // Add -5000 (negative = credit) to customer balance
+        await stripeAPI(`/v1/customers/${referrerUser.stripeCustomerId}/balance_transactions`, {
+          amount: '-5000',
+          currency: 'usd',
+          description: 'Referral reward - $50 credit',
+        });
+      }
+    }
+
+    // For non-subscriber referrers with stripeAccountId: create Stripe Transfer
+    if (!referral.userId && referral.stripeAccountId) {
+      await stripeAPI('/v1/transfers', {
+        amount: '5000',
+        currency: 'usd',
+        destination: referral.stripeAccountId,
+        description: `Referral payout for code ${referral.code}`,
+      });
+    }
+
+    // Create ReferralConversion record
+    await prisma.referralConversion.create({
+      data: {
+        referralId: referral.id,
+        newCustomerId,
+        status: 'paid',
+        amount: 50,
+        paidAt: new Date(),
+      },
+    });
+
+    // Update Referral earnings and count
+    await prisma.referral.update({
+      where: { code: refCode },
+      data: {
+        earnings: { increment: 50 },
+        referralCount: { increment: 1 },
+      },
+    });
+
+    // Send SMS to referrer
+    if (referral.referrerPhone) {
+      const digits = referral.referrerPhone.replace(/\D/g, '').slice(-10);
+      if (digits.length === 10) {
+        await sendSMS(
+          `+1${digits}`,
+          `Your referral just subscribed! You earned $50. Total earnings: $${referral.earnings + 50}. Thank you for spreading the word about KinCare360!`
+        );
+      }
+    }
+  } catch (err) {
+    console.error('Referral reward error:', err);
+  }
 }
 
 // Real Stripe webhook handler (called by Stripe with Stripe-Signature header)
@@ -117,7 +210,6 @@ async function handleStripeEvent(req: NextRequest): Promise<NextResponse> {
 
   // Verify webhook signature if secret is configured
   if (webhookSecret && sig) {
-    // Manual HMAC verification (no Stripe SDK needed)
     const crypto = await import('crypto');
     const parts = sig.split(',').reduce((acc: Record<string, string>, part) => {
       const [key, val] = part.split('=');
@@ -157,6 +249,7 @@ async function handleStripeEvent(req: NextRequest): Promise<NextResponse> {
         const session = event.data.object;
         const userId = session.metadata?.userId;
         const plan = session.metadata?.plan;
+        const refCode = session.metadata?.ref;
         const stripeCustomerId = typeof session.customer === 'string' ? session.customer : session.customer?.id;
         const subscriptionStatus = 'trialing';
 
@@ -169,6 +262,20 @@ async function handleStripeEvent(req: NextRequest): Promise<NextResponse> {
               stripeCustomerId: stripeCustomerId || undefined,
             },
           });
+
+          // Save referral code to patient record if present
+          if (refCode) {
+            const patient = await prisma.patient.findFirst({ where: { userId } });
+            if (patient) {
+              const referral = await prisma.referral.findUnique({ where: { code: refCode } });
+              if (referral) {
+                await prisma.patient.update({
+                  where: { id: patient.id },
+                  data: { referralCode: refCode },
+                });
+              }
+            }
+          }
         }
         break;
       }
@@ -193,15 +300,33 @@ async function handleStripeEvent(req: NextRequest): Promise<NextResponse> {
       }
 
       case 'invoice.paid': {
-        // When a new billing period starts, apply any pending downgrades
         const invoice = event.data.object;
         const customerId = invoice.customer;
+
         if (customerId) {
+          // Check for referral reward on first real payment (after trial)
+          // billing_reason === 'subscription_cycle' means first real charge after trial
+          if (invoice.billing_reason === 'subscription_cycle' || invoice.billing_reason === 'subscription_create') {
+            // Find the user with this customer ID
+            const user = await prisma.user.findFirst({
+              where: { stripeCustomerId: customerId },
+            });
+            if (user) {
+              // Check if this customer used a referral code
+              const patient = await prisma.patient.findFirst({
+                where: { userId: user.id, referralCode: { not: null } },
+              });
+              if (patient?.referralCode) {
+                await processReferralReward(patient.referralCode, customerId);
+              }
+            }
+          }
+
+          // Handle pending plan downgrades
           const user = await prisma.user.findFirst({
             where: { stripeCustomerId: customerId, pendingPlan: { not: null } },
           });
           if (user?.pendingPlan) {
-            // Apply the downgrade in Stripe
             const PRICE_MAP: Record<string, string> = {
               ESSENTIAL: 'price_1TFgeLJlUr03cRD7PP0gW8gW',
               PLUS: 'price_1TFgeMJlUr03cRD7fTOu4j0y',
@@ -212,9 +337,7 @@ async function handleStripeEvent(req: NextRequest): Promise<NextResponse> {
             };
             const newPriceId = PRICE_MAP[user.pendingPlan];
             if (newPriceId) {
-              const stripeKey = process.env.STRIPE_SECRET_KEY!;
-              const auth = Buffer.from(`${stripeKey}:`).toString('base64');
-              // Get active subscription
+              const auth = Buffer.from(`${SK}:`).toString('base64');
               const subsRes = await fetch(
                 `https://api.stripe.com/v1/subscriptions?customer=${customerId}&status=active&limit=1`,
                 { headers: { Authorization: `Basic ${auth}` } }
@@ -237,7 +360,6 @@ async function handleStripeEvent(req: NextRequest): Promise<NextResponse> {
                 }
               }
             }
-            // Update DB: apply pending plan, clear pending fields
             await prisma.user.update({
               where: { id: user.id },
               data: {
@@ -277,7 +399,6 @@ async function handleStripeEvent(req: NextRequest): Promise<NextResponse> {
       }
 
       default:
-        // Unhandled event types — ignore
         break;
     }
   } catch (err) {
@@ -302,8 +423,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No session ID' }, { status: 400 });
     }
 
-    const stripeKey = process.env.STRIPE_SECRET_KEY!;
-    const auth = Buffer.from(`${stripeKey}:`).toString('base64');
+    const auth = Buffer.from(`${SK}:`).toString('base64');
 
     const sessionRes = await fetch(`https://api.stripe.com/v1/checkout/sessions/${sessionId}?expand[]=customer&expand[]=subscription`, {
       headers: { 'Authorization': `Basic ${auth}` },
@@ -325,6 +445,7 @@ export async function POST(req: NextRequest) {
     // Update user plan + subscription status in DB using metadata from checkout
     const metadataUserId = session.metadata?.userId;
     const metadataPlan = session.metadata?.plan;
+    const refCode = session.metadata?.ref;
     const stripeCustomerId = typeof session.customer === 'string' ? session.customer : session.customer?.id;
     const subscriptionStatus = session.subscription?.status || 'trialing';
 
@@ -337,6 +458,20 @@ export async function POST(req: NextRequest) {
           stripeCustomerId: stripeCustomerId || undefined,
         },
       });
+
+      // Save referral code to patient record
+      if (refCode) {
+        const patient = await prisma.patient.findFirst({ where: { userId: metadataUserId } });
+        if (patient) {
+          const referral = await prisma.referral.findUnique({ where: { code: refCode } });
+          if (referral) {
+            await prisma.patient.update({
+              where: { id: patient.id },
+              data: { referralCode: refCode },
+            });
+          }
+        }
+      }
     }
 
     // 1. SMS alert to Andrea
