@@ -2,18 +2,18 @@ import Image from "next/image";
 
 export default function FounderStory() {
   return (
-    <section className="bg-white py-16 md:py-24" id="founder">
+    <section className="bg-gray-50 py-20 md:py-28" id="founder">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row items-center gap-10 md:gap-16">
+        <div className="flex flex-col md:flex-row items-center gap-12 md:gap-20">
           {/* Photo */}
           <div className="flex-shrink-0">
-            <div className="relative w-64 h-64 md:w-80 md:h-80 rounded-2xl overflow-hidden shadow-lg">
+            <div className="relative w-56 h-56 md:w-72 md:h-72 rounded-2xl overflow-hidden shadow-xl ring-1 ring-gray-200">
               <Image
                 src="/andrea-founder.png"
                 alt="Andrea — Founder of KinCare360"
                 fill
                 className="object-cover object-top"
-                sizes="(max-width: 768px) 256px, 320px"
+                sizes="(max-width: 768px) 224px, 288px"
                 priority
               />
             </div>
@@ -48,9 +48,12 @@ export default function FounderStory() {
               <p className="font-medium text-navy text-xl">
                 Because peace of mind shouldn&apos;t depend on how often you can call.
               </p>
+              <p className="italic text-navy mt-2">
+                This is something I trust with my own family.
+              </p>
             </div>
 
-            <div className="mt-6 pt-4 border-t border-gray-200">
+            <div className="mt-8 pt-4 border-t border-gray-200">
               <p className="text-sm text-gray-500 tracking-wide">
                 Foreign Medical Graduate &bull; Healthcare Experience &bull; Elderly Care Focus
               </p>
