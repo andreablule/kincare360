@@ -5,18 +5,20 @@ export default function FounderStory() {
     <section className="bg-gray-50 py-20 md:py-28" id="founder">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row items-center gap-12 md:gap-20">
-          {/* Photo */}
-          <div className="flex-shrink-0">
+          {/* Photo + Name */}
+          <div className="flex-shrink-0 text-center">
             <div className="relative w-56 h-56 md:w-72 md:h-72 rounded-2xl overflow-hidden shadow-xl ring-1 ring-gray-200">
               <Image
                 src="/andrea-founder.png"
-                alt="Andrea — Founder of KinCare360"
+                alt="Andrea Lule — Founder of KinCare360"
                 fill
                 className="object-cover object-top"
                 sizes="(max-width: 768px) 224px, 288px"
                 priority
               />
             </div>
+            <p className="text-lg font-semibold text-navy mt-4">Andrea Lule</p>
+            <p className="text-sm text-teal font-medium">Founder, KinCare360</p>
           </div>
 
           {/* Story */}
@@ -53,10 +55,7 @@ export default function FounderStory() {
               </p>
             </div>
 
-            <div className="mt-8 pt-4 border-t border-gray-200">
-              <p className="text-lg font-semibold text-navy">Andrea Lule</p>
-              <p className="text-sm text-teal font-medium">Founder, KinCare360</p>
-            </div>
+
           </div>
         </div>
       </div>
