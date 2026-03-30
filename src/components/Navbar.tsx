@@ -6,6 +6,7 @@ const navLinks = [
   { label: "How It Works", href: "#how-it-works" },
   { label: "Services", href: "#services" },
   { label: "Pricing", href: "#pricing" },
+  { label: "Earn $50/Referral", href: "/partners" },
   { label: "Contact", href: "#contact" },
 ];
 
