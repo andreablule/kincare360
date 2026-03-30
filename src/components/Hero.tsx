@@ -38,7 +38,8 @@ export default function Hero() {
               <img
                 src="/lily-hero.png"
                 alt="Lily - KinCare360 AI Care Concierge"
-                className="w-64 h-80 object-cover object-top rounded-3xl shadow-xl"
+                className="w-64 h-80 object-cover rounded-3xl shadow-xl"
+                style={{ objectPosition: 'center 10%' }}
               />
             </div>
           </div>
@@ -49,7 +50,8 @@ export default function Hero() {
               <img
                 src="/lily-hero.png"
                 alt="Lily - KinCare360 AI Care Concierge"
-                className="w-full h-[600px] object-cover object-top rounded-3xl shadow-2xl"
+                className="w-full h-[600px] object-cover rounded-3xl shadow-2xl"
+                style={{ objectPosition: 'center 10%' }}
               />
               {/* Floating badge bottom left */}
               <div className="absolute -bottom-5 -left-5 bg-white rounded-2xl shadow-lg px-5 py-4 flex items-center gap-3">

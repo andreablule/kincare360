@@ -5,7 +5,8 @@ export default function CTASection() {
         <img
           src="/lily-avatar.png"
           alt="Lily - KinCare360 AI Care Concierge"
-          className="w-52 h-64 sm:w-60 sm:h-72 object-cover object-top rounded-3xl shadow-2xl ring-4 ring-teal mx-auto mb-8"
+          className="w-52 h-64 sm:w-60 sm:h-72 object-cover rounded-3xl shadow-2xl ring-4 ring-teal mx-auto mb-8"
+          style={{ objectPosition: 'center 10%' }}
         />
         <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">
           Start protecting your parent today.

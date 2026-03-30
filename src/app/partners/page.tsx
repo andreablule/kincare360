@@ -127,6 +127,7 @@ function PartnersContent() {
               src="/lily-avatar.png"
               alt="Lily - KinCare360 AI Care Concierge"
               className="w-14 h-14 rounded-full ring-2 ring-teal object-cover flex-shrink-0"
+              style={{ objectPosition: 'center 15%' }}
             />
             <p className="text-sm text-navy font-medium text-left">
               Your patients will talk to <span className="font-bold text-teal">Lily</span>, our AI care concierge — friendly, reliable, available 24/7.

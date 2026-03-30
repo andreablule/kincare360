@@ -7,7 +7,8 @@ export default function Contact() {
         <img
           src="/lily-avatar.png"
           alt="Lily - KinCare360 AI Care Concierge"
-          className="w-60 h-72 sm:w-72 sm:h-[22rem] object-cover object-top rounded-3xl shadow-2xl ring-4 ring-teal mx-auto mb-8"
+          className="w-60 h-72 sm:w-72 sm:h-[22rem] object-cover rounded-3xl shadow-2xl ring-4 ring-teal mx-auto mb-8"
+          style={{ objectPosition: 'center 10%' }}
         />
 
         <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">
