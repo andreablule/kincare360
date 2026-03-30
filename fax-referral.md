@@ -47,9 +47,9 @@ family dashboard, and 24/7 access to Lily.
 
 â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
 
-PHYSICIAN REFERRAL PROGRAM â€” EARN $25 PER REFERRAL
+PHYSICIAN REFERRAL PROGRAM â€” EARN $50 PER REFERRAL
 
-EARN $25 for every patient you refer to KinCare360.
+EARN $50 for every patient you refer to KinCare360.
 Get your referral code at kincare360.com/referral
 Share your link with patients â€” you earn when they sign up.
 
