@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
+import { useSession, signIn } from "next-auth/react";
 import { Suspense } from "react";
 
 interface Conversion {
@@ -21,8 +22,10 @@ interface ReferralStats {
 
 function PartnersContent() {
   const searchParams = useSearchParams();
+  const { data: session } = useSession();
   const codeParam = searchParams.get("code");
   const connected = searchParams.get("connected");
+  const googleReturn = searchParams.get("google");
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -35,6 +38,14 @@ function PartnersContent() {
   const [stats, setStats] = useState<ReferralStats | null>(null);
   const [connectLoading, setConnectLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  // If returning from Google OAuth, auto-fill name and email
+  useEffect(() => {
+    if (googleReturn && session?.user) {
+      if (session.user.name && !name) setName(session.user.name);
+      if (session.user.email && !email) setEmail(session.user.email);
+    }
+  }, [googleReturn, session]);
 
   // If code in URL, load stats
   useEffect(() => {
@@ -172,6 +183,35 @@ function PartnersContent() {
               </button>
             </div>
 
+            {/* Ready-to-post social media */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+              <h3 className="text-sm font-bold text-navy mb-3">📱 Ready to Post on Social Media</h3>
+              <div className="bg-gray-50 rounded-xl p-4 text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+{`🎉 I just partnered with KinCare360 — a service that provides daily wellness check-in calls, medication reminders, and care coordination for aging parents.
+
+If you or someone you know is caring for an elderly loved one, check it out:
+${result.link}
+
+✅ 7-day free trial
+✅ Daily check-in calls
+✅ Medication reminders
+✅ Family dashboard
+
+#ElderCare #AgingParents #KinCare360 #Caregiving`}
+              </div>
+              <button
+                onClick={() => {
+                  const text = `🎉 I just partnered with KinCare360 — a service that provides daily wellness check-in calls, medication reminders, and care coordination for aging parents.\n\nIf you or someone you know is caring for an elderly loved one, check it out:\n${result.link}\n\n✅ 7-day free trial\n✅ Daily check-in calls\n✅ Medication reminders\n✅ Family dashboard\n\n#ElderCare #AgingParents #KinCare360 #Caregiving`;
+                  navigator.clipboard.writeText(text);
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 2000);
+                }}
+                className="mt-3 w-full bg-navy text-white py-2.5 rounded-full font-semibold text-sm hover:opacity-90 transition-opacity"
+              >
+                {copied ? '✅ Copied!' : 'Copy Post to Clipboard'}
+              </button>
+            </div>
+
             {/* Connect Bank Button */}
             {!connected && (
               <button
@@ -268,6 +308,27 @@ function PartnersContent() {
             <p className="text-sm text-gray-600 mb-2">
               Sign up below to get your unique partner referral code. Earn $50 for every new KinCare360 subscription.
             </p>
+
+            {/* Google Quick Signup */}
+            <button
+              type="button"
+              onClick={() => signIn("google", { callbackUrl: "/partners?google=1" })}
+              className="w-full flex items-center justify-center gap-3 border-2 border-gray-200 rounded-full py-3 font-semibold text-sm text-navy hover:border-teal hover:bg-gray-50 transition-colors"
+            >
+              <svg className="w-5 h-5" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+              </svg>
+              Sign up with Google
+            </button>
+
+            <div className="flex items-center gap-3">
+              <div className="flex-1 h-px bg-gray-200"></div>
+              <span className="text-xs text-gray-400">or fill in manually</span>
+              <div className="flex-1 h-px bg-gray-200"></div>
+            </div>
 
             {error && (
               <div className="bg-red-50 text-red-600 text-sm rounded-xl px-4 py-3">{error}</div>

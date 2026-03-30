@@ -57,6 +57,39 @@ export async function POST(req: NextRequest) {
     const link = `https://kincare360.com/register?ref=${referral.code}`;
     const dashLink = `https://kincare360.com/partners?code=${referral.code}`;
 
+    // Send SMS confirmation + social media post
+    if (phone) {
+      try {
+        const twilioSid = process.env.TWILIO_ACCOUNT_SID!;
+        const twilioToken = process.env.TWILIO_AUTH_TOKEN!;
+        const twilioPhone = process.env.TWILIO_PHONE_NUMBER!;
+        const smsAuth = Buffer.from(`${twilioSid}:${twilioToken}`).toString("base64");
+
+        // Confirmation SMS
+        const smsBody = `Welcome to the KinCare360 Referral Program, ${name.split(" ")[0]}! 🎉\n\nYour code: ${referral.code}\nShare this link: ${link}\n\nYou earn $50 for every new subscriber.\nTrack earnings: ${dashLink}\n\nReply STOP to opt out.`;
+
+        const digits = phone.replace(/\D/g, "").slice(-10);
+        if (digits.length === 10) {
+          await fetch(`https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`, {
+            method: "POST",
+            headers: { "Authorization": `Basic ${smsAuth}`, "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({ To: `+1${digits}`, From: twilioPhone, Body: smsBody }).toString(),
+          });
+
+          // Send ready-to-post social media message
+          const socialPost = `🎉 I just partnered with KinCare360 — a service that provides daily wellness check-in calls, medication reminders, and care coordination for aging parents.\n\nIf you or someone you know is caring for an elderly loved one, check it out:\n${link}\n\n✅ 7-day free trial\n✅ Daily check-in calls\n✅ Medication reminders\n✅ Family dashboard\n\n#ElderCare #AgingParents #KinCare360 #Caregiving`;
+
+          await fetch(`https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`, {
+            method: "POST",
+            headers: { "Authorization": `Basic ${smsAuth}`, "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({ To: `+1${digits}`, From: twilioPhone, Body: `📱 Ready-to-post for social media (just copy & paste):\n\n${socialPost}` }).toString(),
+          });
+        }
+      } catch (smsErr) {
+        console.error("Partner SMS error:", smsErr);
+      }
+    }
+
     // Send confirmation email
     if (email) {
       try {
@@ -109,6 +142,20 @@ export async function POST(req: NextRequest) {
               <p style="color: #555; font-size: 16px; line-height: 1.6;">
                 To receive payouts directly to your bank, click "Connect Your Bank" on your partner page.
               </p>
+
+              <h2 style="color: #0F2147; font-size: 18px; margin-top: 30px;">📱 Ready-to-Post on Social Media</h2>
+              <p style="color: #555; font-size: 14px;">Copy and paste this to Facebook, Instagram, or anywhere:</p>
+              <div style="background: #f5f5f5; padding: 16px; border-radius: 8px; margin: 12px 0; font-size: 14px; color: #333; line-height: 1.6; white-space: pre-wrap;">🎉 I just partnered with KinCare360 — a service that provides daily wellness check-in calls, medication reminders, and care coordination for aging parents.
+
+If you or someone you know is caring for an elderly loved one, check it out:
+${link}
+
+✅ 7-day free trial
+✅ Daily check-in calls
+✅ Medication reminders
+✅ Family dashboard
+
+#ElderCare #AgingParents #KinCare360 #Caregiving</div>
 
               <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;" />
 
