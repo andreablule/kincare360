@@ -5,7 +5,7 @@ export default function CTASection() {
         <img
           src="/lily-avatar.png"
           alt="Lily - KinCare360 AI Care Concierge"
-          className="w-24 h-24 rounded-full ring-2 ring-teal object-cover mx-auto mb-6"
+          className="w-40 h-40 sm:w-48 sm:h-48 rounded-full ring-4 ring-teal shadow-2xl object-cover mx-auto mb-8"
         />
         <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
           Start protecting your parent today.

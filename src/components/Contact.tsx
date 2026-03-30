@@ -10,8 +10,9 @@ export default function Contact() {
         <img
           src="/lily-avatar.png"
           alt="Lily - KinCare360 AI Care Concierge"
-          className="w-20 h-20 rounded-full ring-2 ring-teal object-cover mx-auto mb-4"
+          className="w-36 h-36 sm:w-44 sm:h-44 rounded-full ring-4 ring-teal shadow-xl object-cover mx-auto mb-6"
         />
+        <p className="text-xl font-semibold text-navy mb-2">Talk to Lily</p>
         <p className="text-gray-500 text-lg mb-10">
           Call Lily — our AI concierge — and she&apos;ll walk you through everything, answer your questions, and get your loved one set up. Available 24 hours a day, 7 days a week.
         </p>
