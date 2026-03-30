@@ -13,13 +13,16 @@ export default function Hero() {
             <p className="mt-3 text-lg text-gray-500 leading-relaxed max-w-lg">
               Automated care coordination. Total peace of mind. Starting at $99/month.
             </p>
+            <p className="mt-4 text-lg font-medium text-navy/80 italic max-w-lg">
+              The call you don&apos;t make shouldn&apos;t be the one you regret.
+            </p>
             {/* CTA buttons */}
             <div className="mt-8 flex flex-wrap gap-3">
               <a
                 href="/register"
                 className="bg-teal text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-teal-dark transition-colors shadow-lg"
               >
-                Start Free Trial &mdash; Set Up in 5 Minutes &rarr;
+                Start Protecting Your Parent Today &rarr;
               </a>
               <a
                 href="#how-it-works"
@@ -28,7 +31,7 @@ export default function Hero() {
                 See How It Works
               </a>
             </div>
-            <p className="mt-3 text-sm text-gray-400">7-day free trial · No contracts · Cancel anytime</p>
+            <p className="mt-3 text-sm text-gray-400">Free 7-day trial · Setup in 5 minutes · Cancel anytime</p>
 
             {/* Lily mobile - visible only on small screens */}
             <div className="mt-8 md:hidden flex justify-center">
