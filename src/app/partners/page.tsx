@@ -79,6 +79,12 @@ function PartnersContent() {
         setError(data.error || "Something went wrong");
       } else {
         setResult(data);
+        // Send email notification in background
+        fetch("/api/partner-signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, phone }),
+        }).catch(() => {});
       }
     } catch {
       setError("Network error. Please try again.");

@@ -13,6 +13,11 @@ const nextConfig: NextConfig = {
         destination: "/partners",
         permanent: true,
       },
+      {
+        source: "/register",
+        destination: "/signup",
+        permanent: true,
+      },
     ];
   },
 };

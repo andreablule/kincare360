@@ -30,18 +30,37 @@ const typeLabels: Record<string, string> = {
 };
 
 export default async function AdminPage() {
-  const session = await getServerSession(authOptions);
+  let session;
+  try {
+    session = await getServerSession(authOptions);
+  } catch {
+    // DB or auth error — show error instead of redirect loop
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-navy mb-2">Unable to load admin panel</h1>
+          <p className="text-gray-500 mb-4">Session could not be verified. This is usually a temporary database issue.</p>
+          <a href="/admin" className="text-teal font-semibold hover:underline">Try again</a>
+          {" · "}
+          <a href="/login" className="text-teal font-semibold hover:underline">Go to login</a>
+        </div>
+      </div>
+    );
+  }
   const user = session?.user as any;
 
   if (!user || (user.role !== "ADMIN" && user.email !== "hello@kincare360.com")) {
-    redirect("/login");
+    redirect("/login?callbackUrl=/admin");
   }
 
-  const now = new Date();
-  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const weekStart = new Date(todayStart);
+  let now: Date, todayStart: Date, weekStart: Date, yesterday: Date;
+  try {
+
+  now = new Date();
+  todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  weekStart = new Date(todayStart);
   weekStart.setDate(weekStart.getDate() - 7);
-  const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 
   // Build daily date boundaries for last 7 days
   const dailyBoundaries: { label: string; start: Date; end: Date }[] = [];
@@ -814,4 +833,16 @@ export default async function AdminPage() {
       </main>
     </div>
   );
+
+  } catch (err) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-navy mb-2">Admin panel temporarily unavailable</h1>
+          <p className="text-gray-500 mb-4">Database query failed. This is usually a temporary issue with Neon cold starts.</p>
+          <a href="/admin" className="bg-teal text-white px-6 py-2 rounded-full font-semibold hover:bg-teal-dark transition-colors text-sm">Reload</a>
+        </div>
+      </div>
+    );
+  }
 }

@@ -67,6 +67,7 @@ export default function IntakePage() {
   const [step1Error, setStep1Error] = useState("");
   const [step2Error, setStep2Error] = useState("");
   const [step3Error, setStep3Error] = useState("");
+  const [sessionTimeout, setSessionTimeout] = useState(false);
   const [form, setForm] = useState({
     firstName: "", lastName: "", patientName: "", dob: "", phone: "", email: "", gender: "", address: "", city: "", state: "", zip: "",
     primaryDoctor: "", doctorPhone: "", doctorAddress: "",
@@ -88,12 +89,26 @@ export default function IntakePage() {
     }
   }, [status, router]);
 
+  // If session stays loading too long (e.g. DB cold start), redirect to login
+  useEffect(() => {
+    if (status === "loading") {
+      const timer = setTimeout(() => setSessionTimeout(true), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [status]);
+
+  useEffect(() => {
+    if (sessionTimeout && status === "loading") {
+      router.push("/login");
+    }
+  }, [sessionTimeout, status, router]);
+
   if (status === "loading" || status === "unauthenticated") {
     return (
       <main className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-4 border-teal border-t-transparent rounded-full animate-spin" />
-          <p className="text-gray-400 text-sm">Loading your intake form...</p>
+          <p className="text-gray-400 text-sm">{sessionTimeout ? "Redirecting to login..." : "Loading your intake form..."}</p>
         </div>
       </main>
     );
