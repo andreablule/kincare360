@@ -43,6 +43,20 @@ export default async function AdminPage() {
   weekStart.setDate(weekStart.getDate() - 7);
   const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 
+  // Build daily date boundaries for last 7 days
+  const dailyBoundaries: { label: string; start: Date; end: Date }[] = [];
+  for (let i = 6; i >= 0; i--) {
+    const dayStart = new Date(todayStart);
+    dayStart.setDate(dayStart.getDate() - i);
+    const dayEnd = new Date(dayStart);
+    dayEnd.setDate(dayEnd.getDate() + 1);
+    dailyBoundaries.push({
+      label: dayStart.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" }),
+      start: dayStart,
+      end: dayEnd,
+    });
+  }
+
   const [
     activeUsers,
     trialingUsers,
@@ -58,6 +72,18 @@ export default async function AdminPage() {
     recentCalls,
     recentRequests,
     signupsThisWeek,
+    // Analytics additions
+    totalUsers,
+    newUsersToday,
+    newUsersThisWeek,
+    activeSubscribers,
+    totalReferralCodes,
+    referralAgg,
+    recentSignups,
+    recentReferrals,
+    usersWithPatients,
+    subscribedUsers,
+    ...dailySignupCounts
   ] = await Promise.all([
     prisma.user.findMany({ where: { subscriptionStatus: "active" }, select: { plan: true } }),
     prisma.user.findMany({ where: { subscriptionStatus: "trialing" }, select: { plan: true } }),
@@ -95,7 +121,61 @@ export default async function AdminPage() {
       include: { patient: { select: { firstName: true, lastName: true } } },
     }),
     prisma.user.count({ where: { role: "CLIENT", createdAt: { gte: weekStart } } }),
+    // Analytics: Total users
+    prisma.user.count(),
+    // Analytics: New users today
+    prisma.user.count({ where: { createdAt: { gte: todayStart } } }),
+    // Analytics: New users this week
+    prisma.user.count({ where: { createdAt: { gte: weekStart } } }),
+    // Analytics: Active subscribers
+    prisma.user.count({ where: { subscriptionStatus: { in: ["active", "trialing"] } } }),
+    // Analytics: Referral codes created
+    prisma.referral.count(),
+    // Analytics: Total referrals used (aggregate sum)
+    prisma.referral.aggregate({ _sum: { referralCount: true } }),
+    // Analytics: Recent signups (last 10)
+    prisma.user.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 10,
+      select: { id: true, name: true, email: true, createdAt: true },
+    }),
+    // Analytics: Recent referral creations (last 10)
+    prisma.referral.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 10,
+      select: { id: true, code: true, referrerName: true, type: true, createdAt: true },
+    }),
+    // Analytics: Users who completed intake (have patients)
+    prisma.user.count({ where: { patients: { some: {} } } }),
+    // Analytics: Subscribed users
+    prisma.user.count({ where: { subscriptionStatus: { in: ["active", "trialing"] } } }),
+    // Analytics: Daily signups for last 7 days
+    ...dailyBoundaries.map((d) => prisma.user.count({ where: { createdAt: { gte: d.start, lt: d.end } } })),
   ]);
+
+  const totalReferralsUsed = referralAgg._sum?.referralCount || 0;
+
+  // Build activity feed: merge signups, calls, referrals — sorted by time, take 10
+  type ActivityItem = { type: "signup" | "call" | "referral"; date: Date; label: string; detail: string };
+  const activityFeed: ActivityItem[] = [];
+  (recentSignups as any[]).forEach((u) => {
+    activityFeed.push({ type: "signup", date: new Date(u.createdAt), label: u.name || u.email, detail: u.email });
+  });
+  (recentCalls as any[]).forEach((c) => {
+    activityFeed.push({ type: "call", date: new Date(c.callDate), label: `${c.patient.firstName} ${c.patient.lastName}`, detail: c.callType || "Check-in" });
+  });
+  (recentReferrals as any[]).forEach((r) => {
+    activityFeed.push({ type: "referral", date: new Date(r.createdAt), label: r.referrerName, detail: `Code: ${r.code}` });
+  });
+  activityFeed.sort((a, b) => b.date.getTime() - a.date.getTime());
+  const activityFeedTop10 = activityFeed.slice(0, 10);
+
+  // Daily signups data for chart
+  const dailySignupsData = dailyBoundaries.map((d, i) => ({
+    label: d.label,
+    count: dailySignupCounts[i] as number,
+  }));
+  const maxDailySignup = Math.max(...dailySignupsData.map((d) => d.count), 1);
 
   // MRR calculations
   const mrr = activeUsers.reduce((sum, u) => sum + (PLAN_PRICES[u.plan || ""] || 0), 0);
@@ -261,6 +341,141 @@ export default async function AdminPage() {
             )}
           </div>
         )}
+
+        {/* SECTION: Live Analytics */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
+              <svg className="w-5 h-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <h2 className="text-lg font-semibold text-[#0f172a]">Live Analytics</h2>
+          </div>
+
+          {/* Analytics KPI Cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+            {[
+              { label: "Total Users", value: totalUsers, color: "border-l-indigo-500" },
+              { label: "New Users Today", value: newUsersToday, color: "border-l-green-500" },
+              { label: "New Users This Week", value: newUsersThisWeek, color: "border-l-blue-500" },
+              { label: "Active Subscribers", value: activeSubscribers, color: "border-l-teal" },
+              { label: "Calls Today", value: callsToday, color: "border-l-orange-500" },
+              { label: "Calls This Week", value: callsThisWeek, color: "border-l-yellow-500" },
+              { label: "Referral Codes", value: totalReferralCodes, color: "border-l-pink-500" },
+              { label: "Referrals Used", value: totalReferralsUsed, color: "border-l-purple-500" },
+            ].map((kpi) => (
+              <div key={kpi.label} className={`bg-white rounded-2xl p-5 border border-gray-100 shadow-sm border-l-4 ${kpi.color}`}>
+                <div className="text-xs text-gray-500 uppercase tracking-wide font-medium">{kpi.label}</div>
+                <div className="text-3xl font-bold text-[#0f172a] mt-2">{kpi.value.toLocaleString()}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Activity Feed + Signup Funnel + GA */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            {/* Recent Activity Feed */}
+            <div className="lg:col-span-2">
+              <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Recent Activity</h3>
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm divide-y divide-gray-50">
+                {activityFeedTop10.length === 0 && (
+                  <div className="p-6 text-center text-gray-400">No recent activity.</div>
+                )}
+                {activityFeedTop10.map((item, i) => (
+                  <div key={i} className="px-5 py-3 flex items-center gap-3">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-sm ${
+                      item.type === "signup" ? "bg-green-100 text-green-700" :
+                      item.type === "call" ? "bg-blue-100 text-blue-700" :
+                      "bg-purple-100 text-purple-700"
+                    }`}>
+                      {item.type === "signup" ? "\u{1F464}" : item.type === "call" ? "\u{1F4DE}" : "\u{1F517}"}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-[#0f172a] text-sm truncate">{item.label}</span>
+                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                          item.type === "signup" ? "bg-green-100 text-green-700" :
+                          item.type === "call" ? "bg-blue-100 text-blue-700" :
+                          "bg-purple-100 text-purple-700"
+                        }`}>
+                          {item.type === "signup" ? "Signup" : item.type === "call" ? "Call" : "Referral"}
+                        </span>
+                      </div>
+                      <div className="text-xs text-gray-400 truncate">{item.detail}</div>
+                    </div>
+                    <div className="text-xs text-gray-400 shrink-0">
+                      {item.date.toLocaleDateString("en-US", { month: "short", day: "numeric" })}{" "}
+                      {item.date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right column: GA + Funnel */}
+            <div className="space-y-6">
+              {/* Google Analytics */}
+              <div>
+                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Google Analytics</h3>
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                  <div className="text-xs text-gray-500 mb-3">GA Property ID: <span className="font-mono font-semibold text-[#0f172a]">G-FNXDMJDB3K</span></div>
+                  <a
+                    href="https://analytics.google.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-[#0f172a] text-white text-sm font-semibold px-4 py-2.5 rounded-xl hover:bg-[#1e293b] transition-colors w-full justify-center"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                    Open Google Analytics &rarr;
+                  </a>
+                </div>
+              </div>
+
+              {/* Signup Conversion Funnel */}
+              <div>
+                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Signup Funnel</h3>
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-3">
+                  {[
+                    { label: "Registered", value: totalUsers, pct: 100 },
+                    { label: "Completed Intake", value: usersWithPatients, pct: totalUsers > 0 ? Math.round((usersWithPatients / totalUsers) * 100) : 0 },
+                    { label: "Subscribed", value: subscribedUsers, pct: totalUsers > 0 ? Math.round((subscribedUsers / totalUsers) * 100) : 0 },
+                  ].map((step) => (
+                    <div key={step.label}>
+                      <div className="flex items-center justify-between text-sm mb-1">
+                        <span className="text-gray-600 font-medium">{step.label}</span>
+                        <span className="font-bold text-[#0f172a]">{step.value} <span className="text-xs text-gray-400 font-normal">({step.pct}%)</span></span>
+                      </div>
+                      <div className="w-full bg-gray-100 rounded-full h-2">
+                        <div className="bg-teal rounded-full h-2 transition-all" style={{ width: `${step.pct}%` }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Daily Signups Bar Chart (last 7 days) */}
+          <div>
+            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Signups — Last 7 Days</h3>
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+              <div className="flex items-end gap-3 h-32">
+                {dailySignupsData.map((d) => (
+                  <div key={d.label} className="flex-1 flex flex-col items-center gap-1">
+                    <span className="text-xs font-bold text-[#0f172a]">{d.count}</span>
+                    <div
+                      className="w-full bg-teal/80 rounded-t-md transition-all"
+                      style={{ height: `${Math.max((d.count / maxDailySignup) * 100, 4)}%` }}
+                    />
+                    <span className="text-[10px] text-gray-400 leading-tight text-center">{d.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* SECTION 4: Clients Table */}
         <div className="mb-8">
