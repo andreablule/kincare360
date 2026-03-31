@@ -126,6 +126,7 @@ function SignupForm() {
         <div>
           <label className="block text-sm font-medium text-navy mb-1.5">Email address</label>
           <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
+            autoComplete="new-email"
             className="w-full border border-gray-300 rounded-xl px-4 py-3 text-navy focus:outline-none focus:ring-2 focus:ring-teal focus:border-transparent text-sm"
             placeholder="you@example.com" />
         </div>
@@ -134,6 +135,7 @@ function SignupForm() {
           <label className="block text-sm font-medium text-navy mb-1.5">Create a password</label>
           <div className="relative">
             <input type={showPassword ? "text" : "password"} required value={password} onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
               className="w-full border border-gray-300 rounded-xl px-4 py-3 pr-12 text-navy focus:outline-none focus:ring-2 focus:ring-teal focus:border-transparent text-sm"
               placeholder="Minimum 8 characters" />
             <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">

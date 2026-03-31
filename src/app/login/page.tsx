@@ -103,7 +103,7 @@ export default function LoginPage() {
           </div>
 
           {/* Email/password form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
             {error && (
               <div className="bg-red-50 text-red-600 text-sm rounded-xl px-4 py-3 flex items-center gap-2">
                 <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -126,6 +126,7 @@ export default function LoginPage() {
             <div>
               <label className="block text-sm font-medium text-navy mb-1.5">Email address</label>
               <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
+                autoComplete="new-email"
                 className="w-full border border-gray-300 rounded-xl px-4 py-3 text-navy focus:outline-none focus:ring-2 focus:ring-teal focus:border-transparent text-sm"
                 placeholder="you@example.com" />
             </div>
@@ -139,6 +140,7 @@ export default function LoginPage() {
               </div>
               <div className="relative">
                 <input type={showPassword ? "text" : "password"} required value={password} onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="new-password"
                   className="w-full border border-gray-300 rounded-xl px-4 py-3 pr-12 text-navy focus:outline-none focus:ring-2 focus:ring-teal focus:border-transparent text-sm"
                   placeholder={mode === "register" ? "Minimum 8 characters" : "Enter your password"} />
                 <button type="button" onClick={() => setShowPassword(!showPassword)} 
@@ -157,6 +159,7 @@ export default function LoginPage() {
               <div>
                 <label className="block text-sm font-medium text-navy mb-1.5">Confirm password</label>
                 <input type={showPassword ? "text" : "password"} required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
+                  autoComplete="new-password"
                   className="w-full border border-gray-300 rounded-xl px-4 py-3 text-navy focus:outline-none focus:ring-2 focus:ring-teal focus:border-transparent text-sm"
                   placeholder="Re-enter your password" />
                 {password && confirmPassword && password !== confirmPassword && (
