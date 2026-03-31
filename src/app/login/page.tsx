@@ -102,6 +102,10 @@ export default function LoginPage() {
             </div>
           </div>
 
+          {/* Hidden fields to absorb browser autofill */}
+          <input type="text" name="fake-user" style={{display:'none'}} tabIndex={-1} />
+          <input type="password" name="fake-pass" style={{display:'none'}} tabIndex={-1} />
+          
           {/* Email/password form */}
           <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
             {error && (
@@ -125,8 +129,9 @@ export default function LoginPage() {
 
             <div>
               <label className="block text-sm font-medium text-navy mb-1.5">Email address</label>
-              <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-                autoComplete="new-email"
+              <input type="text" inputMode="email" required value={email} onChange={(e) => setEmail(e.target.value)}
+                autoComplete="one-time-code"
+                name={"email-" + Math.random()}
                 className="w-full border border-gray-300 rounded-xl px-4 py-3 text-navy focus:outline-none focus:ring-2 focus:ring-teal focus:border-transparent text-sm"
                 placeholder="you@example.com" />
             </div>
@@ -140,7 +145,8 @@ export default function LoginPage() {
               </div>
               <div className="relative">
                 <input type={showPassword ? "text" : "password"} required value={password} onChange={(e) => setPassword(e.target.value)}
-                  autoComplete="new-password"
+                  autoComplete="one-time-code"
+                  name={"pw-" + Math.random()}
                   className="w-full border border-gray-300 rounded-xl px-4 py-3 pr-12 text-navy focus:outline-none focus:ring-2 focus:ring-teal focus:border-transparent text-sm"
                   placeholder={mode === "register" ? "Minimum 8 characters" : "Enter your password"} />
                 <button type="button" onClick={() => setShowPassword(!showPassword)} 
@@ -159,7 +165,8 @@ export default function LoginPage() {
               <div>
                 <label className="block text-sm font-medium text-navy mb-1.5">Confirm password</label>
                 <input type={showPassword ? "text" : "password"} required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
-                  autoComplete="new-password"
+                  autoComplete="one-time-code"
+                  name={"cpw-" + Math.random()}
                   className="w-full border border-gray-300 rounded-xl px-4 py-3 text-navy focus:outline-none focus:ring-2 focus:ring-teal focus:border-transparent text-sm"
                   placeholder="Re-enter your password" />
                 {password && confirmPassword && password !== confirmPassword && (
