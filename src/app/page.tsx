@@ -9,6 +9,7 @@ import HowItWorks from "@/components/HowItWorks";
 import Services from "@/components/Services";
 import FounderStory from "@/components/FounderStory";
 import Pricing from "@/components/Pricing";
+import FAQ from "@/components/FAQ";
 
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
@@ -51,6 +52,7 @@ export default function Home() {
         <BeforeAfter />
         <HowItWorks />
         <Services />
+        <FAQ />
         <Pricing />
         {/* Referral Program Banner */}
         <section className="py-16 bg-gradient-to-r from-teal/10 to-navy/5">

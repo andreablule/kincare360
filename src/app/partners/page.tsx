@@ -30,6 +30,7 @@ function PartnersContent() {
   const [phone, setPhone] = useState("");
   const [practiceName, setPracticeName] = useState("");
   const [type, setType] = useState("Doctor");
+  const [heardAbout, setHeardAbout] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ code: string; link: string } | null>(null);
   const [error, setError] = useState("");
@@ -124,10 +125,10 @@ function PartnersContent() {
             <img src="/kincare360-logo.png" alt="KinCare360" className="h-28 w-auto mx-auto mb-6" />
           </a>
           <h1 className="text-2xl md:text-3xl font-bold text-navy">
-            Earn $50 for Every Subscription You Refer
+            Earn $50 for Every Referral
           </h1>
           <p className="text-gray-500 mt-2">
-            Partner with KinCare360 and earn cash for every new subscriber.
+            Doctors, agencies, families, influencers — everyone qualifies. No limits.
           </p>
           <div className="mt-6 flex items-center justify-center gap-3 bg-teal/5 rounded-xl px-5 py-4">
             <img
@@ -438,9 +439,23 @@ ${result.link}
                 <option>Doctor</option>
                 <option>Home Care Agency</option>
                 <option>Hospital</option>
+                <option>Family Member</option>
                 <option>Influencer</option>
                 <option>Other</option>
               </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-navy mb-1">
+                How did you hear about us? <span className="text-gray-400 font-normal">(optional)</span>
+              </label>
+              <input
+                type="text"
+                value={heardAbout}
+                onChange={(e) => setHeardAbout(e.target.value)}
+                className="w-full border border-gray-300 rounded-xl px-4 py-3 text-navy focus:outline-none focus:ring-2 focus:ring-teal text-sm"
+                placeholder="Google, social media, a friend, etc."
+              />
             </div>
 
             <button
@@ -453,6 +468,21 @@ ${result.link}
           </form>
           </>
         )}
+
+        {/* FAQ */}
+        <div className="mt-10 space-y-4">
+          <h2 className="text-xl font-bold text-navy text-center">Frequently Asked Questions</h2>
+          {[
+            { q: "How does it work?", a: "Sign up above to get your unique referral code and link. Share it with anyone who could benefit from KinCare360. When someone subscribes using your link, you earn $50 — paid directly to your connected bank account." },
+            { q: "When do I get paid?", a: "You earn $50 for each referral that converts to a paid subscription (after their 7-day free trial). Payouts are processed automatically once you connect your bank account via Stripe." },
+            { q: "Is there a limit?", a: "No limits whatsoever. Refer 1 person or 1,000 — you earn $50 for every single one. The more you share, the more you earn." },
+          ].map((faq, i) => (
+            <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+              <h3 className="text-sm font-semibold text-navy mb-1">{faq.q}</h3>
+              <p className="text-sm text-gray-600">{faq.a}</p>
+            </div>
+          ))}
+        </div>
 
         <p className="text-center text-xs text-gray-400 mt-6">
           Questions? Call <a href="tel:+18125155252" className="text-teal hover:underline">(812) 515-5252</a>

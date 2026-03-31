@@ -34,7 +34,7 @@ export default async function AdminPage() {
   const user = session?.user as any;
 
   if (!user || (user.role !== "ADMIN" && user.email !== "hello@kincare360.com")) {
-    redirect("/admin");
+    redirect("/login");
   }
 
   const now = new Date();

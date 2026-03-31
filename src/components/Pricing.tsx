@@ -43,14 +43,14 @@ const plans = [
     name: "Individual",
     price: "$99",
     desc: "1 parent",
-    href: "/register",
+    href: "/signup",
   },
   {
     key: "family",
     name: "Family",
     price: "$149",
     desc: "2 parents — each gets their own calls",
-    href: "/register",
+    href: "/signup",
   },
 ];
 
@@ -89,7 +89,7 @@ export default function Pricing() {
             7-day free trial — No charge until day 8
           </span>
           <span className="bg-gray-100 text-gray-600 text-sm font-semibold px-4 py-2 rounded-full">
-            No contracts
+            Cancel anytime
           </span>
         </div>
 
