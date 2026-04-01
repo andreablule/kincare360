@@ -17,6 +17,7 @@ function SignupForm() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [smsConsent, setSmsConsent] = useState(false);
   const [referrerName, setReferrerName] = useState("");
 
   useEffect(() => {
@@ -160,7 +161,23 @@ function SignupForm() {
           )}
         </div>
 
-        <button type="submit" disabled={loading || password !== confirmPassword || password.length < 8}
+        {/* SMS Consent */}
+        <div className="flex items-start gap-3">
+          <input
+            type="checkbox"
+            id="smsConsent"
+            checked={smsConsent}
+            onChange={(e) => setSmsConsent(e.target.checked)}
+            className="mt-1 h-4 w-4 rounded border-gray-300 text-teal focus:ring-teal"
+          />
+          <label htmlFor="smsConsent" className="text-xs text-gray-600 leading-relaxed">
+            I agree to receive SMS messages from KinCare360 including daily check-in notifications, medication reminders, appointment updates, and service alerts. Message frequency varies (up to 5 msgs/day). Message and data rates may apply. Reply STOP to opt out at any time. Reply HELP for help. View our{" "}
+            <a href="/privacy" className="text-teal underline">Privacy Policy</a> and{" "}
+            <a href="/terms" className="text-teal underline">Terms of Service</a>.
+          </label>
+        </div>
+
+        <button type="submit" disabled={loading || password !== confirmPassword || password.length < 8 || !smsConsent}
           className="w-full bg-teal text-white py-3.5 rounded-xl font-semibold hover:bg-teal-dark transition-colors disabled:opacity-40 text-sm">
           {loading ? "Creating account..." : "Create Account & Continue →"}
         </button>

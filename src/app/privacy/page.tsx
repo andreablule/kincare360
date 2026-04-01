@@ -36,7 +36,17 @@ export default function PrivacyPage() {
 
         <div>
           <h2 className="text-xl font-semibold text-navy mb-2">3. SMS Communications</h2>
-          <p>By providing your phone number, you consent to receive SMS messages from KinCare360 related to your care plan, appointments, and service updates. Message and data rates may apply. Reply STOP at any time to unsubscribe.</p>
+          <p>By checking the SMS consent box during signup and providing your phone number, you expressly consent to receive recurring automated SMS messages from KinCare360. These messages include:</p>
+          <ul className="list-disc list-inside mt-2 space-y-1">
+            <li>Daily wellness check-in notifications</li>
+            <li>Medication reminder alerts</li>
+            <li>Appointment scheduling updates</li>
+            <li>Service and account notifications</li>
+          </ul>
+          <p className="mt-2">Message frequency varies (up to 5 messages per day). Message and data rates may apply. Your consent is not a condition of purchase.</p>
+          <p className="mt-2"><strong>To opt out:</strong> Reply STOP to any message at any time. You will receive a confirmation and no further messages.</p>
+          <p className="mt-2"><strong>For help:</strong> Reply HELP to any message, or contact us at <a href="mailto:hello@kincare360.com" className="text-teal underline">hello@kincare360.com</a> or <a href="tel:+18125155252" className="text-teal underline">(812) 515-5252</a>.</p>
+          <p className="mt-2">Supported carriers include AT&amp;T, T-Mobile, Verizon, and most major US carriers. KinCare360 will never share your phone number with third parties for marketing purposes.</p>
         </div>
 
         <div>

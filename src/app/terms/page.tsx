@@ -92,7 +92,15 @@ export default function TermsPage() {
 
         <div>
           <h2 className="text-xl font-semibold text-navy mb-2">10. SMS Communications</h2>
-          <p>By providing your phone number, you consent to receive SMS messages from KinCare360 for appointment reminders, care updates, and service notifications. Message and data rates may apply. Reply <strong>STOP</strong> at any time to unsubscribe.</p>
+          <p>By checking the SMS consent box during signup, you expressly agree to receive recurring automated SMS messages from KinCare360 at the phone number provided. Messages include daily check-in notifications, medication reminders, appointment updates, and service alerts.</p>
+          <ul className="list-disc list-inside mt-2 space-y-1 ml-2">
+            <li>Message frequency: up to 5 messages per day</li>
+            <li>Message and data rates may apply</li>
+            <li>Consent is not required to purchase services</li>
+            <li>Reply <strong>STOP</strong> to cancel at any time</li>
+            <li>Reply <strong>HELP</strong> for assistance</li>
+          </ul>
+          <p className="mt-2">For questions about SMS, contact <a href="mailto:hello@kincare360.com" className="text-teal underline">hello@kincare360.com</a> or <a href="tel:+18125155252" className="text-teal underline">(812) 515-5252</a>. See our <a href="/privacy" className="text-teal underline">Privacy Policy</a> for how we handle your data.</p>
         </div>
 
         <div>
