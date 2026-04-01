@@ -3,8 +3,31 @@ import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
+import RecentCallsClient from "./RecentCallsClient";
+import ProspectsSection from "./ProspectsSection";
+import KpiCardClickable from "./KpiCardClickable";
 
-const PLAN_PRICES: Record<string, number> = { ESSENTIAL: 50, PLUS: 80, CONCIERGE: 110, ESSENTIAL_FAMILY: 75, PLUS_FAMILY: 130, CONCIERGE_FAMILY: 180, COMPLETE: 110, COMPLETE_FAMILY: 180 };
+const PLAN_PRICES: Record<string, number> = { ESSENTIAL: 50, PLUS: 80, CONCIERGE: 110, ESSENTIAL_FAMILY: 75, PLUS_FAMILY: 130, CONCIERGE_FAMILY: 180, COMPLETE: 110, COMPLETE_FAMILY: 180, INDIVIDUAL: 99, FAMILY: 149 };
+
+// Eastern Time helpers — Vercel runs UTC, all boundaries must be ET
+function easternMidnightToday(): Date {
+  const formatter = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' });
+  const parts = formatter.formatToParts(new Date());
+  const y = parseInt(parts.find(p => p.type === 'year')!.value);
+  const m = parseInt(parts.find(p => p.type === 'month')!.value);
+  const d = parseInt(parts.find(p => p.type === 'day')!.value);
+  // Determine EDT (-4) vs EST (-5)
+  const tzName = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', timeZoneName: 'short' }).formatToParts(new Date()).find(p => p.type === 'timeZoneName')?.value;
+  const offsetHours = tzName === 'EDT' ? 4 : 5;
+  return new Date(Date.UTC(y, m - 1, d, offsetHours, 0, 0));
+}
+
+function formatDateET(date: Date): string {
+  return date.toLocaleString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+}
+
+// Filter out initiation-only logs (duplicates)
+const realCallFilter = { NOT: { summary: { startsWith: 'Outbound' } } } as const;
 
 function relativeDate(date: Date) {
   const now = new Date();
@@ -57,10 +80,9 @@ export default async function AdminPage() {
   try {
 
   now = new Date();
-  todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  weekStart = new Date(todayStart);
-  weekStart.setDate(weekStart.getDate() - 7);
-  yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  todayStart = easternMidnightToday();
+  weekStart = new Date(todayStart.getTime() - 7 * 24 * 60 * 60 * 1000);
+  yesterday = new Date(todayStart.getTime() - 24 * 60 * 60 * 1000);
 
   // Build daily date boundaries for last 7 days
   const dailyBoundaries: { label: string; start: Date; end: Date }[] = [];
@@ -102,14 +124,16 @@ export default async function AdminPage() {
     recentReferrals,
     usersWithPatients,
     subscribedUsers,
+    prospects,
+    newCallersToday,
     ...dailySignupCounts
   ] = await Promise.all([
     prisma.user.findMany({ where: { subscriptionStatus: "active" }, select: { plan: true } }),
     prisma.user.findMany({ where: { subscriptionStatus: "trialing" }, select: { plan: true } }),
     prisma.user.findMany({ where: { subscriptionStatus: "past_due" }, select: { name: true, email: true } }),
-    prisma.callLog.count({ where: { callDate: { gte: todayStart } } }),
-    prisma.callLog.count({ where: { callDate: { gte: weekStart } } }),
-    prisma.callLog.count({ where: { callDate: { gte: weekStart }, urgent: true } }),
+    prisma.callLog.count({ where: { callDate: { gte: todayStart }, ...realCallFilter } }),
+    prisma.callLog.count({ where: { callDate: { gte: weekStart }, ...realCallFilter } }),
+    prisma.callLog.count({ where: { callDate: { gte: weekStart }, urgent: true, ...realCallFilter } }),
     prisma.callLog.findMany({ where: { callDate: { gte: yesterday }, urgent: true }, include: { patient: { select: { firstName: true, lastName: true } } } }),
     prisma.serviceRequest.count({ where: { status: "PENDING" } }),
     prisma.user.count({ where: { createdAt: { gte: todayStart } } }),
@@ -131,8 +155,9 @@ export default async function AdminPage() {
     }),
     prisma.callLog.findMany({
       orderBy: { callDate: "desc" },
-      take: 10,
-      include: { patient: { select: { firstName: true, lastName: true } } },
+      take: 20,
+      where: realCallFilter,
+      include: { patient: { select: { firstName: true, lastName: true, phone: true } } },
     }),
     prisma.serviceRequest.findMany({
       orderBy: { createdAt: "desc" },
@@ -168,6 +193,10 @@ export default async function AdminPage() {
     prisma.user.count({ where: { patients: { some: {} } } }),
     // Analytics: Subscribed users
     prisma.user.count({ where: { subscriptionStatus: { in: ["active", "trialing"] } } }),
+    // Prospects: unknown callers
+    prisma.prospect.findMany({ orderBy: { lastCallAt: "desc" } }),
+    // New callers today (prospects created today)
+    prisma.prospect.findMany({ where: { createdAt: { gte: todayStart } }, orderBy: { createdAt: "desc" } }),
     // Analytics: Daily signups for last 7 days
     ...dailyBoundaries.map((d) => prisma.user.count({ where: { createdAt: { gte: d.start, lt: d.end } } })),
   ]);
@@ -230,7 +259,7 @@ export default async function AdminPage() {
     trialResults.forEach((r) => { trialEndMap[r.id] = r.trialEnd; });
   }
 
-  const hasAlerts = pastDueUsers.length > 0 || urgentCalls24h.length > 0 || newSignupsToday > 0;
+  const hasAlerts = pastDueUsers.length > 0 || urgentCalls24h.length > 0 || newSignupsToday > 0 || (newCallersToday as any[]).length > 0;
 
   return (
     <div className="min-h-screen bg-gray-50/50">
@@ -257,6 +286,7 @@ export default async function AdminPage() {
         {/* SECTION 1: Revenue & Growth */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
           {/* Monthly Revenue */}
+          <KpiCardClickable title="Monthly Revenue" value={`$${mrr.toLocaleString()}/mo`} description="Sum of plan prices for all users with subscriptionStatus = 'active'">
           <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm border-l-4 border-l-green-500">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center">
@@ -269,8 +299,10 @@ export default async function AdminPage() {
             <div className="text-3xl font-bold text-[#0f172a]">${mrr.toLocaleString()}<span className="text-lg text-gray-400 font-normal">/mo</span></div>
             <div className="text-sm text-gray-500 mt-1">from {activeUsers.length} active subscriber{activeUsers.length !== 1 ? "s" : ""}</div>
           </div>
+          </KpiCardClickable>
 
           {/* Pipeline */}
+          <KpiCardClickable title="Pipeline" value={`$${pipelineMrr.toLocaleString()}/mo`} description="Sum of plan prices for all users with subscriptionStatus = 'trialing'">
           <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm border-l-4 border-l-blue-500">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
@@ -283,8 +315,10 @@ export default async function AdminPage() {
             <div className="text-3xl font-bold text-[#0f172a]">${pipelineMrr.toLocaleString()}<span className="text-lg text-gray-400 font-normal">/mo</span></div>
             <div className="text-sm text-gray-500 mt-1">{trialingUsers.length} trial{trialingUsers.length !== 1 ? "s" : ""} converting</div>
           </div>
+          </KpiCardClickable>
 
           {/* Total Revenue Potential */}
+          <KpiCardClickable title="Total Potential" value={`$${totalPotential.toLocaleString()}/mo`} description="Monthly Revenue + Pipeline combined">
           <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm border-l-4 border-l-purple-500">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center">
@@ -297,8 +331,10 @@ export default async function AdminPage() {
             <div className="text-3xl font-bold text-[#0f172a]">${totalPotential.toLocaleString()}<span className="text-lg text-gray-400 font-normal">/mo</span></div>
             <div className="text-sm text-gray-500 mt-1">if all trials convert</div>
           </div>
+          </KpiCardClickable>
 
           {/* Conversion Rate */}
+          <KpiCardClickable title="Conversion Rate" value={`${conversionRate}%`} description="Active subscribers ÷ (active + trialing) × 100">
           <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm border-l-4 border-l-teal">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 rounded-xl bg-teal/10 flex items-center justify-center">
@@ -311,30 +347,47 @@ export default async function AdminPage() {
             <div className="text-3xl font-bold text-[#0f172a]">{conversionRate}%</div>
             <div className="text-sm text-gray-500 mt-1">{activeUsers.length} of {totalConverting} converted</div>
           </div>
+          </KpiCardClickable>
         </div>
 
         {/* SECTION 2: Activity Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+          <KpiCardClickable title="Total Clients" value={clientCount} description="Count of all users with role = 'CLIENT'">
           <div className="bg-white rounded-xl px-5 py-4 border border-gray-100">
             <div className="text-xs text-gray-500 uppercase tracking-wide font-medium">Total Clients</div>
             <div className="text-2xl font-bold text-[#0f172a] mt-1">{clientCount}</div>
           </div>
+          </KpiCardClickable>
+          <KpiCardClickable title="Calls Today" value={callsToday} description="Count of call logs with callDate >= today midnight">
           <div className="bg-white rounded-xl px-5 py-4 border border-gray-100">
             <div className="text-xs text-gray-500 uppercase tracking-wide font-medium">Calls Today</div>
             <div className="text-2xl font-bold text-[#0f172a] mt-1">{callsToday}</div>
           </div>
+          </KpiCardClickable>
+          <KpiCardClickable title="Calls This Week" value={callsThisWeek} description="Count of call logs with callDate >= 7 days ago">
           <div className="bg-white rounded-xl px-5 py-4 border border-gray-100">
             <div className="text-xs text-gray-500 uppercase tracking-wide font-medium">Calls This Week</div>
             <div className="text-2xl font-bold text-[#0f172a] mt-1">{callsThisWeek}</div>
           </div>
+          </KpiCardClickable>
+          <KpiCardClickable title="Urgent This Week" value={urgentCallsWeek} description="Count of call logs with urgent = true in last 7 days">
           <div className="bg-white rounded-xl px-5 py-4 border border-gray-100">
             <div className="text-xs text-gray-500 uppercase tracking-wide font-medium">Urgent This Week</div>
             <div className={`text-2xl font-bold mt-1 ${urgentCallsWeek > 0 ? "text-red-600" : "text-[#0f172a]"}`}>{urgentCallsWeek}</div>
           </div>
+          </KpiCardClickable>
+          <KpiCardClickable title="Pending Requests" value={pendingRequests} description="Count of service requests with status = 'PENDING'">
           <div className="bg-white rounded-xl px-5 py-4 border border-gray-100">
             <div className="text-xs text-gray-500 uppercase tracking-wide font-medium">Pending Requests</div>
             <div className={`text-2xl font-bold mt-1 ${pendingRequests > 0 ? "text-orange-600" : "text-[#0f172a]"}`}>{pendingRequests}</div>
           </div>
+          </KpiCardClickable>
+          <KpiCardClickable title="No-Signup Callers" value={(prospects as any[]).length} description="Count of prospects (people who called but didn't register)">
+          <div className="bg-white rounded-xl px-5 py-4 border border-gray-100 border-l-4 border-l-yellow-400">
+            <div className="text-xs text-gray-500 uppercase tracking-wide font-medium">No-Signup Callers</div>
+            <div className={`text-2xl font-bold mt-1 ${(prospects as any[]).length > 0 ? "text-yellow-600" : "text-[#0f172a]"}`}>{(prospects as any[]).length}</div>
+          </div>
+          </KpiCardClickable>
         </div>
 
         {/* SECTION 3: Alerts */}
@@ -358,6 +411,22 @@ export default async function AdminPage() {
                 <span>{"\u{1F389}"} {newSignupsToday} new signup{newSignupsToday > 1 ? "s" : ""} today</span>
               </div>
             )}
+            {(newCallersToday as any[]).length > 0 && (
+              <div className="bg-blue-50 border border-blue-200 rounded-xl px-5 py-3 text-sm text-blue-700 font-medium">
+                <div className="flex items-center gap-2 mb-2">
+                  <span>{"\u{1F4DE}"} {(newCallersToday as any[]).length} new caller{(newCallersToday as any[]).length > 1 ? "s" : ""} today</span>
+                </div>
+                <div className="space-y-1">
+                  {(newCallersToday as any[]).map((p: any) => (
+                    <div key={p.id} className="flex items-center gap-3 text-xs">
+                      <span className="font-mono font-semibold">{p.phone}</span>
+                      <span className="text-blue-500">{p.name || "Unknown"}</span>
+                      {p.summary && <span className="text-blue-400 truncate max-w-xs">{p.summary.slice(0, 60)}...</span>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -375,19 +444,21 @@ export default async function AdminPage() {
           {/* Analytics KPI Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
             {[
-              { label: "Total Users", value: totalUsers, color: "border-l-indigo-500" },
-              { label: "New Users Today", value: newUsersToday, color: "border-l-green-500" },
-              { label: "New Users This Week", value: newUsersThisWeek, color: "border-l-blue-500" },
-              { label: "Active Subscribers", value: activeSubscribers, color: "border-l-teal" },
-              { label: "Calls Today", value: callsToday, color: "border-l-orange-500" },
-              { label: "Calls This Week", value: callsThisWeek, color: "border-l-yellow-500" },
-              { label: "Referral Codes", value: totalReferralCodes, color: "border-l-pink-500" },
-              { label: "Referrals Used", value: totalReferralsUsed, color: "border-l-purple-500" },
+              { label: "Total Users", value: totalUsers, color: "border-l-indigo-500", description: "Count of all users in the database" },
+              { label: "New Users Today", value: newUsersToday, color: "border-l-green-500", description: "Users created since midnight today" },
+              { label: "New Users This Week", value: newUsersThisWeek, color: "border-l-blue-500", description: "Users created in the last 7 days" },
+              { label: "Active Subscribers", value: activeSubscribers, color: "border-l-teal", description: "Users with subscriptionStatus = 'active' or 'trialing'" },
+              { label: "Calls Today", value: callsToday, color: "border-l-orange-500", description: "Count of call logs with callDate >= today midnight" },
+              { label: "Calls This Week", value: callsThisWeek, color: "border-l-yellow-500", description: "Count of call logs with callDate >= 7 days ago" },
+              { label: "Referral Codes", value: totalReferralCodes, color: "border-l-pink-500", description: "Total referral codes created" },
+              { label: "Referrals Used", value: totalReferralsUsed, color: "border-l-purple-500", description: "Sum of referralCount across all referral records" },
             ].map((kpi) => (
-              <div key={kpi.label} className={`bg-white rounded-2xl p-5 border border-gray-100 shadow-sm border-l-4 ${kpi.color}`}>
-                <div className="text-xs text-gray-500 uppercase tracking-wide font-medium">{kpi.label}</div>
-                <div className="text-3xl font-bold text-[#0f172a] mt-2">{kpi.value.toLocaleString()}</div>
-              </div>
+              <KpiCardClickable key={kpi.label} title={kpi.label} value={kpi.value} description={kpi.description}>
+                <div className={`bg-white rounded-2xl p-5 border border-gray-100 shadow-sm border-l-4 ${kpi.color}`}>
+                  <div className="text-xs text-gray-500 uppercase tracking-wide font-medium">{kpi.label}</div>
+                  <div className="text-3xl font-bold text-[#0f172a] mt-2">{kpi.value.toLocaleString()}</div>
+                </div>
+              </KpiCardClickable>
             ))}
           </div>
 
@@ -495,6 +566,9 @@ export default async function AdminPage() {
             </div>
           </div>
         </div>
+
+        {/* SECTION: Prospects (Inbound callers who haven't signed up) */}
+        <ProspectsSection prospects={prospects as any} />
 
         {/* SECTION 4: Clients Table */}
         <div className="mb-8">
@@ -612,49 +686,13 @@ export default async function AdminPage() {
 
         {/* SECTION 5: Two columns — Recent Calls + Recent Requests */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
-          {/* Recent Calls (60%) */}
+          {/* Recent Calls (60%) — client component for collapsible summaries */}
           <div className="lg:col-span-3">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-[#0f172a]">Recent Calls</h2>
               <span className="text-sm text-gray-400 cursor-default">View All</span>
             </div>
-            <div className="space-y-2">
-              {recentCalls.map((log: any) => {
-                const moodColor = log.mood === "happy" ? "bg-green-100 text-green-700"
-                  : (log.mood === "sad" || log.mood === "concerned") ? "bg-red-100 text-red-700"
-                  : log.mood ? "bg-gray-100 text-gray-600" : null;
-                return (
-                  <div key={log.id} className="bg-white rounded-xl border border-gray-100 p-4 hover:border-teal/30 transition-colors">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-[#0f172a]">{log.patient.firstName} {log.patient.lastName}</span>
-                        {log.callType && (
-                          <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">{log.callType}</span>
-                        )}
-                        {log.urgent && (
-                          <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-100 text-red-700">{"\u26A0"} Urgent</span>
-                        )}
-                      </div>
-                    </div>
-                    {log.summary && (
-                      <p className="text-sm text-gray-600 line-clamp-2 mb-2">{log.summary}</p>
-                    )}
-                    <div className="flex items-center gap-3 text-xs text-gray-400">
-                      <span>
-                        {new Date(log.callDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}{" "}
-                        {new Date(log.callDate).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
-                      </span>
-                      {moodColor && (
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${moodColor}`}>{log.mood}</span>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-              {recentCalls.length === 0 && (
-                <div className="bg-white rounded-xl border border-gray-100 p-6 text-center text-gray-400">No call logs yet.</div>
-              )}
-            </div>
+            <RecentCallsClient calls={recentCalls as any} />
           </div>
 
           {/* Recent Service Requests (40%) */}
