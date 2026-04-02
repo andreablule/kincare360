@@ -559,6 +559,25 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // Forward end-of-call-report to /api/call-logs so calls get logged properly
+    if (messageType === "end-of-call-report") {
+      try {
+        const baseUrl = new URL(req.url).origin;
+        const callLogsUrl = `${baseUrl}/api/call-logs`;
+        const forwardRes = await fetch(callLogsUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        const result = await forwardRes.json();
+        console.log(`[vapi-lookup] Forwarded end-of-call-report to call-logs:`, result);
+        return NextResponse.json(result);
+      } catch (fwdErr) {
+        console.error("[vapi-lookup] Failed to forward end-of-call-report:", fwdErr);
+        return NextResponse.json({ received: true, forwarded: false });
+      }
+    }
+
     // If this isn't an assistant-request, just acknowledge
     if (messageType && messageType !== "assistant-request") {
       return NextResponse.json({ received: true });
