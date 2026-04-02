@@ -124,8 +124,21 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Create medications if provided (comma-separated text)
-    if (data.medications) {
+    // Create medications (structured array or legacy comma-separated text)
+    if (Array.isArray(data.medications)) {
+      for (const med of data.medications) {
+        if (med.name) {
+          await prisma.medication.create({
+            data: {
+              patientId: patient.id,
+              name: med.name,
+              dosage: med.dosage || null,
+              frequency: med.frequency || null,
+            },
+          });
+        }
+      }
+    } else if (typeof data.medications === 'string' && data.medications) {
       const meds = data.medications.split(',').map((m: string) => m.trim()).filter(Boolean);
       for (const med of meds) {
         await prisma.medication.create({
@@ -134,8 +147,16 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Create conditions if provided
-    if (data.conditions) {
+    // Create conditions (structured array or legacy comma-separated text)
+    if (Array.isArray(data.conditions)) {
+      for (const cond of data.conditions) {
+        if (cond && typeof cond === 'string' && cond.trim()) {
+          await prisma.condition.create({
+            data: { patientId: patient.id, name: cond.trim() },
+          });
+        }
+      }
+    } else if (typeof data.conditions === 'string' && data.conditions) {
       const conds = data.conditions.split(',').map((c: string) => c.trim()).filter(Boolean);
       for (const cond of conds) {
         await prisma.condition.create({
