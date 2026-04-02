@@ -71,7 +71,9 @@ export default function IntakePage() {
   const [form, setForm] = useState({
     firstName: "", lastName: "", patientName: "", dob: "", phone: "", email: "", gender: "", address: "", city: "", state: "", zip: "",
     primaryDoctor: "", doctorPhone: "", doctorAddress: "",
+    additionalDoctors: [] as {name: string; phone: string; address: string; specialty: string}[],
     pharmacy: "", pharmacyPhone: "", pharmacyAddress: "",
+    additionalPharmacies: [] as {name: string; phone: string; address: string}[],
     medications: "", conditions: "", allergies: "",
     insurances: [{ company: "", memberId: "", groupNumber: "", policyHolder: "" }] as {company: string; memberId: string; groupNumber: string; policyHolder: string}[],
     checkInTime: "09:00",
@@ -403,12 +405,46 @@ export default function IntakePage() {
                 <input type="tel" className={inputClass} value={form.doctorPhone} onChange={e => update('doctorPhone', e.target.value)} placeholder="Doctor's phone number" />
                 <input className={inputClass} value={form.doctorAddress} onChange={e => update('doctorAddress', e.target.value)} placeholder="Doctor's office address" />
               </div>
+              {form.additionalDoctors.map((doc, idx) => (
+                <div key={idx} className="border border-gray-100 rounded-xl p-4 space-y-3">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-sm font-semibold text-navy">Doctor #{idx + 2}</h3>
+                    <button type="button" onClick={() => setForm(prev => ({ ...prev, additionalDoctors: prev.additionalDoctors.filter((_, i) => i !== idx) }))} className="text-red-400 hover:text-red-600 text-xs font-medium">Remove</button>
+                  </div>
+                  <input className={inputClass} value={doc.name} onChange={e => { const updated = [...form.additionalDoctors]; updated[idx] = { ...updated[idx], name: e.target.value }; setForm(prev => ({ ...prev, additionalDoctors: updated })); }} placeholder="Doctor's full name" />
+                  <input className={inputClass} value={doc.specialty} onChange={e => { const updated = [...form.additionalDoctors]; updated[idx] = { ...updated[idx], specialty: e.target.value }; setForm(prev => ({ ...prev, additionalDoctors: updated })); }} placeholder="Specialty (e.g. Cardiologist, Neurologist)" />
+                  <input type="tel" className={inputClass} value={doc.phone} onChange={e => { const updated = [...form.additionalDoctors]; updated[idx] = { ...updated[idx], phone: e.target.value }; setForm(prev => ({ ...prev, additionalDoctors: updated })); }} placeholder="Doctor's phone number" />
+                  <input className={inputClass} value={doc.address} onChange={e => { const updated = [...form.additionalDoctors]; updated[idx] = { ...updated[idx], address: e.target.value }; setForm(prev => ({ ...prev, additionalDoctors: updated })); }} placeholder="Doctor's office address" />
+                </div>
+              ))}
+              <button type="button" onClick={() => setForm(prev => ({ ...prev, additionalDoctors: [...prev.additionalDoctors, { name: '', phone: '', address: '', specialty: '' }] }))}
+                className="w-full border-2 border-dashed border-gray-200 hover:border-teal rounded-xl py-3 text-sm font-medium text-gray-500 hover:text-teal transition-colors flex items-center justify-center gap-2">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
+                Add Another Doctor
+              </button>
+
               <div className="border border-gray-100 rounded-xl p-4 space-y-3">
-                <h3 className="text-sm font-semibold text-navy">Pharmacy</h3>
+                <h3 className="text-sm font-semibold text-navy">Primary Pharmacy</h3>
                 <input className={inputClass} value={form.pharmacy} onChange={e => update('pharmacy', e.target.value)} placeholder="Pharmacy name" />
                 <input type="tel" className={inputClass} value={form.pharmacyPhone} onChange={e => update('pharmacyPhone', e.target.value)} placeholder="Pharmacy phone number" />
                 <input className={inputClass} value={form.pharmacyAddress} onChange={e => update('pharmacyAddress', e.target.value)} placeholder="Pharmacy address" />
               </div>
+              {form.additionalPharmacies.map((pharm, idx) => (
+                <div key={idx} className="border border-gray-100 rounded-xl p-4 space-y-3">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-sm font-semibold text-navy">Pharmacy #{idx + 2}</h3>
+                    <button type="button" onClick={() => setForm(prev => ({ ...prev, additionalPharmacies: prev.additionalPharmacies.filter((_, i) => i !== idx) }))} className="text-red-400 hover:text-red-600 text-xs font-medium">Remove</button>
+                  </div>
+                  <input className={inputClass} value={pharm.name} onChange={e => { const updated = [...form.additionalPharmacies]; updated[idx] = { ...updated[idx], name: e.target.value }; setForm(prev => ({ ...prev, additionalPharmacies: updated })); }} placeholder="Pharmacy name" />
+                  <input type="tel" className={inputClass} value={pharm.phone} onChange={e => { const updated = [...form.additionalPharmacies]; updated[idx] = { ...updated[idx], phone: e.target.value }; setForm(prev => ({ ...prev, additionalPharmacies: updated })); }} placeholder="Pharmacy phone number" />
+                  <input className={inputClass} value={pharm.address} onChange={e => { const updated = [...form.additionalPharmacies]; updated[idx] = { ...updated[idx], address: e.target.value }; setForm(prev => ({ ...prev, additionalPharmacies: updated })); }} placeholder="Pharmacy address" />
+                </div>
+              ))}
+              <button type="button" onClick={() => setForm(prev => ({ ...prev, additionalPharmacies: [...prev.additionalPharmacies, { name: '', phone: '', address: '' }] }))}
+                className="w-full border-2 border-dashed border-gray-200 hover:border-teal rounded-xl py-3 text-sm font-medium text-gray-500 hover:text-teal transition-colors flex items-center justify-center gap-2">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
+                Add Another Pharmacy
+              </button>
               <div><label className={labelClass}>Current Medications</label><textarea className={inputClass + " resize-none"} rows={3} value={form.medications} onChange={e => update('medications', e.target.value)} placeholder="List medications and dosages (e.g. Metformin 500mg, Lisinopril 10mg)" /></div>
               <div><label className={labelClass}>Medical Conditions</label><textarea className={inputClass + " resize-none"} rows={2} value={form.conditions} onChange={e => update('conditions', e.target.value)} placeholder="e.g. Type 2 Diabetes, Hypertension" /></div>
               <div><label className={labelClass}>Known Allergies</label><input className={inputClass} value={form.allergies} onChange={e => update('allergies', e.target.value)} placeholder="e.g. Penicillin, Sulfa, None known" /></div>

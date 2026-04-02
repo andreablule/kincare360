@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
       patient = await prisma.patient.create({ data: patientData });
     }
 
-    // Create doctor if provided
+    // Create primary doctor if provided
     if (data.primaryDoctor) {
       await prisma.doctor.create({
         data: {
@@ -79,7 +79,24 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Create pharmacy if provided
+    // Create additional doctors
+    if (data.additionalDoctors && Array.isArray(data.additionalDoctors)) {
+      for (const doc of data.additionalDoctors) {
+        if (doc.name) {
+          await prisma.doctor.create({
+            data: {
+              patientId: patient.id,
+              name: doc.name,
+              specialty: doc.specialty || null,
+              phone: doc.phone || null,
+              address: doc.address || null,
+            },
+          });
+        }
+      }
+    }
+
+    // Create primary pharmacy if provided
     if (data.pharmacy) {
       await prisma.pharmacy.create({
         data: {
@@ -89,6 +106,22 @@ export async function POST(req: NextRequest) {
           address: data.pharmacyAddress || null,
         },
       });
+    }
+
+    // Create additional pharmacies
+    if (data.additionalPharmacies && Array.isArray(data.additionalPharmacies)) {
+      for (const pharm of data.additionalPharmacies) {
+        if (pharm.name) {
+          await prisma.pharmacy.create({
+            data: {
+              patientId: patient.id,
+              name: pharm.name,
+              phone: pharm.phone || null,
+              address: pharm.address || null,
+            },
+          });
+        }
+      }
     }
 
     // Create medications if provided (comma-separated text)
