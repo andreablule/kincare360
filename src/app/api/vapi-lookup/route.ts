@@ -270,7 +270,7 @@ Insurance: ${patient.insuranceCompany || "not on file"}${patient.insuranceMember
 
 IMPORTANT FOR SPEAKING: When reading phone numbers aloud, say each group separately with a natural pause - e.g. "two-six-seven, four-nine-nine, six-nine-two-seven". Do NOT read phone numbers as one continuous string of digits.
 
-INSTRUCTION: Greet ${patient.firstName} by name warmly. Reference their care details when relevant. This is a VIP client - make them feel known and cared for.`;
+INSTRUCTION: Greet ${patient.firstName} by name warmly. Reference their care details when relevant. Make them feel known and cared for.`;
 }
 
 function buildTransferDestinations(patient: any): any[] {
