@@ -285,6 +285,22 @@ export default async function AdminPage() {
 
       <main className="max-w-7xl mx-auto px-6 py-8">
 
+        {/* SECTION 0: Website Analytics (top priority) */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
+              <svg className="w-5 h-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-[#0f172a]">Website Analytics</h2>
+              <p className="text-xs text-gray-400">Live data from Google Analytics</p>
+            </div>
+          </div>
+          <AnalyticsCards />
+        </div>
+
         {/* SECTION 1: Revenue & Growth */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
           {/* Monthly Revenue */}
@@ -770,11 +786,7 @@ export default async function AdminPage() {
             ))}
           </div>
 
-          {/* Row 2: Website Traffic Metrics (live from GA4) */}
-          <div className="mb-6">
-            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Website Traffic</h3>
-            <AnalyticsCards />
-          </div>
+
 
           {/* Row 3: Outreach Quick Actions */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
