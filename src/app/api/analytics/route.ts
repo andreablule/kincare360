@@ -144,9 +144,9 @@ export async function GET() {
       avgSessionDuration: Math.round(parseFloat(vals30d[4] || "0")),
       bounceRate: (parseFloat(vals30d[5] || "0") * 100).toFixed(1),
       // Today
-      visitorsToday: parseInt(valsToday[0]),
-      sessionsToday: parseInt(valsToday[1]),
-      pageViewsToday: parseInt(valsToday[2]),
+      visitorsToday: parseInt(valsToday[0] || "0"),
+      sessionsToday: parseInt(valsToday[1] || "0"),
+      pageViewsToday: parseInt(valsToday[2] || "0"),
       // Breakdowns
       sources,
       pages,
