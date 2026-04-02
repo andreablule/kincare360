@@ -687,55 +687,7 @@ export default async function AdminPage() {
           </div>
         </div>
 
-        {/* SECTION 5: Two columns — Recent Calls + Recent Requests */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
-          {/* Recent Calls (60%) — client component for collapsible summaries */}
-          <div className="lg:col-span-3">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-[#0f172a]">Recent Calls</h2>
-              <span className="text-sm text-gray-400 cursor-default">View All</span>
-            </div>
-            <RecentCallsClient calls={recentCalls as any} />
-          </div>
 
-          {/* Recent Service Requests (40%) */}
-          <div className="lg:col-span-2">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-[#0f172a]">Recent Requests</h2>
-            </div>
-            <div className="space-y-2">
-              {recentRequests.map((r: any) => {
-                const statusColor = r.status === "PENDING" ? "bg-yellow-100 text-yellow-700"
-                  : r.status === "IN_PROGRESS" ? "bg-blue-100 text-blue-700"
-                  : r.status === "DONE" ? "bg-green-100 text-green-700"
-                  : "bg-gray-100 text-gray-600";
-                const desc = r.description || "";
-                const cleanDesc = desc.replace(/DATE:\s*[^\n,;]*/i, "").replace(/DOCTOR:\s*[^\n,;]*/i, "").trim().slice(0, 50);
-                return (
-                  <div key={r.id} className="bg-white rounded-xl border border-gray-100 p-4 hover:border-teal/30 transition-colors">
-                    <div className="flex items-start gap-3">
-                      <span className="text-lg shrink-0">{typeIcons[r.type] || "\u{1F4CB}"}</span>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="font-medium text-[#0f172a] text-sm">{r.patient.firstName} {r.patient.lastName}</span>
-                          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full shrink-0 ${statusColor}`}>{r.status}</span>
-                        </div>
-                        <div className="text-xs text-gray-500 mt-0.5">{typeLabels[r.type] || r.type}</div>
-                        {cleanDesc && <p className="text-xs text-gray-400 mt-1 truncate">{cleanDesc}</p>}
-                        <div className="text-xs text-gray-400 mt-1">
-                          {new Date(r.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-              {recentRequests.length === 0 && (
-                <div className="bg-white rounded-xl border border-gray-100 p-6 text-center text-gray-400">No requests yet.</div>
-              )}
-            </div>
-          </div>
-        </div>
 
         {/* SECTION 6: Quick Actions */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
