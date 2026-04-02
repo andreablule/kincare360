@@ -186,3 +186,18 @@ model ReferralConversion {
   paidAt        DateTime?
   createdAt     DateTime  @default(now())
 }
+
+model Prospect {
+  id         String   @id @default(cuid())
+  phone      String
+  name       String?
+  callCount  Int      @default(1)
+  lastCallAt DateTime
+  summary    String?
+  mood       String?
+  concerns   String?
+  status     String   @default("NEW") // NEW | CONTACTED | CONVERTED | LOST
+  notes      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
