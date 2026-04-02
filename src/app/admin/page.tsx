@@ -27,7 +27,7 @@ function formatDateET(date: Date): string {
 }
 
 // Filter out initiation-only logs (duplicates)
-const realCallFilter = { NOT: { summary: { startsWith: 'Outbound' } } } as const;
+const realCallFilter = { NOT: { summary: { contains: 'call initiated' } } } as const;
 
 function relativeDate(date: Date) {
   const now = new Date();
@@ -203,14 +203,15 @@ export default async function AdminPage() {
 
   const totalReferralsUsed = referralAgg._sum?.referralCount || 0;
 
-  // Build activity feed: merge signups, calls, referrals — sorted by time, take 10
-  type ActivityItem = { type: "signup" | "call" | "referral"; date: Date; label: string; detail: string };
+  // Build activity feed: signups, referrals, and NEW prospect calls only (not routine client calls)
+  type ActivityItem = { type: "signup" | "call" | "referral" | "prospect"; date: Date; label: string; detail: string };
   const activityFeed: ActivityItem[] = [];
   (recentSignups as any[]).forEach((u) => {
     activityFeed.push({ type: "signup", date: new Date(u.createdAt), label: u.name || u.email, detail: u.email });
   });
-  (recentCalls as any[]).forEach((c) => {
-    activityFeed.push({ type: "call", date: new Date(c.callDate), label: `${c.patient.firstName} ${c.patient.lastName}`, detail: c.callType || "Check-in" });
+  // Only show prospect/inbound calls, not routine outbound client calls
+  (prospects as any[]).forEach((p: any) => {
+    activityFeed.push({ type: "prospect", date: new Date(p.lastCallAt), label: p.name || p.phone, detail: p.summary?.slice(0, 60) || "New caller" });
   });
   (recentReferrals as any[]).forEach((r) => {
     activityFeed.push({ type: "referral", date: new Date(r.createdAt), label: r.referrerName, detail: `Code: ${r.code}` });
@@ -475,20 +476,22 @@ export default async function AdminPage() {
                   <div key={i} className="px-5 py-3 flex items-center gap-3">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-sm ${
                       item.type === "signup" ? "bg-green-100 text-green-700" :
+                      item.type === "prospect" ? "bg-yellow-100 text-yellow-700" :
                       item.type === "call" ? "bg-blue-100 text-blue-700" :
                       "bg-purple-100 text-purple-700"
                     }`}>
-                      {item.type === "signup" ? "\u{1F464}" : item.type === "call" ? "\u{1F4DE}" : "\u{1F517}"}
+                      {item.type === "signup" ? "\u{1F464}" : item.type === "prospect" ? "\u{1F4DE}" : item.type === "call" ? "\u{1F4DE}" : "\u{1F517}"}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="font-medium text-[#0f172a] text-sm truncate">{item.label}</span>
                         <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
                           item.type === "signup" ? "bg-green-100 text-green-700" :
+                          item.type === "prospect" ? "bg-yellow-100 text-yellow-700" :
                           item.type === "call" ? "bg-blue-100 text-blue-700" :
                           "bg-purple-100 text-purple-700"
                         }`}>
-                          {item.type === "signup" ? "Signup" : item.type === "call" ? "Call" : "Referral"}
+                          {item.type === "signup" ? "Signup" : item.type === "prospect" ? "New Caller" : item.type === "call" ? "Call" : "Referral"}
                         </span>
                       </div>
                       <div className="text-xs text-gray-400 truncate">{item.detail}</div>
