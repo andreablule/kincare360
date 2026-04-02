@@ -6,6 +6,7 @@ import Link from "next/link";
 import RecentCallsClient from "./RecentCallsClient";
 import ProspectsSection from "./ProspectsSection";
 import KpiCardClickable from "./KpiCardClickable";
+import AnalyticsCards from "./AnalyticsCards";
 
 const PLAN_PRICES: Record<string, number> = { ESSENTIAL: 50, PLUS: 80, CONCIERGE: 110, ESSENTIAL_FAMILY: 75, PLUS_FAMILY: 130, CONCIERGE_FAMILY: 180, COMPLETE: 110, COMPLETE_FAMILY: 180, INDIVIDUAL: 99, FAMILY: 149 };
 
@@ -769,29 +770,10 @@ export default async function AdminPage() {
             ))}
           </div>
 
-          {/* Row 2: Website Traffic Metrics (placeholder) */}
+          {/* Row 2: Website Traffic Metrics (live from GA4) */}
           <div className="mb-6">
-            <div className="bg-blue-50 border border-blue-200 rounded-xl px-4 py-2.5 text-sm text-blue-700 font-medium mb-4 flex items-center gap-2">
-              <span>📡</span> Connect Google Analytics to see real data
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {[
-                { label: "Website Visitors", sub: "this month" },
-                { label: "Signup Conversion Rate", sub: "visitors → signups" },
-                { label: "Top Traffic Source", sub: "referrer" },
-                { label: "Page Views", sub: "this month" },
-              ].map((metric) => (
-                <div key={metric.label} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm opacity-60 relative">
-                  <span className="absolute top-3 right-3 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-gray-100 text-gray-400">Requires setup</span>
-                  <div className="text-xs text-gray-500 uppercase tracking-wide font-medium">{metric.label}</div>
-                  <div className="text-3xl font-bold text-gray-300 mt-2">--</div>
-                  <div className="text-xs text-gray-400 mt-1">{metric.sub}</div>
-                </div>
-              ))}
-            </div>
-            <div className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-xs text-gray-500 mt-4">
-              To connect real analytics: Add Google Analytics 4 to your site, then contact support to enable the API integration.
-            </div>
+            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Website Traffic</h3>
+            <AnalyticsCards />
           </div>
 
           {/* Row 3: Outreach Quick Actions */}
