@@ -56,6 +56,7 @@ export default function PlanPage() {
   const [loading, setLoading] = useState(true);
   const [upgrading, setUpgrading] = useState<string | null>(null);
   const [cancelingDowngrade, setCancelingDowngrade] = useState(false);
+  const [openingPayment, setOpeningPayment] = useState(false);
 
   function fetchPlan() {
     fetch("/api/plan")
@@ -331,10 +332,37 @@ export default function PlanPage() {
         })}
       </div>
 
-      {/* Cancel subscription */}
+      {/* Manage Payment & Cancel */}
       {plan && (
         <div className="max-w-2xl">
           <div className="border-t border-gray-100 pt-5 mt-2">
+            <h3 className="text-sm font-semibold text-navy mb-1">Payment Method</h3>
+            <p className="text-sm text-gray-400 mb-3">
+              Update your credit card or payment method on file.
+            </p>
+            <button
+              onClick={async () => {
+                setOpeningPayment(true);
+                try {
+                  const res = await fetch("/api/plan/portal", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ action: "manage_payment" }),
+                  });
+                  const data = await res.json();
+                  if (data.url) window.location.href = data.url;
+                  else alert("Unable to open payment settings. Please try again.");
+                } catch { alert("Something went wrong. Please try again."); }
+                setOpeningPayment(false);
+              }}
+              disabled={openingPayment}
+              className="border border-gray-300 text-navy hover:bg-gray-50 px-5 py-2.5 rounded-full text-sm font-semibold transition-colors disabled:opacity-40"
+            >
+              {openingPayment ? "Opening..." : "Manage Payment Method"}
+            </button>
+          </div>
+
+          <div className="border-t border-gray-100 pt-5 mt-4">
             <h3 className="text-sm font-semibold text-navy mb-1">Cancel Subscription</h3>
             <p className="text-sm text-gray-400 mb-3">
               You can cancel anytime. If you&apos;re on a free trial, you won&apos;t be charged. Cancellation takes effect at the end of your billing period.

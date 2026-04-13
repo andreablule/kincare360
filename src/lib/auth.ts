@@ -67,6 +67,30 @@ export const authOptions: AuthOptions = {
           where: { email: user.email! },
         });
         if (dbUser) {
+          // Auto-detect family members: if this user's email matches a FamilyMember record,
+          // link them and set role to FAMILY so they see the patient's dashboard
+          if (dbUser.role === 'CLIENT' && !dbUser.patientId) {
+            const familyLink = await prisma.familyMember.findFirst({
+              where: { email: dbUser.email },
+              select: { id: true, patientId: true },
+            });
+            if (familyLink) {
+              // This user is a family member — update their role and link to patient
+              await prisma.user.update({
+                where: { id: dbUser.id },
+                data: { role: 'FAMILY', patientId: familyLink.patientId },
+              });
+              // Also link the FamilyMember record to this user
+              await prisma.familyMember.update({
+                where: { id: familyLink.id },
+                data: { userId: dbUser.id },
+              });
+              token.role = 'FAMILY';
+              token.id = dbUser.id;
+              token.patientId = familyLink.patientId;
+              return token;
+            }
+          }
           token.role = dbUser.role;
           token.id = dbUser.id;
           token.patientId = dbUser.patientId ?? null;

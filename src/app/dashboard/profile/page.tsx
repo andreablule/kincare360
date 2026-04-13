@@ -272,7 +272,7 @@ export default function ProfilePage() {
       </form>
 
       {/* Delete section */}
-      <div className="bg-white rounded-2xl border border-red-100 p-6 max-w-2xl mt-6">
+      <div className="bg-white rounded-2xl border border-red-100 p-6 max-w-2xl mt-6 mb-12">
         <h2 className="text-base font-semibold text-navy mb-1">
           {isOwner ? "Delete Account" : "Remove My Access"}
         </h2>

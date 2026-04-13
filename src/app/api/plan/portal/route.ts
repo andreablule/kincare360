@@ -6,19 +6,26 @@ import nodemailer from "nodemailer";
 
 const SK = process.env.STRIPE_SECRET_KEY!;
 
+const BILLING_PORTAL_CONFIG = "bpc_1TEOkMJlUr03cRD7Ooh3GBwM";
+
 // Map plan name -> Stripe price ID
 const PRICE_MAP: Record<string, string> = {
-  essential:         "price_1TFgeLJlUr03cRD7PP0gW8gW",
-  plus:              "price_1TFgeMJlUr03cRD7fTOu4j0y",
-  concierge:         "price_1TFgeOJlUr03cRD7Mli4BYhX",
-  essential_family:  "price_1TFgePJlUr03cRD7o3hb9ZGN",
-  plus_family:       "price_1TFgeRJlUr03cRD7OIIRu8kg",
-  concierge_family:  "price_1TFgeSJlUr03cRD7BAJ0XDzT",
-  complete:          "price_1TFgeOJlUr03cRD7Mli4BYhX",
-  complete_family:   "price_1TFgeSJlUr03cRD7BAJ0XDzT",
+  individual:        "price_1TGVNLJlUr03cRD7PhMXGx9x",
+  family:            "price_1TGVNTJlUr03cRD7F9F5mgHh",
+  // Legacy mappings (map to closest new plan)
+  essential:         "price_1TGVNLJlUr03cRD7PhMXGx9x",
+  plus:              "price_1TGVNLJlUr03cRD7PhMXGx9x",
+  concierge:         "price_1TGVNLJlUr03cRD7PhMXGx9x",
+  essential_family:  "price_1TGVNTJlUr03cRD7F9F5mgHh",
+  plus_family:       "price_1TGVNTJlUr03cRD7F9F5mgHh",
+  concierge_family:  "price_1TGVNTJlUr03cRD7F9F5mgHh",
+  complete:          "price_1TGVNLJlUr03cRD7PhMXGx9x",
+  complete_family:   "price_1TGVNTJlUr03cRD7F9F5mgHh",
 };
 
 const PLAN_KEY_MAP: Record<string, string> = {
+  individual: "INDIVIDUAL",
+  family: "FAMILY",
   essential: "ESSENTIAL",
   plus: "PLUS",
   concierge: "CONCIERGE",
@@ -31,6 +38,8 @@ const PLAN_KEY_MAP: Record<string, string> = {
 
 // Monthly price in cents for comparison
 const PLAN_PRICE_CENTS: Record<string, number> = {
+  INDIVIDUAL: 9900,
+  FAMILY: 14900,
   ESSENTIAL: 5000,
   PLUS: 8000,
   CONCIERGE: 11000,
@@ -184,15 +193,30 @@ export async function POST(req: Request) {
     return Response.json({ success: true });
   }
 
+  // Manage payment method -> send to billing portal
+  if (action === "manage_payment" && user?.stripeCustomerId) {
+    const portalSession = await stripeAPI("/v1/billing_portal/sessions", {
+      customer: user.stripeCustomerId,
+      return_url: `${baseUrl}/dashboard/plan`,
+      configuration: BILLING_PORTAL_CONFIG,
+    });
+    if (portalSession.url) {
+      return Response.json({ url: portalSession.url });
+    }
+    return Response.json({ error: "Failed to open payment portal" }, { status: 500 });
+  }
+
   // Cancel action -> send to billing portal (has cancel button built in)
   if (action === "cancel" && user?.stripeCustomerId) {
     const portalSession = await stripeAPI("/v1/billing_portal/sessions", {
       customer: user.stripeCustomerId,
       return_url: `${baseUrl}/dashboard/plan`,
+      configuration: BILLING_PORTAL_CONFIG,
     });
     if (portalSession.url) {
       return Response.json({ url: portalSession.url });
     }
+    return Response.json({ error: "Failed to open cancellation portal" }, { status: 500 });
   }
 
   // Check if user already has an active or trialing subscription

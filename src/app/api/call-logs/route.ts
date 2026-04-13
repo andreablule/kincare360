@@ -101,6 +101,32 @@ export async function POST(req: NextRequest) {
           },
         });
       }
+    } else if (digits) {
+      // No matching patient — upsert into Prospect to track unknown callers
+      const existingProspect = await prisma.prospect.findFirst({ where: { phone: { contains: digits } } });
+      if (existingProspect) {
+        await prisma.prospect.update({
+          where: { id: existingProspect.id },
+          data: {
+            callCount: { increment: 1 },
+            lastCallAt: new Date(),
+            ...(summary ? { summary } : {}),
+            ...(structuredData.mood || structuredData.feeling ? { mood: structuredData.mood || structuredData.feeling } : {}),
+            ...(structuredData.concerns ? { concerns: structuredData.concerns } : {}),
+          },
+        });
+      } else {
+        await prisma.prospect.create({
+          data: {
+            phone: customerPhone || digits,
+            lastCallAt: new Date(),
+            summary: summary || null,
+            mood: structuredData.mood || structuredData.feeling || null,
+            concerns: structuredData.concerns || null,
+            status: 'NEW',
+          },
+        });
+      }
     }
 
     // CHECK-IN SMS: If this is a check-in call, notify family members with updates enabled
