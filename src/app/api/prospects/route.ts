@@ -7,7 +7,7 @@ import prisma from '@/lib/prisma';
 export async function PATCH(req: NextRequest) {
   const session = await getServerSession(authOptions);
   const user = session?.user as any;
-  if (!user || (user.role !== 'ADMIN' && user.email !== 'hello@kincare360.com')) {
+  if (!user || (user.role !== 'ADMIN' && user.email !== 'hello@kincare360.com' && user.email !== 'andreablule@gmail.com')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -37,7 +37,7 @@ export async function PATCH(req: NextRequest) {
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
   const user = session?.user as any;
-  if (!user || (user.role !== 'ADMIN' && user.email !== 'hello@kincare360.com')) {
+  if (!user || (user.role !== 'ADMIN' && user.email !== 'hello@kincare360.com' && user.email !== 'andreablule@gmail.com')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

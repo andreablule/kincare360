@@ -65,7 +65,7 @@ export default async function AdminCallsPage() {
   const session = await getServerSession(authOptions);
   const user = session?.user as any;
 
-  if (!user || (user.role !== "ADMIN" && user.email !== "hello@kincare360.com")) {
+  if (!user || (user.role !== "ADMIN" && user.email !== "hello@kincare360.com" && user.email !== "andreablule@gmail.com")) {
     redirect("/admin");
   }
 

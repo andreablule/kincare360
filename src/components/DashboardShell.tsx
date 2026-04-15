@@ -113,7 +113,7 @@ export default function DashboardShell({ children, user }: { children: React.Rea
           })}
         </nav>
 
-        {(user?.role === "ADMIN" || user?.email === "hello@kincare360.com") && (
+        {(user?.role === "ADMIN" || user?.email === "hello@kincare360.com" || user?.email === "andreablule@gmail.com") && (
           <div className="px-4 pt-2 space-y-1">
             <Link
               href="/admin"

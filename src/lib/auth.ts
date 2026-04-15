@@ -62,7 +62,7 @@ export const authOptions: AuthOptions = {
     },
     async jwt({ token, user, account }) {
       if (user) {
-        // Get user from DB to get role and id
+        // First sign-in: get user from DB to get role and id
         const dbUser = await prisma.user.findUnique({
           where: { email: user.email! },
         });
@@ -98,6 +98,16 @@ export const authOptions: AuthOptions = {
           token.role = (user as any).role;
           token.id = user.id;
           token.patientId = null;
+        }
+      } else if (token.email) {
+        // Subsequent requests: refresh role from DB so admin changes take effect immediately
+        const dbUser = await prisma.user.findUnique({
+          where: { email: token.email },
+          select: { role: true, patientId: true },
+        });
+        if (dbUser) {
+          token.role = dbUser.role;
+          token.patientId = dbUser.patientId ?? null;
         }
       }
       return token;

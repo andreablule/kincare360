@@ -9,7 +9,7 @@ const PLAN_PRICES: Record<string, number> = { ESSENTIAL: 50, PLUS: 80, CONCIERGE
 export default async function ClientDetailPage({ params }: { params: Promise<{ userId: string }> }) {
   const session = await getServerSession(authOptions);
   const currentUser = session?.user as any;
-  if (!currentUser || (currentUser.role !== "ADMIN" && currentUser.email !== "hello@kincare360.com")) {
+  if (!currentUser || (currentUser.role !== "ADMIN" && currentUser.email !== "hello@kincare360.com" && currentUser.email !== "andreablule@gmail.com")) {
     redirect("/admin");
   }
 
