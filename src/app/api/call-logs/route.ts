@@ -136,7 +136,7 @@ export async function POST(req: NextRequest) {
       const checkInMsg = `KinCare360 Update: ${patient.firstName} ${patient.lastName}'s check-in with Lily is complete.\nMood: ${moodText}. Medications taken: ${medsText}.\nView full report: kincare360.com/dashboard`;
 
       for (const member of patient.familyMembers) {
-        if (member.notifyUpdates && member.phone) {
+        if (member.notifyUpdates && member.alertsEnabled && member.smsConsentStatus === 'opted_in' && ['text', 'both'].includes(member.alertMode) && member.phone) {
           const memberDigits = member.phone.replace(/\D/g, '');
           if (memberDigits.length >= 10) {
             await sendSMS(`+1${memberDigits.slice(-10)}`, checkInMsg);
@@ -155,7 +155,7 @@ export async function POST(req: NextRequest) {
 
       // SMS all family members with notifications enabled
       for (const member of patient.familyMembers) {
-        if (member.notifyUpdates && member.phone) {
+        if (member.notifyUpdates && member.alertsEnabled && member.smsConsentStatus === 'opted_in' && ['text', 'both'].includes(member.alertMode) && member.phone) {
           const memberDigits = member.phone.replace(/\D/g, '');
           if (memberDigits.length >= 10) {
             // Send both the summary and the full urgent alert

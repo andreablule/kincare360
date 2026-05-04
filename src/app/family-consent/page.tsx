@@ -1,0 +1,50 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+
+function digits(value: string) { return value.replace(/\D/g, "").slice(-10); }
+
+export default function FamilyConsentPage() {
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [lovedOne, setLovedOne] = useState("");
+  const [checked, setChecked] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<{type:"success"|"error"; message:string}|null>(null);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setResult(null);
+    if (digits(phone).length !== 10) return setResult({ type: "error", message: "Please enter a valid U.S. mobile number." });
+    if (!checked) return setResult({ type: "error", message: "Please check the consent box to continue." });
+    setLoading(true);
+    try {
+      const res = await fetch("/api/family-consent", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, phone, lovedOne, consent: checked }) });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Consent could not be recorded.");
+      setResult({ type: "success", message: "Consent recorded. You are now enrolled to receive KinCare360 care alerts and daily updates by text message." });
+    } catch (err: any) {
+      setResult({ type: "error", message: err.message || "Consent could not be recorded." });
+    } finally { setLoading(false); }
+  }
+
+  return (
+    <main className="min-h-screen bg-gray-50 py-10 px-4">
+      <div className="max-w-xl mx-auto bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+        <Link href="/" className="text-teal font-bold text-xl">KinCare360</Link>
+        <h1 className="text-3xl font-bold text-navy mt-6">Family SMS Consent</h1>
+        <p className="text-gray-600 mt-3 leading-relaxed">Use this form only if your family invited you to receive KinCare360 text updates about a loved one.</p>
+        <form onSubmit={submit} className="mt-8 space-y-5">
+          <div><label className="block text-sm font-semibold text-navy mb-1">Your name</label><input required value={name} onChange={e=>setName(e.target.value)} className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal" placeholder="Jane Family" /></div>
+          <div><label className="block text-sm font-semibold text-navy mb-1">Mobile phone number</label><input required inputMode="tel" value={phone} onChange={e=>setPhone(e.target.value)} className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal" placeholder="(555) 123-4567" /></div>
+          <div><label className="block text-sm font-semibold text-navy mb-1">Loved one&apos;s name</label><input required value={lovedOne} onChange={e=>setLovedOne(e.target.value)} className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal" placeholder="Parent or loved one name" /></div>
+          <label className="flex gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700 leading-relaxed"><input type="checkbox" required checked={checked} onChange={e=>setChecked(e.target.checked)} className="mt-1 h-4 w-4" /><span>I agree to receive recurring automated SMS/text messages from KinCare360 about my loved one&apos;s care, including daily check-in summaries, medication/refill reminders, appointment updates, care concern alerts, and emergency alerts. Message frequency varies, up to 5 messages per day. Message and data rates may apply. Reply STOP to opt out at any time. Reply HELP for help. Consent is not a condition of purchase. I have read the <Link href="/privacy" className="text-teal underline">Privacy Policy</Link> and <Link href="/terms" className="text-teal underline">Terms of Service</Link>.</span></label>
+          <button disabled={loading} className="w-full rounded-xl bg-teal text-white font-bold py-3 disabled:opacity-60">{loading ? "Recording consent..." : "I Consent to Receive KinCare360 Text Updates"}</button>
+        </form>
+        {result && <div className={`mt-5 rounded-xl p-4 text-sm ${result.type === "success" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>{result.message}</div>}
+        <p className="text-xs text-gray-500 mt-8 leading-relaxed">Need help? Email <a href="mailto:hello@kincare360.com" className="text-teal underline">hello@kincare360.com</a> or call <a href="tel:+18125155252" className="text-teal underline">(812) 515-5252</a>. To stop texts after enrollment, reply STOP to any message.</p>
+      </div>
+    </main>
+  );
+}

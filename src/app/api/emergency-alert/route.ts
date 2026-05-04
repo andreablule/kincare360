@@ -78,11 +78,12 @@ export async function POST(req: NextRequest) {
     // Send alerts to all family members via SMS + email + VAPI call
     let alerted = 0;
     for (const member of patient.familyMembers) {
-      // Try SMS (may fail if A2P 10DLC not approved yet)
       if (member.phone) {
         const digits = member.phone.replace(/\D/g, "").slice(-10);
         if (digits.length === 10) {
-          try { await sendSMS(`+1${digits}`, smsMsg); } catch (e) { console.error(`[emergency-alert] SMS failed for ${member.name}:`, e); }
+          if (member.smsConsentStatus === 'opted_in' && ['text', 'both'].includes(member.alertMode)) {
+            try { await sendSMS(`+1${digits}`, smsMsg); } catch (e) { console.error(`[emergency-alert] SMS failed for ${member.name}:`, e); }
+          }
           // Also make an emergency VAPI call to the family member
           try {
             await fetch("https://api.vapi.ai/call/phone", {

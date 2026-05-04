@@ -22,10 +22,13 @@ interface FamilyMember {
   alertMode?: string;
   summaryTime?: string;
   alertsEnabled?: boolean;
+  smsConsentStatus?: string;
   inviteStatus?: "none" | "pending" | "active";
   linkedRole?: string | null;
   user?: LinkedUser | null;
 }
+
+const FAMILY_CONSENT_URL = "https://www.kincare360.com/family-consent";
 
 function RoleBadge({ role }: { role: string | null | undefined }) {
   if (!role || role === "FAMILY") {
@@ -178,7 +181,10 @@ export default function FamilyPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-navy">Family Members</h1>
+        <div>
+          <h1 className="text-2xl font-bold text-navy">Family Members</h1>
+          {isOwner && <button type="button" onClick={() => navigator.clipboard?.writeText(FAMILY_CONSENT_URL)} className="mt-2 text-xs font-semibold bg-teal/10 border border-teal/20 text-teal px-3 py-1.5 rounded-lg hover:bg-teal/20">Copy family SMS consent link</button>}
+        </div>
         {isOwner && (
           <button onClick={addMember} className="text-sm bg-teal text-white px-4 py-2 rounded-full font-medium hover:bg-teal-dark">
             + Add Member
@@ -206,7 +212,7 @@ export default function FamilyPage() {
               <span className="text-gray-600">Can also edit care records (medications, doctors) and submit requests. Cannot access billing.</span>
             </div>
           </div>
-          <p className="text-xs text-gray-400 mt-3">Only you (the account owner) can grant or remove Manager access.</p>
+          <p className="text-xs text-gray-400 mt-3">Only you (the account owner) can grant or remove Manager access. For text alerts, send family members to <a href="/family-consent" target="_blank" className="text-teal underline">kincare360.com/family-consent</a> after adding them.</p>
         </div>
       )}
 
@@ -234,6 +240,7 @@ export default function FamilyPage() {
             <div className="flex items-center gap-2 mb-3 flex-wrap">
               {member.id && <RoleBadge role={member.linkedRole} />}
               {member.id && <InviteStatusBadge status={member.inviteStatus} email={member.email} />}
+              {member.id && <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${member.smsConsentStatus === "opted_in" ? "bg-green-100 text-green-700" : member.smsConsentStatus === "opted_out" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}`}>{member.smsConsentStatus === "opted_in" ? "✓ SMS consented" : member.smsConsentStatus === "opted_out" ? "SMS opted out" : "SMS consent pending"}</span>}
             </div>
 
             <div className="grid sm:grid-cols-2 gap-3 mb-3">
@@ -339,7 +346,8 @@ export default function FamilyPage() {
                   </button>
                 </div>
               </div>
-              <p className="text-xs text-gray-400">🚨 Emergency alerts are always on and cannot be disabled.</p>
+              <p className="text-xs text-gray-400">🚨 Emergency alerts are always on. Text alerts require the family member to consent at <a href="/family-consent" target="_blank" className="text-teal underline">kincare360.com/family-consent</a>.</p>
+              {member.id && member.smsConsentStatus !== "opted_in" && <button type="button" onClick={() => navigator.clipboard?.writeText(FAMILY_CONSENT_URL)} className="text-xs font-semibold bg-white border border-amber-200 text-amber-700 px-3 py-1.5 rounded-lg hover:bg-amber-50">Copy consent link for this family member</button>}
             </div>
 
             <div className="flex items-center justify-between flex-wrap gap-2">

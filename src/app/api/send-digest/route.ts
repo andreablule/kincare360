@@ -139,7 +139,7 @@ export async function GET(req: NextRequest) {
         if ((member.alertMode === 'email' || member.alertMode === 'both') && member.email) {
           await sendEmail(member.email, emailSubject, emailHtml);
         }
-        if ((member.alertMode === 'text' || member.alertMode === 'both') && member.phone) {
+        if ((member.alertMode === 'text' || member.alertMode === 'both') && member.phone && member.smsConsentStatus === 'opted_in') {
           const digits = member.phone.replace(/\D/g, '').slice(-10);
           if (digits.length === 10) await sendSMS(`+1${digits}`, smsText);
         }

@@ -121,7 +121,7 @@ export async function POST(req: NextRequest) {
         if (member.email) {
           try { await sendEmail(member.email, subject, emailHtml); } catch (e) { console.error(`[concern-alert] Email failed:`, e); }
         }
-        if (member.phone) {
+        if (member.phone && member.alertsEnabled && member.smsConsentStatus === 'opted_in' && ['text', 'both'].includes(member.alertMode)) {
           const digits = member.phone.replace(/\D/g, "").slice(-10);
           if (digits.length === 10) { try { await sendSMS(`+1${digits}`, smsMsg); } catch (e) {} }
         }

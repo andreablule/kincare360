@@ -30,7 +30,7 @@ export async function GET() {
       include: {
         patient: {
           include: {
-            familyMembers: { where: { notifyUpdates: true } },
+            familyMembers: { where: { notifyUpdates: true, alertsEnabled: true, smsConsentStatus: 'opted_in', alertMode: { in: ['text', 'both'] } } },
             user: { select: { plan: true } },
           },
         },

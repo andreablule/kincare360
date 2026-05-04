@@ -36,17 +36,18 @@ export default function PrivacyPage() {
 
         <div>
           <h2 className="text-xl font-semibold text-navy mb-2">3. SMS Communications</h2>
-          <p>By checking the SMS consent box during signup and providing your phone number, you expressly consent to receive recurring automated SMS messages from KinCare360. These messages include:</p>
+          <p>Account owners may consent during signup/intake. Family members provide their own consent on the public Family SMS Consent page at <a href="https://www.kincare360.com/family-consent" className="text-teal underline">https://www.kincare360.com/family-consent</a> after the account owner adds them to the family profile. By submitting the applicable consent form and providing your phone number, you expressly consent to receive recurring automated SMS messages from KinCare360. These messages include:</p>
           <ul className="list-disc list-inside mt-2 space-y-1">
             <li>Daily wellness check-in notifications</li>
             <li>Medication reminder alerts</li>
             <li>Appointment scheduling updates</li>
             <li>Service and account notifications</li>
+            <li>Family care alerts and daily summaries for loved ones you are connected to</li>
           </ul>
           <p className="mt-2">Message frequency varies (up to 5 messages per day). Message and data rates may apply. Your consent is not a condition of purchase.</p>
           <p className="mt-2"><strong>To opt out:</strong> Reply STOP to any message at any time. You will receive a confirmation and no further messages.</p>
           <p className="mt-2"><strong>For help:</strong> Reply HELP to any message, or contact us at <a href="mailto:hello@kincare360.com" className="text-teal underline">hello@kincare360.com</a> or <a href="tel:+18125155252" className="text-teal underline">(812) 515-5252</a>.</p>
-          <p className="mt-2">Supported carriers include AT&amp;T, T-Mobile, Verizon, and most major US carriers. KinCare360 will never share your phone number with third parties for marketing purposes.</p>
+          <p className="mt-2">Supported carriers include AT&amp;T, T-Mobile, Verizon, and most major US carriers. KinCare360 will never sell, rent, share, or distribute your mobile phone number or SMS opt-in data to third parties or affiliates for marketing or promotional purposes.</p>
         </div>
 
         <div>

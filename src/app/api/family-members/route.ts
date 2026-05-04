@@ -86,6 +86,7 @@ export async function POST(req: NextRequest) {
       alertMode: body.alertMode ?? 'email',
       summaryTime: body.summaryTime ?? '18:00',
       alertsEnabled: body.alertsEnabled ?? true,
+      smsConsentStatus: 'pending',
     },
   });
 
@@ -111,16 +112,8 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Send SMS to family member if they have a phone
-    if (body.phone) {
-      const digits = body.phone.replace(/\D/g, "").slice(-10);
-      if (digits.length === 10) {
-        await sendSMS(
-          `+1${digits}`,
-          `You're part of KinCare360's referral program! Share your code ${code} and earn $50 for every new subscription. Link: kincare360.com/register?ref=${code}`
-        );
-      }
-    }
+    // Do not send outbound SMS here. Family members must first opt in at
+    // https://www.kincare360.com/family-consent before receiving texts.
   } catch (err) {
     console.error("Family referral auto-create error:", err);
   }

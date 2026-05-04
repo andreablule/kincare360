@@ -92,11 +92,12 @@ export default function TermsPage() {
 
         <div>
           <h2 className="text-xl font-semibold text-navy mb-2">10. SMS Communications</h2>
-          <p>By checking the SMS consent box during signup, you expressly agree to receive recurring automated SMS messages from KinCare360 at the phone number provided. Messages include daily check-in notifications, medication reminders, appointment updates, and service alerts.</p>
+          <p>Account owners may consent during signup/intake. Family members provide their own consent at <a href="https://www.kincare360.com/family-consent" className="text-teal underline">https://www.kincare360.com/family-consent</a> after being added to a family profile. By submitting the applicable SMS consent form, you expressly agree to receive recurring automated SMS messages from KinCare360 at the phone number provided. Messages include daily check-in notifications, medication reminders, appointment updates, family care alerts, daily summaries, and service alerts.</p>
           <ul className="list-disc list-inside mt-2 space-y-1 ml-2">
             <li>Message frequency: up to 5 messages per day</li>
             <li>Message and data rates may apply</li>
             <li>Consent is not required to purchase services</li>
+            <li>Family members who do not submit the Family SMS Consent form will not receive recurring text updates</li>
             <li>Reply <strong>STOP</strong> to cancel at any time</li>
             <li>Reply <strong>HELP</strong> for assistance</li>
           </ul>

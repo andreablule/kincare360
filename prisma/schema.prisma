@@ -119,6 +119,10 @@ model FamilyMember {
   alertMode       String  @default("email")    // email | text | both | none
   summaryTime     String  @default("18:00")    // HH:MM 24h — when daily digest is sent
   alertsEnabled   Boolean @default(true)       // opt in/out of non-emergency alerts
+  smsConsentStatus String @default("pending")  // pending | opted_in | opted_out
+  smsConsentSource String?                      // family_web_form | family_reply_start | admin_manual
+  smsConsentedAt   DateTime?
+  smsOptedOutAt    DateTime?
   lastDigestSent  DateTime?                     // prevent duplicate digests
 }
 
