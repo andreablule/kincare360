@@ -7,20 +7,20 @@ const steps = [
   },
   {
     number: "2",
-    title: "Set Up Your Care Plan",
+    title: "Set Up Your Family Check-In Plan",
     description:
-      "Choose your plan, fill out the intake form, and pick your preferred call times. Lily handles the rest.",
+      "Choose your plan, fill out the intake form, and pick your preferred call times and routine reminders.",
   },
   {
     number: "3",
-    title: "Lily Starts Caring",
-    description: "Lily calls your loved one daily — checking in, reminding medications, coordinating appointments.",
+    title: "Lily Starts Checking In",
+    description: "Lily calls your loved one daily — checking in, sharing routine reminders, and helping with everyday coordination.",
   },
   {
     number: "4",
     title: "Family Stays Informed",
     description:
-      "Log into your dashboard anytime to see daily summaries, health updates, and care notes.",
+      "Log into your dashboard anytime to see daily summaries, routine updates, and family notes.",
   },
 ];
 

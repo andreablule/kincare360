@@ -1,8 +1,8 @@
 const painPoints = [
   {
-    title: "Missed Medications",
+    title: "Missed Daily Routines",
     description:
-      "Without daily oversight, medications get skipped or taken incorrectly.",
+      "Without a daily check-in, meals, calls, appointments, and other routines can slip through the cracks.",
     icon: (
       <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -40,11 +40,10 @@ export default function Problem() {
             You can&apos;t be there every day. Lily can.
           </h2>
           <p className="mt-6 text-lg text-gray-600 leading-relaxed">
-            Caring for an aging parent from a distance is exhausting. You worry
-            about missed medications, forgotten appointments, and whether
-            they&apos;re really okay. KinCare360&apos;s AI concierge Lily helps you stay informed &mdash;
-            with daily check-ins, automated coordination, and real-time family
-            updates so you can act faster when something seems off.
+            Caring for an aging parent from a distance is exhausting. Most apps
+            and websites were not built for them. Lily gives your loved one a
+            simple way to talk by phone, ask for help, keep routines on track,
+            and share updates with family &mdash; without needing a smartphone or computer.
           </p>
         </div>
 

@@ -1,7 +1,15 @@
 const nodemailer = require('nodemailer');
+const gmailUser = process.env.KINCARE360_GMAIL_USER || 'hello@kincare360.com';
+const gmailAppPassword = process.env.KINCARE360_GMAIL_APP_PASSWORD;
+
+if (!gmailAppPassword) {
+  console.error('Missing KINCARE360_GMAIL_APP_PASSWORD environment variable.');
+  process.exit(1);
+}
+
 const transporter = nodemailer.createTransport({
   service: 'gmail',
-  auth: { user: 'hello@kincare360.com', pass: 'rogv owro cfhd sasp' }
+  auth: { user: gmailUser, pass: gmailAppPassword }
 });
 
 // Category-specific subject lines and intros

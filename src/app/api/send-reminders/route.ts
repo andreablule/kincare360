@@ -4,10 +4,10 @@ import prisma from '@/lib/prisma';
 export const maxDuration = 55;
 export const dynamic = 'force-dynamic';
 
-const VAPI_KEY = '3e6bdfb6-fc6f-4c60-a584-16cfa60e6846';
-const PHONE_NUMBER_ID = '8354bde3-c67c-4316-b181-95c227479b58'; // (812) 515-5252
-const LILY_ASSISTANT_ID = '8dc06b99-9533-4b28-b379-7ed4f07768aa';
-const CRON_SECRET = process.env.CRON_SECRET || 'kc360-cron-x9f2m7k4p1';
+const VAPI_KEY = process.env.VAPI_API_KEY;
+const PHONE_NUMBER_ID = process.env.VAPI_PHONE_NUMBER_ID;
+const LILY_ASSISTANT_ID = process.env.VAPI_LILY_ASSISTANT_ID;
+const CRON_SECRET = process.env.CRON_SECRET;
 
 function getEtTime(): { etTime: string; nowMins: number } {
   const now = new Date();
@@ -78,6 +78,7 @@ async function getAssistantConfig(phone: string, callType: string): Promise<any>
 }
 
 async function vapiCheckinCall(phone: string, firstName: string): Promise<string> {
+  if (!VAPI_KEY || !PHONE_NUMBER_ID) return 'VAPI not configured';
   const rawPhone = phone.replace(/\D/g, '');
   const formattedPhone = rawPhone.length === 10 ? `+1${rawPhone}` : `+${rawPhone}`;
 
@@ -100,7 +101,7 @@ async function vapiCheckinCall(phone: string, firstName: string): Promise<string
         machineDetectionSpeechEndThreshold: 2000,
       },
     };
-  } else {
+  } else if (LILY_ASSISTANT_ID) {
     callBody.assistantId = LILY_ASSISTANT_ID;
     callBody.assistantOverrides = {
       firstMessage: `Hi ${firstName}! This is Lily from KinCare360 with your daily check-in. How are you feeling today?`,
@@ -112,6 +113,8 @@ async function vapiCheckinCall(phone: string, firstName: string): Promise<string
         machineDetectionSpeechEndThreshold: 2000,
       },
     };
+  } else {
+    return 'VAPI assistant not configured';
   }
 
   const res = await fetch('https://api.vapi.ai/call/phone', {
@@ -124,6 +127,7 @@ async function vapiCheckinCall(phone: string, firstName: string): Promise<string
 }
 
 async function vapiMedicationCall(phone: string, firstName: string): Promise<string> {
+  if (!VAPI_KEY || !PHONE_NUMBER_ID) return 'VAPI not configured';
   const rawPhone = phone.replace(/\D/g, '');
   const formattedPhone = rawPhone.length === 10 ? `+1${rawPhone}` : `+${rawPhone}`;
 
@@ -137,7 +141,19 @@ async function vapiMedicationCall(phone: string, firstName: string): Promise<str
   if (assistantConfig) {
     callBody.assistant = {
       ...assistantConfig,
-      firstMessage: `Hi ${firstName}! This is Lily from KinCare360. This is your medication reminder - it's time to take your medications. Have you taken them yet?`,
+      firstMessage: `Hi ${firstName}! This is Lily from KinCare360. This is your routine reminder from your family. Please follow the instructions your family or care team gave you. Have you reviewed it?`,
+      voicemailDetection: {
+        provider: "twilio",
+        enabled: true,
+        machineDetectionTimeout: 8,
+        machineDetectionSpeechThreshold: 3000,
+        machineDetectionSpeechEndThreshold: 2000,
+      },
+    };
+  } else if (LILY_ASSISTANT_ID) {
+    callBody.assistantId = LILY_ASSISTANT_ID;
+    callBody.assistantOverrides = {
+      firstMessage: `Hi ${firstName}! This is Lily from KinCare360. This is your routine reminder from your family. Please follow the instructions your family or care team gave you. Have you reviewed it?`,
       voicemailDetection: {
         provider: "twilio",
         enabled: true,
@@ -147,17 +163,7 @@ async function vapiMedicationCall(phone: string, firstName: string): Promise<str
       },
     };
   } else {
-    callBody.assistantId = LILY_ASSISTANT_ID;
-    callBody.assistantOverrides = {
-      firstMessage: `Hi ${firstName}! This is Lily from KinCare360. This is your medication reminder - it's time to take your medications. Have you taken them yet?`,
-      voicemailDetection: {
-        provider: "twilio",
-        enabled: true,
-        machineDetectionTimeout: 8,
-        machineDetectionSpeechThreshold: 3000,
-        machineDetectionSpeechEndThreshold: 2000,
-      },
-    };
+    return 'VAPI assistant not configured';
   }
 
   const res = await fetch('https://api.vapi.ai/call/phone', {
@@ -170,6 +176,7 @@ async function vapiMedicationCall(phone: string, firstName: string): Promise<str
 }
 
 async function vapiReminderCall(phone: string, firstName: string, message: string): Promise<string> {
+  if (!VAPI_KEY || !PHONE_NUMBER_ID) return 'VAPI not configured';
   const rawPhone = phone.replace(/\D/g, '');
   const formattedPhone = rawPhone.length === 10 ? `+1${rawPhone}` : `+${rawPhone}`;
 
@@ -219,6 +226,10 @@ export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const querySecret = url.searchParams.get('secret');
 
+  if (!CRON_SECRET && !vercelCronHeader) {
+    return NextResponse.json({ error: 'CRON_SECRET is not configured' }, { status: 500 });
+  }
+
   if (!vercelCronHeader && querySecret !== CRON_SECRET) {
     const token = authHeader?.replace('Bearer ', '');
     if (token !== CRON_SECRET) {
@@ -249,13 +260,13 @@ export async function GET(req: NextRequest) {
     for (const patient of patients) {
       if (!patient.phone) continue;
 
-      // --- Medication reminders ---
+      // --- Routine reminders ---
       if (patient.medicationReminderTime) {
         const times = patient.medicationReminderTime.split(',').map(t => t.trim());
         for (const t of times) {
           if (timeMatches(t, nowMins)) {
             if (await hasRecentCall(patient.id, 'medication')) {
-              console.log(`[dedup] Skipping medication reminder for ${patient.firstName} - already called in last 30min`);
+              console.log(`[dedup] Skipping routine reminder for ${patient.firstName} - already called in last 30min`);
               skipped.push(`${patient.firstName}@${t}: dedup-medication`);
               break;
             }

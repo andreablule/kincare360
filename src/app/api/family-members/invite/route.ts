@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
   secure: false,
   auth: {
     user: "hello@kincare360.com",
-    pass: "rogvowrocfhdsasp",
+    pass: process.env.GOOGLE_APP_PASSWORD,
   },
 });
 

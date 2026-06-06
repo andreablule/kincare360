@@ -23,7 +23,7 @@ async function sendSMS(to: string, body: string) {
 async function sendEmail(to: string, subject: string, html: string) {
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com", port: 587, secure: false,
-    auth: { user: "hello@kincare360.com", pass: process.env.GOOGLE_APP_PASSWORD || "rogvowrocfhdsasp" },
+    auth: { user: "hello@kincare360.com", pass: process.env.GOOGLE_APP_PASSWORD },
   });
   await transporter.sendMail({ from: '"KinCare360" <hello@kincare360.com>', to, subject, html });
 }
@@ -97,7 +97,7 @@ export async function GET(req: NextRequest) {
       let textSummary = '';
       for (const log of callLogs) {
         const time = new Date(log.callDate).toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour: 'numeric', minute: '2-digit', hour12: true });
-        const type = log.callType === 'medication' ? 'Medication Reminder' : log.callType === 'checkin' ? 'Daily Check-in' : 'Call';
+        const type = log.callType === 'medication' ? 'Routine Reminder' : log.callType === 'checkin' ? 'Daily Check-in' : 'Call';
         const summary = log.summary || 'No details recorded.';
         
         callSummaries += `

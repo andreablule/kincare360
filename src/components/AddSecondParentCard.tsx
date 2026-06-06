@@ -177,7 +177,7 @@ export default function AddSecondParentCard() {
           </div>
 
           <div>
-            <label className={labelClass}>Medication Reminder Times</label>
+            <label className={labelClass}>Routine Reminder Times</label>
             <label className="flex items-center gap-2 mb-2 text-sm text-gray-600 cursor-pointer">
               <input type="checkbox" checked={form.medicationReminders.length === 0} onChange={e => {
                 if (e.target.checked) {
@@ -186,7 +186,7 @@ export default function AddSecondParentCard() {
                   setForm({ ...form, medicationReminders: [{ time: "08:00" }] });
                 }
               }} className="rounded border-gray-300 text-teal focus:ring-teal" />
-              No medication reminders
+              No routine reminders
             </label>
             {form.medicationReminders.length > 0 && (
               <>
@@ -319,7 +319,7 @@ export default function AddSecondParentCard() {
 
         {/* Family Members */}
         <div className="space-y-3">
-          <h3 className="text-sm font-semibold text-navy">Family Members / Emergency Contacts</h3>
+          <h3 className="text-sm font-semibold text-navy">Family / Safety Contacts</h3>
           {familyMembers.map((fm, i) => (
             <div key={i} className="border border-gray-100 rounded-xl p-4 space-y-3">
               <div className="flex justify-between items-center">

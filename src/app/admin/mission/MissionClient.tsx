@@ -49,7 +49,7 @@ export default function MissionClient({ data }: { data: MissionData }) {
         <p style={{ color: "#555", fontSize: 13, marginBottom: 28 }}>KinCare360 — Real-time Command Center | {time}</p>
 
         {/* Lily Stats */}
-        <Section icon="📞" title="Lily — AI Care Assistant">
+        <Section icon="📞" title="Lily — AI Family Check-In Assistant">
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 12 }}>
             <Card label="Calls Today" value={data.callsToday} color="#10b981" />
             <Card label="Calls This Week" value={data.callsThisWeek} color="#3b82f6" />

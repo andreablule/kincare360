@@ -2,7 +2,7 @@ const services = [
   {
     title: "Daily Wellness Check-Ins",
     description:
-      "Lily calls your loved one every day at their preferred time to check on health, mood, and wellbeing — and reports back to you.",
+      "Lily calls your loved one every day at their preferred time to check in, ask how the day is going, and share a family update with you.",
     image: "/daily-checkin.png",
     alt: "Elderly woman receiving a daily check-in call from Lily on her phone",
     icon: (
@@ -12,11 +12,11 @@ const services = [
     ),
   },
   {
-    title: "Medication Reminders",
+    title: "Routine Reminder Calls",
     description:
-      "Automated reminder calls at the exact times your loved one needs to take their medications. Never miss a dose again.",
+      "Helpful reminder calls for everyday routines like meals, appointments, errands, and family check-ins.",
     image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=600&q=80&auto=format&fit=crop",
-    alt: "Elderly person taking medication with pill organizer",
+    alt: "Elderly person reviewing a daily routine reminder",
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -26,9 +26,9 @@ const services = [
   {
     title: "Appointment Coordination",
     description:
-      "Your parent never sits on hold again. Lily calls the doctor's office, schedules the appointment, confirms it, and reminds your parent before and after. No hold music, no frustration, no calling the kids for help.",
+      "Lily helps keep appointment details organized and can support reminders so the family stays on the same page.",
     image: "/appointment-coordination.png",
-    alt: "Lily scheduling a doctor appointment on screen while nurse confirms by phone",
+    alt: "Lily helping organize an appointment reminder on screen",
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
@@ -38,9 +38,9 @@ const services = [
   {
     title: "Family Reporting Dashboard",
     description:
-      "A private online portal where family members can see daily updates, health status, call summaries, and care notes in real time.",
+      "A private online portal where family members can see daily updates, call summaries, family notes, and routine check-in history.",
     image: "/family-dashboard.png",
-    alt: "KinCare360 family dashboard on tablet showing patient status, daily updates, and call summaries",
+    alt: "KinCare360 family dashboard on tablet showing daily updates and call summaries",
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
@@ -50,7 +50,7 @@ const services = [
   {
     title: "Local Service Concierge",
     description:
-      "Need a plumber? Pizza? An electrician? Just call Lily. She searches, finds, and connects your loved one directly to local businesses — so they can speak to them, ask questions, and decide. No need to call the kids.",
+      "Need a plumber, pizza, a ride, or another everyday service? Your loved one can just ask Lily by phone. No web browser, app, password, or computer needed.",
     image: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=600&q=80&auto=format&fit=crop",
     alt: "Elderly person on phone getting help from AI assistant",
     icon: (
@@ -60,11 +60,11 @@ const services = [
     ),
   },
   {
-    title: "Emergency Family Alerts",
+    title: "Family Concern Notifications",
     description:
-      "If Lily detects something wrong — a fall, confusion, distress, or a missed check-in — your family is alerted instantly via text and email. Peace of mind, 24/7.",
+      "If a call is missed or your loved one shares something that may need family attention, KinCare360 sends a concern notification so someone can check in.",
     image: "/emergency-alert.png",
-    alt: "Emergency alert notification on phone showing fall reported for elderly parent",
+    alt: "Family concern notification on phone for an elderly parent",
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
@@ -81,13 +81,13 @@ export default function Services() {
           Everything your parent needs. Handled automatically.
         </h2>
         <p className="text-gray-500 text-center mb-6 max-w-2xl mx-auto">
-          Lily, our AI care concierge, manages everything 24/7 — so you never have to worry.
+          Lily works like a simple voice interface for daily life: your loved one can talk, ask questions, request help, and keep family informed without using an app or computer.
         </p>
         <div className="flex items-center justify-center gap-2 mb-16 text-xs text-gray-400 max-w-xl mx-auto text-center">
           <svg className="w-4 h-4 flex-shrink-0 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
           </svg>
-          <p>Lily is an AI-powered concierge — not a replacement for medical care. She coordinates, reminds, and reports. For medical emergencies, always call 911.</p>
+          <p>Lily is an AI-powered family check-in assistant — not a replacement for medical care, in-home care, or emergency services. For medical emergencies, always call 911.</p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">

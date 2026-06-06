@@ -25,8 +25,8 @@ export default function WhoItsFor() {
           <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
         </svg>
       ),
-      title: "Patients with memory challenges",
-      desc: "Medication reminders and daily check-ins help catch changes early, before they become emergencies.",
+      title: "Loved ones who need routine support",
+      desc: "Daily check-ins and routine reminder calls help families stay connected without needing another app.",
     },
     {
       icon: (
@@ -34,8 +34,8 @@ export default function WhoItsFor() {
           <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 01-1 1h-2a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clipRule="evenodd" />
         </svg>
       ),
-      title: "After hospital discharge",
-      desc: "The first 30 days after discharge are the most dangerous. Lily checks in daily to help prevent readmission.",
+      title: "Families rebuilding a daily rhythm",
+      desc: "When routines change, Lily helps keep daily check-ins, reminders, and family updates consistent.",
     },
   ];
 

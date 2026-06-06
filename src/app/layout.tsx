@@ -6,12 +6,12 @@ export const metadata: Metadata = {
   verification: {
     google: "cf_IcqWaXVOu0IqvLj-_TW_mkcd9yl3Mmq8ZcEyJnJA",
   },
-  title: "KinCare360 — AI-Powered Daily Check-In Calls for Aging Parents",
-  description: "KinCare360's AI care assistant Lily calls your aging parent every day — checking in, reminding medications, and alerting family if something's wrong. Starting at $50/month. 7-day free trial.",
-  keywords: "elderly care, aging parents, daily check-in calls, medication reminders, senior care, AI care assistant, elder care service, remote patient monitoring, caregiver support, family dashboard",
+  title: "KinCare360 — Daily Family Check-In Calls for Aging Parents",
+  description: "KinCare360's AI family check-in assistant Lily gives aging parents a simple phone-based way to talk, ask questions, manage routines, and keep family updated — no smartphone, computer, or app required. Starting at $99/month. 7-day free trial.",
+  keywords: "elderly care, aging parents, daily check-in calls, senior care, family check-ins, elder care coordination, caregiver support, family dashboard, remote family support",
   openGraph: {
-    title: "KinCare360 — Daily AI Check-In Calls for Your Aging Parent",
-    description: "Lily calls your loved one every day to check in, remind medications, and alert you if something's wrong. Plans from $50/mo. Free 7-day trial.",
+    title: "KinCare360 — Daily Family Check-In Calls for Your Aging Parent",
+    description: "Lily gives your loved one a simple voice interface for daily check-ins, routine support, everyday questions, and family updates — no app or computer required. Plans from $99/mo. Free 7-day trial.",
     url: "https://kincare360.com",
     siteName: "KinCare360",
     type: "website",
@@ -19,8 +19,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "KinCare360 — Daily AI Check-In Calls for Aging Parents",
-    description: "AI care assistant Lily calls your parent daily. Medication reminders. Emergency alerts. Family dashboard. From $50/mo.",
+    title: "KinCare360 — Daily Family Check-In Calls for Aging Parents",
+    description: "AI family check-in assistant Lily lets aging parents talk by phone for daily check-ins, routines, questions, and family updates. No app required. From $99/mo.",
   },
   alternates: {
     canonical: "https://kincare360.com",

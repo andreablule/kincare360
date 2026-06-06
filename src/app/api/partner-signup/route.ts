@@ -5,7 +5,7 @@ const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: "hello@kincare360.com",
-    pass: process.env.GOOGLE_SMTP_PASSWORD || "rogv owro cfhd sasp",
+    pass: process.env.GOOGLE_SMTP_PASSWORD,
   },
 });
 

@@ -44,8 +44,8 @@ export default function FounderStory() {
                 I built KinCare360 to solve that.
               </p>
               <p>
-                Not as another app — but as a reliable system families can count on
-                every single day.
+                Not as another app. As a voice-first system elderly people can use
+                by simply talking — the way the rest of us use web browsers and apps.
               </p>
               <p className="font-medium text-navy text-xl">
                 Because peace of mind shouldn&apos;t depend on how often you can call.

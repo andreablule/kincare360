@@ -72,7 +72,7 @@ export default function HistoryPage() {
                 </svg>
               </div>
               <p className="text-gray-500 font-medium">No call history yet.</p>
-              <p className="text-gray-400 text-sm mt-1">Lily will log every check-in and medication reminder here.</p>
+              <p className="text-gray-400 text-sm mt-1">Lily will log every check-in and routine reminder here.</p>
             </>
           ) : (
             <p className="text-gray-400">No matching calls found.</p>

@@ -46,7 +46,7 @@ export function generateFlyer(partnerName: string, referralCode: string, referra
   <div class="header">
     <img src="https://kincare360.com/kincare360-logo.png" alt="KinCare360" class="logo" />
     <div class="headline">Daily Wellness Calls<br/>for Your Aging Parent</div>
-    <div class="subline">AI-powered check-ins, medication reminders, and care coordination — so you can breathe.</div>
+    <div class="subline">AI-powered check-ins, family-approved routine reminders, and everyday coordination — so you can breathe.</div>
     <div class="punch">"The call you don't make shouldn't be the one you regret."</div>
   </div>
 
@@ -58,7 +58,7 @@ export function generateFlyer(partnerName: string, referralCode: string, referra
     </div>
     <div class="feature">
       <div class="feature-icon">💊</div>
-      <div class="feature-title">Medication Reminders</div>
+      <div class="feature-title">Routine Reminders</div>
       <div class="feature-desc">Never miss a dose — automatic calls at scheduled times</div>
     </div>
     <div class="feature">

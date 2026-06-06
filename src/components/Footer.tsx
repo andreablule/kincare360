@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const footerLinks = [
   { label: "How It Works", href: "#how-it-works" },
   { label: "Services", href: "#services" },
@@ -13,15 +15,15 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8">
           <div>
             {/* Logo */}
-            <a href="/" className="inline-block mb-4">
+            <Link href="/" className="inline-block mb-4">
               <img
                 src="/kincare360-logo.png"
                 alt="KinCare360"
                 className="h-28 w-auto brightness-0 invert"
               />
-            </a>
+            </Link>
             <p className="text-white/60 text-sm max-w-xs mb-4">
-              AI-powered care coordination for aging parents.
+              Voice-first daily check-ins and non-medical coordination for aging parents.
             </p>
             {/* Clickable phone + email */}
             <div className="flex flex-col gap-2">

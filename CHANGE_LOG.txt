@@ -1,0 +1,32 @@
+2026-06-06 EDT - Vulnerable-user Lily safety protocol and urgent concern guardrails
+- Added Lily prompt protocols for self-harm/suicidal thoughts, immediate danger, overdose/poisoning risk, confusion/disorientation, abuse/neglect/exploitation, scam risk, emotional-dependency boundaries, and no-guessing/truthfulness.
+- Added `/api/crisis-alert` for crisis-level concerns shared during Lily calls, with urgent safety concern wording, 911/988/Poison Control guidance, family/safety-contact notification, and call-log marking.
+- Rewrote concern and urgent alert routes to use family/safety concern language instead of emergency-detection or medical framing.
+- Removed hardcoded VAPI alert credentials from the urgent alert route; the route now uses environment variables for VAPI configuration.
+- Updated Terms, Privacy, FAQ, signup, intake, family SMS consent, and family dashboard labels to explain urgent safety concern notifications and KinCare360's limits as a non-emergency, non-crisis, non-medical, non-in-home-care service.
+- Added `LILY_SAFETY_QA_CHECKLIST.md` with manual crisis/vulnerable-user scenarios to test before deployment or live Lily changes.
+- Cleaned older referral, dashboard, reminder, fax, and active Lily/VAPI runtime copy so the risk scan finds 0 non-log unsafe marketing/runtime claims for emergency detection, medication compliance, hospital readmissions, or medical supervision.
+- Verified production build with `npm run build`: compiled successfully, TypeScript passed, and generated 72 static pages.
+
+2026-06-06 EDT - Controlled Lily vulnerable-user safety QA pass
+- Ran local/static QA against `LILY_SAFETY_QA_CHECKLIST.md` with no live calls, SMS, emails, or deployment.
+- Fixed QA issues found: prompt tool-name mismatch (`crisisAlert` -> `sendCrisisAlert`), crisis route argument compatibility (`riskCategory`), active VAPI vulnerable-user protocol detail, and family/safety notification wording.
+- Added `LILY_SAFETY_QA_RESULTS.md` documenting PASS results for suicidal thoughts, immediate self-harm/weapon, overdose/poisoning, confusion/disorientation, abuse/neglect, scam exploitation, emotional dependency, confidentiality boundaries, backend category compatibility, and notification wording.
+- Re-verified risk scan: `remaining_non_log_risky 0`; re-ran `npm run build` successfully with 72 static pages generated.
+
+2026-06-06 EDT - Conservative website positioning cleanup
+- Updated homepage and SEO copy to position KinCare360 as daily family check-ins, routine reminders, family updates, and non-medical coordination.
+- Softened public-facing medication, emergency, detection, hospital-readmission, and medical-supervision language across hero, problem, call example, services, pricing, FAQ, contact CTA, footer, metadata, and structured data.
+- Renamed risky public labels such as “Medication reminders” and “Emergency family alerts” to safer “Routine reminder calls” and “Family concern notifications.”
+- Updated Lily's operating language to avoid claims around detection, emergencies, hospital readmissions, medication compliance, and medical supervision, while emphasizing safe non-medical family check-ins and phone-based everyday coordination.
+- Added voice-first positioning across the website/customer flow: Lily lets elderly adults talk by regular phone call to ask questions, manage routines, request everyday help, and keep family informed without using a smartphone, computer, web browser, or app.
+- Updated partner/referral copy, intake plan/SMS consent language, CTA copy, terms wording, pricing detail, metadata, and admin labels to match the conservative Lily positioning.
+- Verified targeted changed files with ESLint: 0 errors, existing image/font warnings only.
+- Verified production build with `npm run build`: compiled successfully and generated 71 static pages.
+
+2026-05-12 EDT - Twilio A2P campaign remediation and credential cleanup
+- Updated the primary KinCare360 Twilio A2P campaign through Twilio CLI/API with corrected non-medical elder-care coordination wording, clearer opt-in/message-flow explanation, five safer sample SMS messages, `hasEmbeddedLinks=false`, `hasEmbeddedPhone=false`, `ageGated=false`, and `directLending=false`.
+- Twilio read-back showed the primary KinCare360 A2P campaign changed from `FAILED` to `IN_PROGRESS`.
+- Added `KINCARE360_A2P_RESUBMISSION_PACKAGE.md` documenting the submitted campaign description, message flow, sample SMS messages, final settings, and remaining HELP/opt-in/opt-out limitation.
+- Removed hardcoded Gmail app-password values from outreach scripts and API email routes; email helpers now rely on environment variables instead of repository-stored credentials.
+- No phone numbers, billing settings, or sender assignments were changed.

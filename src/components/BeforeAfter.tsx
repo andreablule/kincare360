@@ -1,7 +1,7 @@
 export default function BeforeAfter() {
   const before = [
     "You call Mom 3 times a day just to check in",
-    "Medications get missed at least twice a week",
+    "Daily routines and reminders are easy to miss",
     "Doctor appointments fall through the cracks",
     "You lie awake wondering if she is okay",
     "Family members are out of the loop",
@@ -9,9 +9,9 @@ export default function BeforeAfter() {
 
   const after = [
     "Lily calls every morning \u2014 you get a summary",
-    "Medication reminders ensure nothing is missed",
-    "Lily schedules and confirms every appointment",
-    "Emergency alerts notify you instantly if something is wrong",
+    "Routine reminder calls help keep the day on track",
+    "Lily helps coordinate appointment reminders",
+    "Family concern notifications let you know when to check in",
     "The whole family sees daily updates on the dashboard",
   ];
 

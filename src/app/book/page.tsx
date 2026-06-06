@@ -8,7 +8,7 @@ const services = [
   "Essential Plan - $50/mo",
   "Plus Plan - $80/mo",
   "Concierge Plan - $110/mo",
-  "Medication Reminder Setup",
+  "Routine Reminder Setup",
   "Family Dashboard Setup",
 ];
 

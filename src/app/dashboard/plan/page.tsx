@@ -22,7 +22,7 @@ const PLANS = [
     price: "$99/mo",
     features: [
       "Daily wellness check-in calls",
-      "Medication reminders",
+      "Routine reminder calls",
       "Appointment scheduling (Lily calls for you)",
       "Find & connect to any service",
       "Emergency detection and family alerts",
@@ -38,7 +38,7 @@ const PLANS = [
     features: [
       "Everything included — for 2 parents",
       "Each parent gets their own personalized calls",
-      "Separate medication reminders per parent",
+      "Separate routine reminders per parent",
       "Appointment scheduling for both parents",
       "Family dashboard with all care info",
       "24/7 access to Lily for both parents",

@@ -8,24 +8,24 @@ const features = [
     detail: "Every day, Lily calls your loved one at their preferred time. She asks how they're feeling, checks on their mood, and makes sure everything is okay. You get a summary after every call — so you always know how Mom or Dad is doing, even from miles away.",
   },
   {
-    name: "Medication reminders",
-    detail: "Lily calls at each scheduled medication time to remind your parent exactly which pills to take. Multiple reminders per day if needed. No more missed doses, no more guessing if they took their morning meds.",
+    name: "Routine reminder calls",
+    detail: "Lily can call at scheduled times to remind your parent about everyday routines like meals, appointments, errands, and family check-ins. These are supportive routine reminders, not medical instructions or advice.",
   },
   {
     name: "Appointment scheduling",
-    detail: "Your parent never has to call a doctor's office and sit on hold for 45 minutes again. Lily handles it all — she calls the office, finds available times, schedules the appointment, and confirms it. Before the visit, she reminds your parent. After the visit, she follows up. No hold music. No frustration. No calling the kids for help. Lily does what used to take your parent an entire afternoon in under 5 minutes.",
+    detail: "Lily helps keep appointment details organized and can support reminder calls before important events, so your family has one place to track what is coming up.",
   },
   {
     name: "Find & connect to any service",
     detail: "Need a plumber? A pharmacy? A ride to the store? Your parent just tells Lily what they need. She searches, finds a local provider, and connects them directly by phone — no apps, no internet needed. Like having a personal assistant on call 24/7.",
   },
   {
-    name: "Emergency family alerts",
-    detail: "If Lily detects something concerning during a call — confusion, distress, a fall, or a missed check-in — your family is alerted instantly via text and email. Every second counts, and Lily makes sure you know right away.",
+    name: "Family concern notifications",
+    detail: "If a call is missed or your loved one shares something that may need family attention, KinCare360 sends a concern notification so someone can check in. KinCare360 is not an emergency response service.",
   },
   {
     name: "Family dashboard",
-    detail: "A private online portal where you and your family can see daily call summaries, health trends, medication tracking, care notes, and more — all in real time. Invite unlimited family members so everyone stays in the loop.",
+    detail: "A private online portal where you and your family can see daily call summaries, routine notes, family updates, and coordination details. Invite unlimited family members so everyone stays in the loop.",
   },
   {
     name: "24/7 access to Lily",
@@ -80,7 +80,7 @@ export default function Pricing() {
             Replaces hours of daily phone calls
           </span>
           <span className="bg-navy/5 text-navy text-sm font-medium px-4 py-2 rounded-full">
-            Can help prevent costly ER visits and hospital readmissions
+            Helps families notice when a check-in may be needed
           </span>
         </div>
 

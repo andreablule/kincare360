@@ -13,7 +13,7 @@ Dear Doctor,
 Are your elderly patients falling through the cracks between visits?
 
 KinCare360 provides DAILY AI-powered wellness check-in calls
-for elderly patients living at home. Our AI care assistant, Lily,
+for elderly patients living at home. Our AI family check-in assistant, Lily,
 calls your patients every day to:
 
   âœ“ Check their overall wellness and mood
@@ -29,7 +29,7 @@ calls your patients every day to:
 HOW IT HELPS YOUR PRACTICE:
 â€¢ Reduces no-shows â€” Lily reminds patients about appointments
 â€¢ Reduces ER visits â€” catches issues before they escalate
-â€¢ Improves medication compliance â€” daily reminders + tracking
+• Supports family-approved routines — reminder calls + family updates
 â€¢ Keeps families informed â€” reduces after-hours calls to you
 â€¢ No cost to your practice â€” patients/families pay directly
 
@@ -41,8 +41,8 @@ Individual: $99/month â€” one parent
 Family:    $149/month â€” two parents (each gets their own calls)
 
 7-day free trial. No contracts. Cancel anytime.
-Everything included: daily check-ins, medication reminders,
-appointment scheduling, service search, emergency alerts,
+Everything included: daily check-ins, routine reminder calls,
+appointment scheduling, service search, family concern notifications,
 family dashboard, and 24/7 access to Lily.
 
 â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”

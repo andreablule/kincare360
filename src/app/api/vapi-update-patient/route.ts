@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
     if (args.medicationReminderTime) {
       // Accept comma-separated times like "09:20,12:00,20:00"
       updateData.medicationReminderTime = args.medicationReminderTime;
-      updates.push(`medication reminder times to ${args.medicationReminderTime}`);
+      updates.push(`routine reminder times to ${args.medicationReminderTime}`);
     }
 
     if (args.gender) {

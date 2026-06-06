@@ -5,19 +5,27 @@ import { useState } from "react";
 const faqs = [
   {
     q: "Is Lily a real person?",
-    a: "Lily is an AI care concierge designed specifically for seniors. She has a warm, natural voice and infinite patience. She remembers your parent's name, medications, preferences, and history — so every call feels personal and familiar.",
+    a: "Lily is an AI family check-in assistant designed for warm, simple conversations with seniors. Instead of using a smartphone, computer, app, or web browser, your loved one can simply talk to Lily by phone. She remembers your parent's name, preferences, and daily routine details you choose to share — so every call feels personal and familiar.",
+  },
+  {
+    q: "Why is Lily different from an app or website?",
+    a: "Many elderly adults do not want to manage passwords, apps, small screens, or web searches. Lily gives them a voice-first way to ask questions, talk through everyday needs, request help, and keep family informed using a regular phone call.",
   },
   {
     q: "What if my parent doesn't answer?",
-    a: "If your parent doesn't pick up, Lily tries again a little later. If she still can't reach them, your family is notified immediately so you can check in. No missed call goes unnoticed.",
+    a: "If your parent doesn't pick up, Lily tries again a little later. If she still can't reach them, your family receives a concern notification so someone can check in.",
   },
   {
     q: "Is this a medical service?",
-    a: "No — KinCare360 is a care coordination service, not a medical provider. Lily helps with daily check-ins, medication reminders, appointment scheduling, and connecting to services. She does not diagnose, treat, or provide medical advice.",
+    a: "No — KinCare360 is a non-medical care coordination service, not a medical provider, in-home care agency, or emergency service. Lily helps with daily check-ins, routine reminders, family updates, and everyday coordination. She does not diagnose, treat, provide medical advice, supervise medication, or respond to emergencies.",
+  },
+  {
+    q: "What happens if Lily hears something concerning?",
+    a: "KinCare360 is not an emergency, crisis counseling, suicide-prevention, medical, or in-home care service. If a caller shares something suggesting possible immediate harm, self-harm, severe confusion, abuse, exploitation, or another urgent safety concern, Lily may encourage 911, 988, Poison Control, or another appropriate resource and may notify listed family/safety contacts so someone can follow up.",
   },
   {
     q: "Can I listen to the calls?",
-    a: "You get full transcripts and summaries of every call on your family dashboard. You can read exactly what was discussed, see mood tracking, medication compliance, and any concerns flagged — all in real time.",
+    a: "You get transcripts and summaries of every call on your family dashboard. You can read what was discussed, review routine notes, and see family updates in one place.",
   },
   {
     q: "What happens after the free trial?",
@@ -32,8 +40,8 @@ const faqs = [
     a: "Absolutely. Your data is never sold to third parties. All information is encrypted in transit and at rest. We follow HIPAA-informed privacy practices to keep your family's information safe.",
   },
   {
-    q: "Does this work for dementia patients?",
-    a: "Yes. Lily is patient, adaptive, and never frustrated. She adjusts her pace, repeats information gently, and keeps calls simple and reassuring. Many families caring for loved ones with cognitive decline find Lily especially helpful.",
+    q: "Does this work for loved ones who need simple, patient conversations?",
+    a: "Yes. Lily is patient, consistent, and easy to talk to. She can keep calls simple, natural, and reassuring for families who want a daily check-in routine. KinCare360 is still non-medical and should not replace professional care when it is needed.",
   },
 ];
 

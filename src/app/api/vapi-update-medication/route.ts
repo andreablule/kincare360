@@ -164,7 +164,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Update the medication reminder time
+    // Update the routine reminder time
     await prisma.medication.update({
       where: { id: medication.id },
       data: { reminderTime: parsedTime },
@@ -195,7 +195,7 @@ export async function POST(req: NextRequest) {
         {
           toolCallId: "",
           result:
-            "There was an error updating the medication reminder. I'll flag this for the care team.",
+            "There was an error updating the routine reminder. I'll flag this for the care team.",
         },
       ],
     });

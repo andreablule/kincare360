@@ -55,7 +55,7 @@ export default function ReferPage() {
     if (!data) return;
     const subject = encodeURIComponent("Get $50 off KinCare360");
     const body = encodeURIComponent(
-      `Hi!\n\nI've been using KinCare360 for my family and love it. If you sign up using my referral link, you'll get $50 off your first bill:\n\n${data.link}\n\nKinCare360 provides daily AI check-in calls, medication reminders, and a family dashboard for your aging parent.`
+      `Hi!\n\nI've been using KinCare360 for my family and love it. If you sign up using my referral link, you'll get $50 off your first bill:\n\n${data.link}\n\nKinCare360 provides daily AI check-in calls, family-approved routine reminders, and a family dashboard for your aging parent.`
     );
     window.open(`mailto:?subject=${subject}&body=${body}`, "_blank");
   }

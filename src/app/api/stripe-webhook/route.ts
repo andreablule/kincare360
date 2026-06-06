@@ -51,7 +51,7 @@ async function sendWelcomeEmail(to: string, customerName: string, trialEnd: stri
       secure: false,
       auth: {
         user: 'hello@kincare360.com',
-        pass: process.env.GOOGLE_APP_PASSWORD || 'rogvowrocfhdsasp',
+        pass: process.env.GOOGLE_APP_PASSWORD,
       },
     });
 
@@ -76,7 +76,7 @@ async function sendWelcomeEmail(to: string, customerName: string, trialEnd: stri
           </div>
 
           <div style="background: #f0faf9; border-left: 4px solid #0EA5A0; padding: 16px; margin: 20px 0; border-radius: 0 8px 8px 0;">
-            <p style="margin: 0; color: #0F2147;"><strong>💊 Medication reminders</strong> will be sent at the times you selected during setup.</p>
+            <p style="margin: 0; color: #0F2147;"><strong>Routine reminders</strong> will be sent at the times you selected during setup.</p>
           </div>
 
           <div style="background: #f0faf9; border-left: 4px solid #0EA5A0; padding: 16px; margin: 20px 0; border-radius: 0 8px 8px 0;">

@@ -4,14 +4,14 @@ export default function CTASection() {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <img
           src="/lily-avatar.png"
-          alt="Lily - KinCare360 AI Care Concierge"
+          alt="Lily - KinCare360 AI family check-in assistant"
           className="w-52 h-64 sm:w-60 sm:h-72 object-cover rounded-3xl shadow-2xl ring-4 ring-teal mx-auto mb-8"
           style={{ objectPosition: 'center 10%' }}
         />
         <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">
-          Start protecting your parent today.
+          Start daily family check-ins today.
         </h2>
-        <p className="text-lg font-medium text-teal mb-2">Lily is ready to care for your loved one.</p>
+        <p className="text-lg font-medium text-teal mb-2">Lily is ready to talk by phone — no app, smartphone, or computer needed.</p>
         <p className="text-white/70 text-lg mb-8">
           7-day free trial. No contracts. Cancel anytime.
         </p>

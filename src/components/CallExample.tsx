@@ -1,8 +1,8 @@
 const transcript = [
   { speaker: "Lily", text: "Good morning, Margaret! This is Lily from KinCare360. How are you feeling today?" },
   { speaker: "Margaret", text: "Oh hi Lily! I\u2019m doing okay, my knee is bothering me a bit." },
-  { speaker: "Lily", text: "I\u2019m sorry to hear that. Have you taken your morning medications yet?" },
-  { speaker: "Margaret", text: "Oh, I almost forgot! Let me take them now." },
+  { speaker: "Lily", text: "I\u2019m sorry to hear that. Is there anything you would like your family to know today?" },
+  { speaker: "Margaret", text: "Please let them know I may need help with groceries this week." },
   { speaker: "Lily", text: "Great! I\u2019ll check back in with you tomorrow. Take care, Margaret!" },
 ];
 
@@ -71,8 +71,8 @@ export default function CallExample() {
                 <span className="text-gray-600">Good</span>
               </div>
               <div className="bg-white rounded-lg px-3 py-2">
-                <span className="font-semibold text-navy">Medications:</span>{" "}
-                <span className="text-gray-600">Taken after reminder</span>
+                <span className="font-semibold text-navy">Routine:</span>{" "}
+                <span className="text-gray-600">Daily check-in completed</span>
               </div>
               <div className="bg-white rounded-lg px-3 py-2">
                 <span className="font-semibold text-navy">Concern:</span>{" "}

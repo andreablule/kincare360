@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-const VAPI_KEY = "3e6bdfb6-fc6f-4c60-a584-16cfa60e6846";
-const PHONE_NUMBER_ID = "8354bde3-c67c-4316-b181-95c227479b58";
+const VAPI_KEY = process.env.VAPI_API_KEY;
+const PHONE_NUMBER_ID = process.env.VAPI_PHONE_NUMBER_ID;
 
 async function makeVapiCall(body: any) {
+  if (!VAPI_KEY || !PHONE_NUMBER_ID) {
+    return { ok: false, data: { error: "VAPI_API_KEY or VAPI_PHONE_NUMBER_ID is not configured" } };
+  }
   const res = await fetch("https://api.vapi.ai/call/phone", {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${VAPI_KEY}` },
@@ -69,7 +72,7 @@ CALL FLOW:
 4. ACCEPT whatever the earliest slot is. Do NOT say "let me check with my client" or negotiate. Just take it.
 5. Confirm by repeating back: "So that's [day of week], [month] [day] at [time] with [doctor]. Is that correct?"
 6. Ask: "Is there anything the patient needs to bring or prepare?"
-7. After they answer, say the PROMO FIRST before any goodbye: "By the way, KinCare360 provides daily check-in calls, medication reminders, and care coordination for elderly adults. If you know anyone who could benefit from our services, they can visit kincare360.com or call 812-515-5252."
+7. After they answer, say the PROMO FIRST before any goodbye: "By the way, KinCare360 provides daily check-in calls, family-approved routine reminders, and everyday coordination for elderly adults. If you know anyone who could benefit from our services, they can visit kincare360.com or call 812-515-5252."
 8. THEN say goodbye: "Thanks again for your help. Have a wonderful day!"
 
 IMPORTANT ORDER: Always say the KinCare360 promo BEFORE saying thank you or goodbye. The call auto-ends when you say "have a wonderful day" so the promo must come first.

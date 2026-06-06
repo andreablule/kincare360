@@ -139,12 +139,12 @@ function PartnersContent() {
           <div className="mt-6 flex items-center justify-center gap-3 bg-teal/5 rounded-xl px-5 py-4">
             <img
               src="/lily-avatar.png"
-              alt="Lily - KinCare360 AI Care Concierge"
+              alt="Lily - KinCare360 AI family check-in assistant"
               className="w-14 h-14 rounded-full ring-2 ring-teal object-cover flex-shrink-0"
               style={{ objectPosition: 'center 15%' }}
             />
             <p className="text-sm text-navy font-medium text-left">
-              People you refer will talk to <span className="font-bold text-teal">Lily</span>, our AI care concierge — friendly, reliable, available 24/7.
+              People you refer can talk to <span className="font-bold text-teal">Lily</span>, our AI family check-in assistant — friendly, voice-first, and available by phone 24/7.
             </p>
           </div>
         </div>
@@ -209,21 +209,21 @@ function PartnersContent() {
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
               <h3 className="text-sm font-bold text-navy mb-3">📱 Ready to Post on Social Media</h3>
               <div className="bg-gray-50 rounded-xl p-4 text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
-{`🎉 I just partnered with KinCare360 — a service that provides daily wellness check-in calls, medication reminders, and care coordination for aging parents.
+{`🎉 I just partnered with KinCare360 — a voice-first service that provides daily family check-in calls, routine reminders, and non-medical coordination for aging parents.
 
 If you or someone you know is caring for an elderly loved one, check it out:
 ${result.link}
 
 ✅ 7-day free trial
 ✅ Daily check-in calls
-✅ Medication reminders
+✅ Routine reminders
 ✅ Family dashboard
 
 #ElderCare #AgingParents #KinCare360 #Caregiving`}
               </div>
               <button
                 onClick={() => {
-                  const text = `🎉 I just partnered with KinCare360 — a service that provides daily wellness check-in calls, medication reminders, and care coordination for aging parents.\n\nIf you or someone you know is caring for an elderly loved one, check it out:\n${result.link}\n\n✅ 7-day free trial\n✅ Daily check-in calls\n✅ Medication reminders\n✅ Family dashboard\n\n#ElderCare #AgingParents #KinCare360 #Caregiving`;
+                  const text = `🎉 I just partnered with KinCare360 — a voice-first service that provides daily family check-in calls, routine reminders, and non-medical coordination for aging parents.\n\nIf you or someone you know is caring for an elderly loved one, check it out:\n${result.link}\n\n✅ 7-day free trial\n✅ Daily check-in calls\n✅ Routine reminders\n✅ Family dashboard\n\n#ElderCare #AgingParents #KinCare360 #Caregiving`;
                   navigator.clipboard.writeText(text);
                   setCopied(true);
                   setTimeout(() => setCopied(false), 2000);

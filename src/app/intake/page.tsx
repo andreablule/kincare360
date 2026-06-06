@@ -325,7 +325,7 @@ export default function IntakePage() {
                     <>
                       <select className={inputClass} value={form.checkInTime} onChange={e => {
                         const newTime = e.target.value;
-                        // Prevent selecting a time already used by medication reminders
+                        // Prevent selecting a time already used by routine reminders
                         if (form.medicationReminders.some(r => r.time === newTime)) return;
                         update('checkInTime', newTime);
                       }}>
@@ -336,9 +336,9 @@ export default function IntakePage() {
                   )}
                 </div>
 
-                {/* Multiple Medication Reminders */}
+                {/* Multiple Routine Reminders */}
                 <div>
-                  <label className={labelClass}>Medication Reminder Times</label>
+                  <label className={labelClass}>Routine Reminder Times</label>
                   <label className="flex items-center gap-2 mb-2 text-sm text-gray-600 cursor-pointer">
                     <input type="checkbox" checked={form.medicationReminders.length === 0} onChange={e => {
                       if (e.target.checked) {
@@ -347,7 +347,7 @@ export default function IntakePage() {
                         setForm(prev => ({ ...prev, medicationReminders: [{ time: "08:00" }] }));
                       }
                     }} className="rounded border-gray-300 text-teal focus:ring-teal" />
-                    No medication reminders
+                    No routine reminders
                   </label>
                   {form.medicationReminders.length > 0 && (
                     <>
@@ -570,7 +570,7 @@ export default function IntakePage() {
               <div>
                 <h3 className="text-sm font-semibold text-navy mb-3">Services Requested</h3>
                 <div className="space-y-2">
-                  {["Daily Wellness Check-In Calls", "Medication Reminders", "Appointment Scheduling & Coordination", "Prescription Refill Requests", "Family Dashboard Updates", "Emergency Contact Notification"].map(service => (
+                  {["Daily Family Check-In Calls", "Family-Approved Routine Reminders", "Appointment & Everyday Coordination", "Prescription Refill Coordination", "Family Dashboard Updates", "Urgent Safety Concern Notifications"].map(service => (
                     <label key={service} className="flex items-center gap-3 cursor-pointer p-3 rounded-xl hover:bg-gray-50 border border-gray-100">
                       <input type="checkbox" checked={form.services.includes(service)} onChange={() => toggleService(service)} className="w-4 h-4 accent-teal" />
                       <span className="text-sm text-navy">{service}</span>
@@ -589,7 +589,7 @@ export default function IntakePage() {
                 <button onClick={() => {
                   setStep3Error("");
                   if (!form.familyContacts[0]?.name) { setStep3Error("At least one family contact name is required."); return; }
-                  if (!form.familyContacts[0]?.phone) { setStep3Error("Emergency contact phone number is required."); return; }
+                  if (!form.familyContacts[0]?.phone) { setStep3Error("Primary family or safety contact phone number is required."); return; }
                   setStep(3);
                 }}
                   className="flex-1 bg-teal text-white py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors">
@@ -610,7 +610,7 @@ export default function IntakePage() {
                 <div className="flex justify-between"><span className="text-gray-500">Phone</span><span className="font-medium text-navy">{form.phone}</span></div>
                 {form.email && <div className="flex justify-between"><span className="text-gray-500">Email</span><span className="font-medium text-navy">{form.email}</span></div>}
                 <div className="flex justify-between"><span className="text-gray-500">Check-In Time</span><span className="font-medium text-navy">{form.checkInTime} ({form.checkInDays.join(', ')})</span></div>
-                <div className="flex justify-between"><span className="text-gray-500">Med Reminders</span><span className="font-medium text-navy">{form.medicationReminders.map(r => timeOptions.find(t => t.value === r.time)?.label).join(', ')}</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">Routine Reminders</span><span className="font-medium text-navy">{form.medicationReminders.map(r => timeOptions.find(t => t.value === r.time)?.label).join(', ')}</span></div>
                 <div className="flex justify-between"><span className="text-gray-500">Family Contacts</span><span className="font-medium text-navy">{form.familyContacts.filter(c => c.name).length}</span></div>
                 {form.primaryDoctor && <div className="flex justify-between"><span className="text-gray-500">Primary Doctor</span><span className="font-medium text-navy">{form.primaryDoctor}</span></div>}
                 {form.additionalDoctors.filter(d => d.name).map((doc, i) => (
@@ -630,7 +630,7 @@ export default function IntakePage() {
                 <h3 className="text-sm font-semibold text-navy mb-3">Choose Your Plan</h3>
                 <div className="grid gap-3">
                   {[
-                    { id: 'individual', name: 'Individual', price: '$99/mo', desc: 'Daily check-ins, medication reminders, appointment scheduling, find & connect to any service, emergency alerts, family dashboard, 24/7 access to Lily' },
+                    { id: 'individual', name: 'Individual', price: '$99/mo', desc: 'Daily check-ins, routine reminders, everyday coordination, local service connections, family concern notifications, family dashboard, and 24/7 access to Lily by phone — no app required' },
                     { id: 'family', name: 'Family (2 Parents)', price: '$149/mo', desc: 'Everything included — for 2 parents. Each gets their own personalized calls and reminders.' },
                   ].map(plan => (
                     <label key={plan.id} className={`flex items-center gap-4 cursor-pointer p-4 rounded-xl border-2 transition-colors ${form.selectedPlan === plan.id ? 'border-teal bg-teal/5' : 'border-gray-200 hover:border-teal/50'}`}>
@@ -650,7 +650,7 @@ export default function IntakePage() {
               <label className="flex items-start gap-3 cursor-pointer p-4 rounded-xl border-2 border-gray-200 hover:border-teal transition-colors bg-blue-50/30">
                 <input type="checkbox" checked={agreedToSms} onChange={e => setAgreedToSms(e.target.checked)} className="w-5 h-5 mt-0.5 accent-teal flex-shrink-0" />
                 <span className="text-xs text-gray-600">
-                  <strong className="text-navy">SMS Consent:</strong> By checking this box, I consent to receive SMS text messages from KinCare360 at the phone number provided above. Messages may include daily wellness check-in confirmations, medication reminders, appointment notifications, prescription refill alerts, and emergency family alerts. Message frequency varies. Message and data rates may apply. Reply <strong>STOP</strong> to unsubscribe at any time. Reply <strong>HELP</strong> for assistance. View our <a href="/privacy" target="_blank" className="text-teal underline">Privacy Policy</a> and <a href="/terms" target="_blank" className="text-teal underline">Terms of Service</a>.
+                  <strong className="text-navy">SMS Consent:</strong> By checking this box, I consent to receive SMS text messages from KinCare360 at the phone number provided above. Messages may include daily check-in confirmations, family-approved routine reminders, appointment notifications, family updates, family concern notifications, and urgent safety concern notices. Message frequency varies. Message and data rates may apply. Reply <strong>STOP</strong> to unsubscribe at any time. Reply <strong>HELP</strong> for assistance. KinCare360 is not an emergency, crisis, medical, or in-home care service. View our <a href="/privacy" target="_blank" className="text-teal underline">Privacy Policy</a> and <a href="/terms" target="_blank" className="text-teal underline">Terms of Service</a>.
                 </span>
               </label>
 
@@ -658,7 +658,7 @@ export default function IntakePage() {
               <label className="flex items-start gap-3 cursor-pointer p-4 rounded-xl border-2 border-gray-200 hover:border-teal transition-colors">
                 <input type="checkbox" checked={agreedToTerms} onChange={e => setAgreedToTerms(e.target.checked)} className="w-5 h-5 mt-0.5 accent-teal flex-shrink-0" />
                 <span className="text-xs text-gray-600">
-                  I agree to KinCare360&apos;s <a href="/terms" target="_blank" className="text-teal underline">Terms of Service</a> and <a href="/privacy" target="_blank" className="text-teal underline">Privacy Policy</a>. I understand KinCare360 is a non-medical care coordination service, not a substitute for emergency care (call 911).
+                  I agree to KinCare360&apos;s <a href="/terms" target="_blank" className="text-teal underline">Terms of Service</a> and <a href="/privacy" target="_blank" className="text-teal underline">Privacy Policy</a>. I understand KinCare360 is a non-medical care coordination service, not a substitute for emergency care, crisis counseling, suicide prevention, medical care, or in-home care. If a caller shares an urgent safety concern, KinCare360 may notify listed family/safety contacts and encourage 911, 988, Poison Control, or other appropriate support.
                 </span>
               </label>
 

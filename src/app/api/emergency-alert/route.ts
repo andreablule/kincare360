@@ -2,12 +2,23 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import nodemailer from "nodemailer";
 
-const twilioSid = process.env.TWILIO_ACCOUNT_SID!;
-const twilioToken = process.env.TWILIO_AUTH_TOKEN!;
-const twilioPhone = process.env.TWILIO_PHONE_NUMBER!;
-const alertPhone = process.env.ALERT_PHONE_NUMBER!;
+const twilioSid = process.env.TWILIO_ACCOUNT_SID;
+const twilioToken = process.env.TWILIO_AUTH_TOKEN;
+const twilioPhone = process.env.TWILIO_PHONE_NUMBER;
+const alertPhone = process.env.ALERT_PHONE_NUMBER;
+const vapiApiKey = process.env.VAPI_API_KEY;
+const vapiPhoneNumberId = process.env.VAPI_PHONE_NUMBER_ID;
+const vapiAlertAssistantId = process.env.VAPI_ALERT_ASSISTANT_ID;
+
+function digits(value = "") {
+  return value.replace(/\D/g, "").slice(-10);
+}
 
 async function sendSMS(to: string, body: string) {
+  if (!twilioSid || !twilioToken || !twilioPhone) {
+    console.warn("[emergency-alert] SMS skipped; missing Twilio configuration.");
+    return;
+  }
   const auth = Buffer.from(`${twilioSid}:${twilioToken}`).toString("base64");
   await fetch(`https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`, {
     method: "POST",
@@ -17,14 +28,41 @@ async function sendSMS(to: string, body: string) {
 }
 
 async function sendEmail(to: string, subject: string, html: string) {
+  if (!process.env.GOOGLE_APP_PASSWORD) {
+    console.warn("[emergency-alert] Email skipped; missing GOOGLE_APP_PASSWORD.");
+    return;
+  }
   const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com", port: 587, secure: false,
-    auth: { user: "hello@kincare360.com", pass: process.env.GOOGLE_APP_PASSWORD || "rogvowrocfhdsasp" },
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
+    auth: { user: "hello@kincare360.com", pass: process.env.GOOGLE_APP_PASSWORD },
   });
-  await transporter.sendMail({ from: '"KinCare360 Alert" <hello@kincare360.com>', to, subject, html });
+  await transporter.sendMail({ from: '"KinCare360 Safety" <hello@kincare360.com>', to, subject, html });
 }
 
-// VAPI tool endpoint — Lily calls this when a client reports an emergency
+async function placeFamilySafetyCall(to: string, firstMessage: string) {
+  if (!vapiApiKey || !vapiPhoneNumberId || !vapiAlertAssistantId) {
+    console.warn("[emergency-alert] VAPI safety call skipped; missing configuration.");
+    return;
+  }
+  await fetch("https://api.vapi.ai/call/phone", {
+    method: "POST",
+    headers: { "Authorization": `Bearer ${vapiApiKey}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      phoneNumberId: vapiPhoneNumberId,
+      customer: { number: to },
+      assistantId: vapiAlertAssistantId,
+      assistantOverrides: {
+        firstMessage,
+        maxDurationSeconds: 60,
+      },
+    }),
+  });
+}
+
+// VAPI tool endpoint — kept for compatibility when Lily routes a caller-reported urgent situation here.
+// Preferred mental-health/self-harm route is /api/crisis-alert.
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -39,9 +77,8 @@ export async function POST(req: NextRequest) {
     if (!args.emergencyDescription) args = body;
 
     const { emergencyDescription } = args;
-    const callerPhone = (body.message?.call?.customer?.number || "").replace(/\D/g, "").slice(-10);
+    const callerPhone = digits(body.message?.call?.customer?.number || "");
 
-    // Look up patient
     let patient: any = null;
     if (callerPhone) {
       patient = await prisma.patient.findFirst({
@@ -52,82 +89,84 @@ export async function POST(req: NextRequest) {
 
     if (!patient) {
       return NextResponse.json({
-        results: [{ toolCallId: toolCall?.id || "", result: "I'm alerting emergency contacts now. Please stay on the line." }]
+        results: [{ toolCallId: toolCall?.id || "", result: "I'm trying to notify a safety contact now. KinCare360 is not an emergency service, so please call 911 now if you may be in immediate danger." }]
       });
     }
 
     const patientName = `${patient.firstName} ${patient.lastName}`;
-    const description = emergencyDescription || "reported an emergency";
+    const description = emergencyDescription || "shared an urgent safety concern";
     const now = new Date().toLocaleString("en-US", { timeZone: "America/New_York" });
 
-    const smsMsg = `🚨 EMERGENCY ALERT — KinCare360\n\n${patientName} ${description}.\n\nTime: ${now}\n\nPlease check on them immediately. Call 911 if needed.\n\n— KinCare360 Emergency Alert`;
+    const smsMsg = `Urgent KinCare360 safety concern\n\n${patientName} ${description}.\n\nTime: ${now}\n\nPlease check on them immediately. If there is immediate danger, call 911. KinCare360 is not an emergency response service.\n\n— KinCare360 Safety Notice`;
 
     const emailHtml = `
       <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px;">
-        <div style="background:#ef4444;color:white;padding:16px;border-radius:8px;margin-bottom:20px;">
-          <h1 style="margin:0;font-size:24px;">🚨 Emergency Alert</h1>
+        <div style="background:#b91c1c;color:white;padding:16px;border-radius:8px;margin-bottom:20px;">
+          <h1 style="margin:0;font-size:24px;">Urgent KinCare360 Safety Concern</h1>
         </div>
         <p style="font-size:18px;color:#333;"><strong>${patientName}</strong> ${description}.</p>
         <p style="color:#666;">Time: ${now}</p>
-        <div style="background:#fef2f2;border:2px solid #ef4444;border-radius:8px;padding:16px;margin:20px 0;">
-          <p style="margin:0;color:#b91c1c;font-weight:bold;">Please check on them immediately. Call 911 if needed.</p>
+        <div style="background:#fef2f2;border:2px solid #b91c1c;border-radius:8px;padding:16px;margin:20px 0;">
+          <p style="margin:0;color:#7f1d1d;font-weight:bold;">Please check on them immediately. If there is immediate danger, call 911.</p>
         </div>
-        <p style="color:#999;font-size:12px;">— KinCare360 Automated Emergency Alert</p>
+        <p style="color:#475569;font-size:14px;line-height:1.7;">KinCare360 is not an emergency response, crisis counseling, medical, or in-home care service. This notice means the caller shared an urgent concern during a Lily call.</p>
+        <p style="color:#999;font-size:12px;">— KinCare360 Automated Safety Notice</p>
       </div>`;
 
-    // Send alerts to all family members via SMS + email + VAPI call
     let alerted = 0;
     for (const member of patient.familyMembers) {
       if (member.phone) {
-        const digits = member.phone.replace(/\D/g, "").slice(-10);
-        if (digits.length === 10) {
+        const memberDigits = digits(member.phone);
+        if (memberDigits.length === 10) {
+          const formattedPhone = `+1${memberDigits}`;
           if (member.smsConsentStatus === 'opted_in' && ['text', 'both'].includes(member.alertMode)) {
-            try { await sendSMS(`+1${digits}`, smsMsg); } catch (e) { console.error(`[emergency-alert] SMS failed for ${member.name}:`, e); }
+            try { await sendSMS(formattedPhone, smsMsg); alerted++; } catch (e) { console.error(`[emergency-alert] SMS failed for ${member.name}:`, e); }
           }
-          // Also make an emergency VAPI call to the family member
           try {
-            await fetch("https://api.vapi.ai/call/phone", {
-              method: "POST",
-              headers: { "Authorization": "Bearer 3e6bdfb6-fc6f-4c60-a584-16cfa60e6846", "Content-Type": "application/json" },
-              body: JSON.stringify({
-                phoneNumberId: "8354bde3-c67c-4316-b181-95c227479b58",
-                customer: { number: `+1${digits}` },
-                assistantId: "8dc06b99-9533-4b28-b379-7ed4f07768aa",
-                assistantOverrides: {
-                  firstMessage: `This is an emergency alert from KinCare360. ${patientName} ${description}. Please check on them immediately or call nine one one. This is an automated emergency notification.`,
-                  maxDurationSeconds: 60
-                }
-              })
-            });
-            console.log(`[emergency-alert] Emergency call placed to ${member.name} at +1${digits}`);
-          } catch (e) { console.error(`[emergency-alert] VAPI call failed for ${member.name}:`, e); }
-          alerted++;
+            await placeFamilySafetyCall(
+              formattedPhone,
+              `This is an urgent KinCare360 safety concern notice. ${patientName} ${description}. Please check on them immediately. If there is immediate danger, call nine one one. KinCare360 is not an emergency service.`
+            );
+            alerted++;
+          } catch (e) { console.error(`[emergency-alert] VAPI safety call failed for ${member.name}:`, e); }
         }
       }
-      // Always send email
       if (member.email) {
-        try { await sendEmail(member.email, `🚨 Emergency Alert: ${patientName}`, emailHtml); } catch (e) { console.error(`[emergency-alert] Email failed for ${member.name}:`, e); }
+        try { await sendEmail(member.email, `Urgent KinCare360 safety concern: ${patientName}`, emailHtml); alerted++; } catch (e) { console.error(`[emergency-alert] Email failed for ${member.name}:`, e); }
       }
     }
 
-    // Always alert Andrea (the owner) — SMS + call
-    const ownerDigits = alertPhone.replace(/\D/g, "").slice(-10);
-    try { await sendSMS(`+1${ownerDigits}`, smsMsg); } catch (e) { console.error("[emergency-alert] Owner SMS failed:", e); }
-    alerted++;
+    if (alertPhone) {
+      const ownerDigits = digits(alertPhone);
+      if (ownerDigits.length === 10) {
+        try { await sendSMS(`+1${ownerDigits}`, smsMsg); alerted++; } catch (e) { console.error("[emergency-alert] Owner SMS failed:", e); }
+      }
+    }
 
-    console.log(`[emergency-alert] Sent to ${alerted} contacts for ${patientName}: ${description}`);
+    await prisma.callLog.create({
+      data: {
+        patientId: patient.id,
+        callDate: new Date(),
+        callType: "urgent_safety",
+        summary: `Urgent safety concern: ${description}`,
+        concerns: description,
+        urgent: true,
+      },
+    });
+
+    console.log(`[emergency-alert] Urgent safety notice attempted via ${alerted} channel(s) for ${patientName}: ${description}`);
 
     return NextResponse.json({
       results: [{
         toolCallId: toolCall?.id || "",
-        result: `I've sent emergency alerts to ${patient.familyMembers.length} family member${patient.familyMembers.length !== 1 ? "s" : ""}. They're being notified right now. Please stay on the line and call nine one one if you need immediate help.`
+        result: `I've notified your family or safety contact right away. KinCare360 is not an emergency response service, so please call nine one one now if you may be in immediate danger.`
       }]
     });
 
   } catch (error) {
     console.error("[emergency-alert] Error:", error);
     return NextResponse.json({
-      results: [{ toolCallId: "", result: "I'm alerting your family now. Please stay on the line and call nine one one if needed." }]
+      results: [{ toolCallId: "", result: "I'm trying to notify your family now. Please call nine one one now if you may be in immediate danger." }]
     });
   }
 }

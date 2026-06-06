@@ -193,7 +193,7 @@ export default function ProfilePage() {
             <p className="text-xs text-gray-400 mt-1">Check-in and medication times cannot be the same hour</p>
           </div>
           <div>
-            <label className="block text-sm font-medium text-navy mb-1">Medication Reminder Times</label>
+            <label className="block text-sm font-medium text-navy mb-1">Routine Reminder Times</label>
             <label className="flex items-center gap-2 mb-2 text-sm text-gray-600 cursor-pointer">
               <input type="checkbox" checked={medTimes.length === 0 || (medTimes.length === 1 && medTimes[0] === "NONE")} onChange={e => {
                 if (e.target.checked) {
@@ -202,7 +202,7 @@ export default function ProfilePage() {
                   setMedTimes([""]);
                 }
               }} className="rounded border-gray-300 text-teal focus:ring-teal" />
-              No medication reminders
+              No routine reminders
             </label>
             {!(medTimes.length === 0 || (medTimes.length === 1 && medTimes[0] === "NONE")) && (
               <>

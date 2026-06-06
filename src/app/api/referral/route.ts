@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
           });
 
           // Send ready-to-post social media message
-          const socialPost = `🎉 I just partnered with KinCare360 — a service that provides daily wellness check-in calls, medication reminders, and care coordination for aging parents.\n\nIf you or someone you know is caring for an elderly loved one, check it out:\n${link}\n\n✅ 7-day free trial\n✅ Daily check-in calls\n✅ Medication reminders\n✅ Family dashboard\n\n#ElderCare #AgingParents #KinCare360 #Caregiving`;
+          const socialPost = `🎉 I just partnered with KinCare360 — a service that provides daily family check-in calls, family-approved routine reminders, and everyday coordination for aging parents.\n\nIf you or someone you know is caring for an elderly loved one, check it out:\n${link}\n\n✅ 7-day free trial\n✅ Daily check-in calls\n✅ Routine reminder calls\n✅ Family dashboard\n\n#ElderCare #AgingParents #KinCare360 #Caregiving`;
 
           await fetch(`https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`, {
             method: "POST",
@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
           secure: false,
           auth: {
             user: "hello@kincare360.com",
-            pass: process.env.GOOGLE_APP_PASSWORD || "rogvowrocfhdsasp",
+            pass: process.env.GOOGLE_APP_PASSWORD,
           },
         });
 
@@ -160,14 +160,14 @@ export async function POST(req: NextRequest) {
 
               <h2 style="color: #0F2147; font-size: 18px; margin-top: 30px;">📱 Ready-to-Post on Social Media</h2>
               <p style="color: #555; font-size: 14px;">Copy and paste this to Facebook, Instagram, or anywhere:</p>
-              <div style="background: #f5f5f5; padding: 16px; border-radius: 8px; margin: 12px 0; font-size: 14px; color: #333; line-height: 1.6; white-space: pre-wrap;">🎉 I just partnered with KinCare360 — a service that provides daily wellness check-in calls, medication reminders, and care coordination for aging parents.
+              <div style="background: #f5f5f5; padding: 16px; border-radius: 8px; margin: 12px 0; font-size: 14px; color: #333; line-height: 1.6; white-space: pre-wrap;">🎉 I just partnered with KinCare360 — a service that provides daily family check-in calls, family-approved routine reminders, and everyday coordination for aging parents.
 
 If you or someone you know is caring for an elderly loved one, check it out:
 ${link}
 
 ✅ 7-day free trial
 ✅ Daily check-in calls
-✅ Medication reminders
+✅ Routine reminder calls
 ✅ Family dashboard
 
 #ElderCare #AgingParents #KinCare360 #Caregiving</div>

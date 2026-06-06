@@ -7,8 +7,8 @@ Update the metadata export with proper SEO tags:
 ```
 export const metadata = {
   title: "KinCare360 — AI-Powered Daily Check-In Calls for Aging Parents",
-  description: "KinCare360's AI care assistant Lily calls your aging parent every day — checking in, reminding medications, and alerting family if something's wrong. Starting at $50/month. 7-day free trial.",
-  keywords: "elderly care, aging parents, daily check-in calls, medication reminders, senior care, AI care assistant, elder care service, remote patient monitoring, caregiver support, family dashboard",
+  description: "KinCare360's AI family check-in assistant Lily calls your aging parent by regular phone — daily check-ins, family-approved routine reminders, and family updates. Starting at $50/month. 7-day free trial.",
+  keywords: "elderly care, aging parents, daily check-in calls, routine reminders, senior care, AI family check-in assistant, elder care coordination, caregiver support, family dashboard",
   openGraph: {
     title: "KinCare360 — Daily AI Check-In Calls for Your Aging Parent",
     description: "Lily calls your loved one every day to check in, remind medications, and alert you if something's wrong. Plans from $50/mo. Free 7-day trial.",
@@ -20,7 +20,7 @@ export const metadata = {
   twitter: {
     card: "summary_large_image",
     title: "KinCare360 — Daily AI Check-In Calls for Aging Parents",
-    description: "AI care assistant Lily calls your parent daily. Medication reminders. Emergency alerts. Family dashboard. From $50/mo.",
+    description: "AI family check-in assistant Lily calls your parent daily. Routine reminders. Family concern notifications. Family dashboard. From $50/mo.",
   },
   alternates: {
     canonical: "https://kincare360.com",
@@ -83,7 +83,7 @@ In src/app/page.tsx, add a script tag with JSON-LD structured data at the top of
       "@context": "https://schema.org",
       "@type": "HealthAndBeautyBusiness",
       "name": "KinCare360",
-      "description": "AI-powered daily check-in calls, medication reminders, and care coordination for aging parents.",
+      "description": "AI-powered daily check-in calls, family-approved routine reminders, and everyday coordination for aging parents.",
       "url": "https://kincare360.com",
       "telephone": "+18125155252",
       "email": "hello@kincare360.com",

@@ -182,7 +182,7 @@ export default function FamilyPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-navy">Family Members</h1>
+          <h1 className="text-2xl font-bold text-navy">Family / Safety Contacts</h1>
           {isOwner && <button type="button" onClick={() => navigator.clipboard?.writeText(FAMILY_CONSENT_URL)} className="mt-2 text-xs font-semibold bg-teal/10 border border-teal/20 text-teal px-3 py-1.5 rounded-lg hover:bg-teal/20">Copy family SMS consent link</button>}
         </div>
         {isOwner && (
@@ -224,7 +224,7 @@ export default function FamilyPage() {
             </svg>
           </div>
           <p className="text-gray-500 font-medium mb-1">No family members added.</p>
-          <p className="text-gray-400 text-sm mb-4">Add family members to receive updates and alerts about your loved one.</p>
+          <p className="text-gray-400 text-sm mb-4">Add family or safety contacts to receive daily updates, family concern notifications, and urgent safety concern notices about your loved one.</p>
           {isOwner && (
             <button onClick={addMember} className="bg-teal text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-teal-dark">
               Add Family Member
@@ -301,7 +301,7 @@ export default function FamilyPage() {
                     <option value="email">📧 Email only</option>
                     <option value="text">📱 Text only</option>
                     <option value="both">📧📱 Email + Text</option>
-                    <option value="none">🔕 None (emergencies only)</option>
+                    <option value="none">🔕 None (urgent safety notices only)</option>
                   </select>
                 </div>
 
@@ -346,7 +346,7 @@ export default function FamilyPage() {
                   </button>
                 </div>
               </div>
-              <p className="text-xs text-gray-400">🚨 Emergency alerts are always on. Text alerts require the family member to consent at <a href="/family-consent" target="_blank" className="text-teal underline">kincare360.com/family-consent</a>.</p>
+              <p className="text-xs text-gray-400">Urgent safety concern notices are always enabled for listed safety contacts. Text notices require the family/safety contact to consent at <a href="/family-consent" target="_blank" className="text-teal underline">kincare360.com/family-consent</a>. KinCare360 is not an emergency or crisis service.</p>
               {member.id && member.smsConsentStatus !== "opted_in" && <button type="button" onClick={() => navigator.clipboard?.writeText(FAMILY_CONSENT_URL)} className="text-xs font-semibold bg-white border border-amber-200 text-amber-700 px-3 py-1.5 rounded-lg hover:bg-amber-50">Copy consent link for this family member</button>}
             </div>
 

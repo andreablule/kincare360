@@ -97,7 +97,7 @@ export default async function DashboardPage() {
           </div>
           <div className="flex-1">
             <h2 className="text-lg font-bold text-navy">Complete your care profile to get started</h2>
-            <p className="text-sm text-gray-500 mt-1">Set up your loved one&apos;s information so Lily can begin daily check-ins and medication reminders.</p>
+            <p className="text-sm text-gray-500 mt-1">Set up your loved one&apos;s information so Lily can begin daily check-ins and family-approved routine reminders.</p>
           </div>
           <Link
             href="/intake"
@@ -243,9 +243,9 @@ function PatientCard({ data, label }: {
           <div className="text-sm text-gray-500 mt-1">Daily wellness call with Lily</div>
         </div>
 
-        {/* Medication reminders */}
+        {/* Routine reminders */}
         <div className="bg-white rounded-2xl border border-gray-100 p-5">
-          <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Medication Reminders</div>
+          <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Routine Reminders</div>
           {patient.medicationReminderTime ? (
             <div className="flex flex-wrap gap-1.5 mt-1">
               {patient.medicationReminderTime.split(',').map((t: string, i: number) => (

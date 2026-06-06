@@ -25,7 +25,7 @@ export default function Home() {
             "@context": "https://schema.org",
             "@type": "HealthAndBeautyBusiness",
             "name": "KinCare360",
-            "description": "AI-powered daily check-in calls, medication reminders, and care coordination for aging parents.",
+            "description": "AI-powered phone conversations, daily check-in calls, routine reminders, and family updates for aging parents — no smartphone, computer, or app required.",
             "url": "https://kincare360.com",
             "telephone": "+18125155252",
             "email": "hello@kincare360.com",

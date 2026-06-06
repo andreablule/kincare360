@@ -38,11 +38,11 @@ export default function PrivacyPage() {
           <h2 className="text-xl font-semibold text-navy mb-2">3. SMS Communications</h2>
           <p>Account owners may consent during signup/intake. Family members provide their own consent on the public Family SMS Consent page at <a href="https://www.kincare360.com/family-consent" className="text-teal underline">https://www.kincare360.com/family-consent</a> after the account owner adds them to the family profile. By submitting the applicable consent form and providing your phone number, you expressly consent to receive recurring automated SMS messages from KinCare360. These messages include:</p>
           <ul className="list-disc list-inside mt-2 space-y-1">
-            <li>Daily wellness check-in notifications</li>
-            <li>Medication reminder alerts</li>
-            <li>Appointment scheduling updates</li>
+            <li>Daily family check-in notifications</li>
+            <li>Family-approved routine reminder notifications</li>
+            <li>Appointment and everyday coordination updates</li>
             <li>Service and account notifications</li>
-            <li>Family care alerts and daily summaries for loved ones you are connected to</li>
+            <li>Family concern notifications, urgent safety concern notices, and daily summaries for loved ones you are connected to</li>
           </ul>
           <p className="mt-2">Message frequency varies (up to 5 messages per day). Message and data rates may apply. Your consent is not a condition of purchase.</p>
           <p className="mt-2"><strong>To opt out:</strong> Reply STOP to any message at any time. You will receive a confirmation and no further messages.</p>
@@ -56,32 +56,38 @@ export default function PrivacyPage() {
         </div>
 
         <div>
-          <h2 className="text-xl font-semibold text-navy mb-2">5. Data Security</h2>
+          <h2 className="text-xl font-semibold text-navy mb-2">5. Urgent Safety Concern Notifications</h2>
+          <p>KinCare360 is not an emergency, crisis counseling, suicide-prevention, medical, or in-home care service. However, if a caller shares information suggesting possible immediate harm, self-harm, abuse, neglect, severe confusion, exploitation, or another urgent safety concern, KinCare360 may use call information and profile details to notify listed family/safety contacts and encourage the caller to contact 911, 988, Poison Control, or another appropriate human support resource.</p>
+          <p className="mt-2">These notifications do not mean Lily verified an emergency or that KinCare360 can confirm what happened. They mean the caller shared something concerning and a family/safety contact should follow up.</p>
+        </div>
+
+        <div>
+          <h2 className="text-xl font-semibold text-navy mb-2">6. Data Security</h2>
           <p>We implement industry-standard security measures to protect your information. However, no method of transmission over the internet is 100% secure. We encourage you to use strong passwords and contact us immediately if you suspect unauthorized access.</p>
         </div>
 
         <div>
-          <h2 className="text-xl font-semibold text-navy mb-2">6. Your Rights</h2>
+          <h2 className="text-xl font-semibold text-navy mb-2">7. Your Rights</h2>
           <p>You have the right to access, correct, or delete your personal information. To exercise these rights, contact us at <a href="mailto:hello@kincare360.com" className="text-teal underline">hello@kincare360.com</a>.</p>
         </div>
 
         <div>
-          <h2 className="text-xl font-semibold text-navy mb-2">7. Cookies</h2>
+          <h2 className="text-xl font-semibold text-navy mb-2">8. Cookies</h2>
           <p>Our website may use cookies to improve your browsing experience. You can disable cookies through your browser settings, though some features may not function properly.</p>
         </div>
 
         <div>
-          <h2 className="text-xl font-semibold text-navy mb-2">8. Children's Privacy</h2>
+          <h2 className="text-xl font-semibold text-navy mb-2">9. Children&apos;s Privacy</h2>
           <p>Our services are not directed to children under 13. We do not knowingly collect personal information from children.</p>
         </div>
 
         <div>
-          <h2 className="text-xl font-semibold text-navy mb-2">9. Changes to This Policy</h2>
+          <h2 className="text-xl font-semibold text-navy mb-2">10. Changes to This Policy</h2>
           <p>We may update this Privacy Policy from time to time. We will notify you of changes by updating the effective date and, for significant changes, via email.</p>
         </div>
 
         <div>
-          <h2 className="text-xl font-semibold text-navy mb-2">10. Contact Us</h2>
+          <h2 className="text-xl font-semibold text-navy mb-2">11. Contact Us</h2>
           <p>Questions about this Privacy Policy? Contact us at <a href="mailto:hello@kincare360.com" className="text-teal underline">hello@kincare360.com</a></p>
         </div>
       </section>

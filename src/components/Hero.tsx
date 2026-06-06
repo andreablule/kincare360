@@ -5,13 +5,13 @@ export default function Hero() {
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="animate-fade-in">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-navy leading-tight">
-              Daily check-in calls, reminders, and care coordination for your aging parent.
+              A voice assistant for aging parents — no app, smartphone, or computer needed.
             </h1>
             <p className="mt-4 text-xl text-gray-600 leading-relaxed max-w-lg">
-              Lily, our AI concierge, calls your loved one every day &mdash; and keeps your whole family informed.
+              Lily lets your loved one simply talk by phone — for daily check-ins, everyday questions, routine reminders, and family updates.
             </p>
             <p className="mt-3 text-lg text-gray-500 leading-relaxed max-w-lg">
-              Automated care coordination. Total peace of mind. Starting at $99/month.
+              Like a web browser or app they can use with their voice. Starting at $99/month.
             </p>
             <p className="mt-4 text-lg font-medium text-navy/80 italic max-w-lg">
               The call you don&apos;t make shouldn&apos;t be the one you regret.
@@ -22,7 +22,7 @@ export default function Hero() {
                 href="/register"
                 className="bg-teal text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-teal-dark transition-colors shadow-lg"
               >
-                Start Protecting Your Parent Today &rarr;
+                Start Daily Family Check-Ins &rarr;
               </a>
               <a
                 href="#how-it-works"
@@ -31,13 +31,13 @@ export default function Hero() {
                 See How It Works
               </a>
             </div>
-            <p className="mt-3 text-sm text-gray-400">Free 7-day trial · Setup in 5 minutes · Cancel anytime</p>
+            <p className="mt-3 text-sm text-gray-400">Free 7-day trial · Works by regular phone call · Cancel anytime</p>
 
             {/* Lily mobile - visible only on small screens */}
             <div className="mt-8 md:hidden flex justify-center">
               <img
                 src="/lily-hero.png"
-                alt="Lily - KinCare360 AI Care Concierge"
+                alt="Lily - KinCare360 AI family check-in assistant"
                 className="w-64 h-80 object-cover rounded-3xl shadow-xl"
                 style={{ objectPosition: 'center 10%' }}
               />
@@ -49,7 +49,7 @@ export default function Hero() {
             <div className="relative w-full max-w-md mx-auto">
               <img
                 src="/lily-hero.png"
-                alt="Lily - KinCare360 AI Care Concierge"
+                alt="Lily - KinCare360 AI family check-in assistant"
                 className="w-full h-[600px] object-cover rounded-3xl shadow-2xl"
                 style={{ objectPosition: 'center 10%' }}
               />

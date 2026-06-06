@@ -98,7 +98,7 @@ async function sendPlanChangeEmail(to: string, customerName: string, options: {
       secure: false,
       auth: {
         user: "hello@kincare360.com",
-        pass: process.env.GOOGLE_APP_PASSWORD || "rogvowrocfhdsasp",
+        pass: process.env.GOOGLE_APP_PASSWORD,
       },
     });
 
