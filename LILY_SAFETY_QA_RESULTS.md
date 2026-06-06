@@ -64,4 +64,4 @@ Finished TypeScript
 
 ## Remaining caution
 
-This was a local/static controlled QA pass. Before enabling live crisis alerts in production, run a supervised live dry run using a test patient/test family contact and explicit Andrea approval, with Twilio/VAPI configured for test-safe recipients only.
+This was a local/static controlled QA pass. Before enabling live crisis alerts in production, run a supervised live dry run using a test patient/test family contact and explicit Andrea approval, with Telnyx/VAPI configured for test-safe recipients only.

@@ -27,7 +27,7 @@ export default function PrivacyPage() {
           <p>We use the information we collect to:</p>
           <ul className="list-disc list-inside mt-2 space-y-1">
             <li>Provide, maintain, and improve our services</li>
-            <li>Send appointment reminders and care updates via SMS and email</li>
+            <li>Send appointment, routine reminder, family update, and account messages via SMS and email</li>
             <li>Process payments and manage your subscription</li>
             <li>Communicate with you about your account and our services</li>
             <li>Comply with legal obligations</li>
@@ -52,7 +52,7 @@ export default function PrivacyPage() {
 
         <div>
           <h2 className="text-xl font-semibold text-navy mb-2">4. Information Sharing</h2>
-          <p>We do not sell your personal information. We may share information with trusted third-party service providers (such as Stripe for payments and Twilio for SMS) solely to operate our services. These providers are bound by confidentiality obligations.</p>
+          <p>We do not sell your personal information. We may share information with trusted third-party service providers (such as Stripe for payments and Telnyx or another telecommunications provider for SMS) solely to operate our services. These providers are bound by confidentiality obligations.</p>
         </div>
 
         <div>

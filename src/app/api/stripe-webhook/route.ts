@@ -1,26 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 import { prisma } from '@/lib/prisma';
+import { sendSMS } from '@/lib/sms';
 
-const twilioSid = process.env.TWILIO_ACCOUNT_SID!;
-const twilioToken = process.env.TWILIO_AUTH_TOKEN!;
-const twilioPhone = process.env.TWILIO_PHONE_NUMBER!;
-const alertPhone = process.env.ALERT_PHONE_NUMBER || '+12674996927';
+const alertPhone = process.env.ALERT_PHONE_NUMBER;
 const SK = process.env.STRIPE_SECRET_KEY!;
-
-async function sendSMS(to: string, body: string) {
-  const auth = Buffer.from(`${twilioSid}:${twilioToken}`).toString('base64');
-  const params = new URLSearchParams({ To: to, From: twilioPhone, Body: body });
-  try {
-    await fetch(`https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`, {
-      method: 'POST',
-      headers: { 'Authorization': `Basic ${auth}`, 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: params.toString(),
-    });
-  } catch (e) {
-    console.error('SMS error:', e);
-  }
-}
 
 async function stripeAPI(path: string, body: Record<string, string>) {
   const auth = Buffer.from(`${SK}:`).toString('base64');
@@ -475,10 +459,14 @@ export async function POST(req: NextRequest) {
     }
 
     // 1. SMS alert to Andrea
-    await sendSMS(
-      `+1${alertPhone.replace(/\D/g, '').slice(-10)}`,
-      `🎉 NEW KINCARE360 SIGNUP!\n\nName: ${customerName}\nEmail: ${customerEmail}\nPhone: ${customerPhone || 'Not provided'}\nPlan: ${planAmount}/mo\nTrial ends: ${trialEnd}\n\nLily will begin daily check-ins automatically.`
-    );
+    if (alertPhone) {
+      await sendSMS(
+        `+1${alertPhone.replace(/\D/g, '').slice(-10)}`,
+        `🎉 NEW KINCARE360 SIGNUP!\n\nName: ${customerName}\nEmail: ${customerEmail}\nPhone: ${customerPhone || 'Not provided'}\nPlan: ${planAmount}/mo\nTrial ends: ${trialEnd}\n\nLily will begin daily check-ins automatically.`
+      );
+    } else {
+      console.warn('[stripe-webhook] Andrea SMS alert skipped; missing ALERT_PHONE_NUMBER.');
+    }
 
     // 2. Welcome email to client
     if (customerEmail) {

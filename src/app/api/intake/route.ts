@@ -3,19 +3,9 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-const ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID!;
-const AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN!;
-const ANDREA_PHONE = process.env.ANDREA_PHONE!;
-const MESSAGING_SERVICE_SID = 'MG56c166fc03122880a51c65cb455696f1';
+import { sendSMS } from '@/lib/sms';
 
-async function sendSMS(to: string, body: string) {
-  const auth = Buffer.from(`${ACCOUNT_SID}:${AUTH_TOKEN}`).toString('base64');
-  await fetch(`https://api.twilio.com/2010-04-01/Accounts/${ACCOUNT_SID}/Messages.json`, {
-    method: 'POST',
-    headers: { 'Authorization': `Basic ${auth}`, 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({ To: to, MessagingServiceSid: MESSAGING_SERVICE_SID, Body: body }).toString(),
-  });
-}
+const ANDREA_PHONE = process.env.ANDREA_PHONE!;
 
 export async function POST(req: NextRequest) {
   try {

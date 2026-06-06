@@ -8,6 +8,15 @@
 - Cleaned older referral, dashboard, reminder, fax, and active Lily/VAPI runtime copy so the risk scan finds 0 non-log unsafe marketing/runtime claims for emergency detection, medication compliance, hospital readmissions, or medical supervision.
 - Verified production build with `npm run build`: compiled successfully, TypeScript passed, and generated 72 static pages.
 
+2026-06-06 EDT - Telnyx SMS migration and A2P readiness prep
+- Migrated active KinCare360 SMS sending routes from Twilio-specific API calls to a shared Telnyx helper using `TELNYX_API_KEY` and `TELNYX_PHONE_NUMBER`.
+- Updated inbound SMS handling at `/api/sms-inbound` for Telnyx-compatible JSON/form payloads, with STOP/START/HELP handling and STOP opt-out updates for matching family member records.
+- Updated public Privacy/SMS wording from Twilio to Telnyx/telecommunications-provider language and aligned HELP/START text with conservative family-update positioning.
+- Added `KINCARE360_TELNYX_A2P_CAMPAIGN_PACKAGE.md` with campaign description, opt-in flow, consent evidence URLs, HELP/STOP/START responses, sample messages, and reviewer checklist.
+- Verified active API `.ts` Twilio search: 0 matches for Twilio credentials/endpoints/TwiML in `src`.
+- Verified production build with `npm run build`: compiled successfully, TypeScript passed, and generated 72 static pages.
+- Deployment/submission note: local Vercel, GitHub, and Telnyx API auth were unavailable in this shell, so production deploy and Telnyx campaign submission remain blocked until credentials/session access are available.
+
 2026-06-06 EDT - Controlled Lily vulnerable-user safety QA pass
 - Ran local/static QA against `LILY_SAFETY_QA_CHECKLIST.md` with no live calls, SMS, emails, or deployment.
 - Fixed QA issues found: prompt tool-name mismatch (`crisisAlert` -> `sendCrisisAlert`), crisis route argument compatibility (`riskCategory`), active VAPI vulnerable-user protocol detail, and family/safety notification wording.

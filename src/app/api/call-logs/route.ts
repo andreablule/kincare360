@@ -2,25 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser, getSessionPatientId } from '@/lib/session';
 import prisma from '@/lib/prisma';
 
-const twilioSid = process.env.TWILIO_ACCOUNT_SID!;
-const twilioToken = process.env.TWILIO_AUTH_TOKEN!;
-const twilioPhone = process.env.TWILIO_PHONE_NUMBER!;
+import { sendSMS } from '@/lib/sms';
+
 const alertPhone = process.env.ALERT_PHONE_NUMBER!;
-
-async function sendSMS(to: string, body: string) {
-  const auth = Buffer.from(`${twilioSid}:${twilioToken}`).toString('base64');
-  const params = new URLSearchParams({ To: to, From: twilioPhone, Body: body });
-
-  try {
-    await fetch(`https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`, {
-      method: 'POST',
-      headers: { 'Authorization': `Basic ${auth}`, 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: params.toString(),
-    });
-  } catch (e) {
-    console.error('SMS send error:', e);
-  }
-}
 
 // POST: VAPI webhook posts call summaries here + handles emergency escalation
 export async function POST(req: NextRequest) {
@@ -221,14 +205,20 @@ export async function POST(req: NextRequest) {
               firstMsg = `Hi ${pt.firstName}, this is Lily from KinCare360 calling you back about ${providerLabel}.`;
             }
 
-            await fetch("https://api.vapi.ai/call/phone", {
+            const vapiApiKey = process.env.VAPI_API_KEY;
+            const vapiPhoneNumberId = process.env.VAPI_PHONE_NUMBER_ID;
+
+            if (!vapiApiKey || !vapiPhoneNumberId) {
+              console.warn("[call-logs] Callback trigger skipped; missing VAPI_API_KEY or VAPI_PHONE_NUMBER_ID.");
+            } else {
+              await fetch("https://api.vapi.ai/call/phone", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
-                Authorization: "Bearer 3e6bdfb6-fc6f-4c60-a584-16cfa60e6846",
+                Authorization: `Bearer ${vapiApiKey}`,
               },
               body: JSON.stringify({
-                phoneNumberId: "8354bde3-c67c-4316-b181-95c227479b58",
+                phoneNumberId: vapiPhoneNumberId,
                 customer: { number: `+1${cbDigits}` },
                 assistant: {
                   name: "Lily - Callback",
@@ -248,6 +238,7 @@ export async function POST(req: NextRequest) {
               }),
             });
             console.log(`[call-logs] Triggered callback to ${pt.firstName} at ${cbDigits} | confirmed: ${!!officeConfirmed}`);
+            }
           }
         }
       } catch (cbErr) {

@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import nodemailer from "nodemailer";
+import { sendSMS } from "@/lib/sms";
 
-const twilioSid = process.env.TWILIO_ACCOUNT_SID;
-const twilioToken = process.env.TWILIO_AUTH_TOKEN;
-const twilioPhone = process.env.TWILIO_PHONE_NUMBER;
 const alertPhone = process.env.ALERT_PHONE_NUMBER;
 const vapiApiKey = process.env.VAPI_API_KEY;
 const vapiPhoneNumberId = process.env.VAPI_PHONE_NUMBER_ID;
@@ -12,19 +10,6 @@ const vapiAlertAssistantId = process.env.VAPI_ALERT_ASSISTANT_ID;
 
 function digits(value = "") {
   return value.replace(/\D/g, "").slice(-10);
-}
-
-async function sendSMS(to: string, body: string) {
-  if (!twilioSid || !twilioToken || !twilioPhone) {
-    console.warn("[emergency-alert] SMS skipped; missing Twilio configuration.");
-    return;
-  }
-  const auth = Buffer.from(`${twilioSid}:${twilioToken}`).toString("base64");
-  await fetch(`https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`, {
-    method: "POST",
-    headers: { Authorization: `Basic ${auth}`, "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({ To: to, From: twilioPhone, Body: body }).toString(),
-  });
 }
 
 async function sendEmail(to: string, subject: string, html: string) {

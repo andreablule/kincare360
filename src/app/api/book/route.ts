@@ -1,57 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { sendSMS } from '@/lib/sms';
 
-const ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID!;
-const AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN!;
-const FROM_NUMBER = process.env.TWILIO_PHONE_NUMBER!;
 const ANDREA_PHONE = process.env.ANDREA_PHONE!;
-const MESSAGING_SERVICE_SID = 'MG56c166fc03122880a51c65cb455696f1';
-
-async function sendSMS(to: string, body: string) {
-  const auth = Buffer.from(`${ACCOUNT_SID}:${AUTH_TOKEN}`).toString('base64');
-  const params = new URLSearchParams({
-    To: to,
-    MessagingServiceSid: MESSAGING_SERVICE_SID,
-    Body: body,
-  });
-
-  const res = await fetch(
-    `https://api.twilio.com/2010-04-01/Accounts/${ACCOUNT_SID}/Messages.json`,
-    {
-      method: 'POST',
-      headers: {
-        'Authorization': `Basic ${auth}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: params.toString(),
-    }
-  );
-  return res.json();
-}
-
-async function sendWhatsApp(to: string, body: string) {
-  const auth = Buffer.from(`${ACCOUNT_SID}:${AUTH_TOKEN}`).toString('base64');
-  // WhatsApp format
-  const cleanTo = to.replace(/\D/g, '');
-  const waTo = `whatsapp:+1${cleanTo.replace(/^1/, '')}`;
-  const params = new URLSearchParams({
-    To: waTo,
-    From: `whatsapp:${FROM_NUMBER}`,
-    Body: body,
-  });
-
-  const res = await fetch(
-    `https://api.twilio.com/2010-04-01/Accounts/${ACCOUNT_SID}/Messages.json`,
-    {
-      method: 'POST',
-      headers: {
-        'Authorization': `Basic ${auth}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: params.toString(),
-    }
-  );
-  return res.json();
-}
 
 async function sendEmail(to: string, subject: string, text: string) {
   // Send via Gmail SMTP using nodemailer as fallback
@@ -83,8 +33,8 @@ export async function POST(req: NextRequest) {
       sendSMS(ANDREA_PHONE, andreaMsg),
     ]);
 
-    console.log('Client SMS:', clientSMS.status, clientSMS.error_code || 'ok');
-    console.log('Andrea SMS:', andreaSMS.status, andreaSMS.error_code || 'ok');
+    console.log('Client SMS:', clientSMS.ok ? 'ok' : 'not_sent');
+    console.log('Andrea SMS:', andreaSMS.ok ? 'ok' : 'not_sent');
 
     // Log booking to console for visibility
     console.log(`BOOKING: ${name} | ${phone} | ${date} ${time} | ${service}`);

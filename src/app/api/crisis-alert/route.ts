@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import nodemailer from "nodemailer";
+import { sendSMS } from "@/lib/sms";
 
-const twilioSid = process.env.TWILIO_ACCOUNT_SID;
-const twilioToken = process.env.TWILIO_AUTH_TOKEN;
-const twilioPhone = process.env.TWILIO_PHONE_NUMBER;
 const alertPhone = process.env.ALERT_PHONE_NUMBER;
 
 type CrisisCategory =
@@ -48,19 +46,6 @@ function categoryLabel(category: CrisisCategory) {
     OTHER_URGENT_SAFETY: "urgent safety concern",
   };
   return labels[category] || labels.OTHER_URGENT_SAFETY;
-}
-
-async function sendSMS(to: string, body: string) {
-  if (!twilioSid || !twilioToken || !twilioPhone) {
-    console.warn("[crisis-alert] Twilio SMS skipped; missing configuration.");
-    return;
-  }
-  const auth = Buffer.from(`${twilioSid}:${twilioToken}`).toString("base64");
-  await fetch(`https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`, {
-    method: "POST",
-    headers: { Authorization: `Basic ${auth}`, "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({ To: to, From: twilioPhone, Body: body }).toString(),
-  });
 }
 
 async function sendEmail(to: string, subject: string, html: string) {

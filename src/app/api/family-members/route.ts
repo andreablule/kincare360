@@ -2,23 +2,7 @@ import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionUser, getSessionPatientId, canManageFamilyMembers, resolvePatientIdFromRequest } from "@/lib/session";
 
-const twilioSid = process.env.TWILIO_ACCOUNT_SID!;
-const twilioToken = process.env.TWILIO_AUTH_TOKEN!;
-const twilioPhone = process.env.TWILIO_PHONE_NUMBER!;
-
-async function sendSMS(to: string, body: string) {
-  const auth = Buffer.from(`${twilioSid}:${twilioToken}`).toString('base64');
-  const params = new URLSearchParams({ To: to, From: twilioPhone, Body: body });
-  try {
-    await fetch(`https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`, {
-      method: 'POST',
-      headers: { 'Authorization': `Basic ${auth}`, 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: params.toString(),
-    });
-  } catch (e) {
-    console.error('SMS error:', e);
-  }
-}
+import { sendSMS } from "@/lib/sms";
 
 function generateCode(name: string): string {
   const prefix = name.replace(/[^a-zA-Z]/g, "").slice(0, 4).toUpperCase();
