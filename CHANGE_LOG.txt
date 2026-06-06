@@ -1,3 +1,10 @@
+2026-06-06 EDT - Production deploy and GitHub push for safety/Telnyx prep
+- Deployed approved KinCare360 safety, positioning, and Telnyx-prep changes to Vercel production; production alias completed for `https://www.kincare360.com`.
+- Pushed local commits `264eb89` and `44b6e29` to `origin/main`.
+- Verified live pages returned 200 for `/`, `/family-consent`, `/privacy`, and `/terms`; `/api/sms-inbound` returned 405 for GET as expected for a POST webhook route.
+- Verified live Privacy/Family Consent content includes Telnyx/family-update/STOP/HELP/non-emergency wording.
+- Vercel env inspection showed `TELNYX_API_KEY` and `TELNYX_PHONE_NUMBER` are not configured yet; KinCare360 needs a purchased/selected Telnyx number before live Telnyx SMS tests or A2P submission.
+
 2026-06-06 EDT - Vulnerable-user Lily safety protocol and urgent concern guardrails
 - Added Lily prompt protocols for self-harm/suicidal thoughts, immediate danger, overdose/poisoning risk, confusion/disorientation, abuse/neglect/exploitation, scam risk, emotional-dependency boundaries, and no-guessing/truthfulness.
 - Added `/api/crisis-alert` for crisis-level concerns shared during Lily calls, with urgent safety concern wording, 911/988/Poison Control guidance, family/safety-contact notification, and call-log marking.
