@@ -42,12 +42,12 @@ export default function PrivacyPage() {
             <li>Family-approved routine reminder notifications</li>
             <li>Appointment and everyday coordination updates</li>
             <li>Service and account notifications</li>
-            <li>Family concern notifications, urgent safety concern notices, and daily summaries for loved ones you are connected to</li>
+            <li>Family concern notifications, time-sensitive non-medical family follow-up notices, and daily summaries for loved ones you are connected to</li>
           </ul>
           <p className="mt-2">Message frequency varies (up to 5 messages per day). Message and data rates may apply. Your consent is not a condition of purchase.</p>
           <p className="mt-2"><strong>To opt out:</strong> Reply STOP to any message at any time. You will receive a confirmation and no further messages.</p>
           <p className="mt-2"><strong>For help:</strong> Reply HELP to any message, or contact us at <a href="mailto:hello@kincare360.com" className="text-teal underline">hello@kincare360.com</a> or <a href="tel:+12727669090" className="text-teal underline">+1 272 766 9090</a>.</p>
-          <p className="mt-2">Supported carriers include AT&amp;T, T-Mobile, Verizon, and most major US carriers. KinCare360 will never sell, rent, share, or distribute your mobile phone number or SMS opt-in data to third parties or affiliates for marketing or promotional purposes.</p>
+          <p className="mt-2">Supported carriers include AT&amp;T, T-Mobile, Verizon, and most major US carriers. KinCare360 does not sell, rent, share, or distribute mobile phone numbers, SMS opt-in data, or SMS consent records to third parties or affiliates for marketing or promotional purposes. Text messaging originator opt-in data and consent will not be shared with any third parties except service providers that operate the KinCare360 messaging service.</p>
         </div>
 
         <div>
@@ -56,9 +56,9 @@ export default function PrivacyPage() {
         </div>
 
         <div>
-          <h2 className="text-xl font-semibold text-navy mb-2">5. Urgent Safety Concern Notifications</h2>
-          <p>KinCare360 is not an emergency, crisis counseling, suicide-prevention, medical, or in-home care service. However, if a caller shares information suggesting possible immediate harm, self-harm, abuse, neglect, severe confusion, exploitation, or another urgent safety concern, KinCare360 may use call information and profile details to notify listed family/safety contacts and encourage the caller to contact 911, 988, Poison Control, or another appropriate human support resource.</p>
-          <p className="mt-2">These notifications do not mean Lily verified an emergency or that KinCare360 can confirm what happened. They mean the caller shared something concerning and a family/safety contact should follow up.</p>
+          <h2 className="text-xl font-semibold text-navy mb-2">5. Family Follow-Up Notices</h2>
+          <p>KinCare360 is not an emergency, crisis counseling, suicide-prevention, medical, or in-home care service. KinCare360 may send family/safety contacts non-medical family follow-up notices when a caller shares an everyday concern, request, missed check-in, or coordination need that may require family attention. These notices are for family coordination only. KinCare360 does not verify emergencies, dispatch help, provide clinical assessment, or guarantee that any person will respond. In an emergency or immediate danger, call 911.</p>
+          <p className="mt-2">These notices do not mean Lily verified an emergency or medical issue. They mean a caller shared something that may warrant family follow-up.</p>
         </div>
 
         <div>

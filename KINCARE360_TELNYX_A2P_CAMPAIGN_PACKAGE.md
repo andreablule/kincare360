@@ -1,6 +1,6 @@
 # KinCare360 Telnyx A2P Campaign Package
 
-Date prepared: 2026-06-06
+Date prepared: 2026-06-07
 Provider target: Telnyx A2P 10DLC
 Business/legal entity: Son Healthcare Services LLC, operating as KinCare360
 Website: https://www.kincare360.com
@@ -15,13 +15,19 @@ KinCare360 should be positioned as a non-medical family coordination and elder-s
 
 ## Campaign description
 
-KinCare360 sends recurring SMS messages to account owners and family/safety contacts who expressly opt in to receive updates about a loved one. Messages include family check-in notifications, family-approved routine reminder notifications, appointment and everyday coordination updates, account/service messages, family concern notifications, urgent safety concern notices when a caller shares something that may need family follow-up, and daily summaries.
+KinCare360 sends recurring SMS messages to account owners, family members, and safety contacts who expressly opt in to receive updates about a loved one. Messages include family check-in notifications, family-approved routine reminder notifications, appointment and everyday coordination updates, account/service messages, family concern notifications, time-sensitive family follow-up notices for non-medical everyday coordination, and daily summaries.
 
 KinCare360 is not a medical provider, emergency response service, crisis counseling service, suicide-prevention service, or in-home care provider. Messages are for non-medical family coordination and account/service support only.
 
 ## Message flow / opt-in flow
 
-Account owners may opt in during signup/intake when they provide their phone number and agree to receive KinCare360 SMS messages.
+Account owners opt in during signup at:
+
+https://www.kincare360.com/signup
+
+The signup page requires an SMS consent checkbox before account creation with this disclosure:
+
+"I agree to receive recurring automated SMS/text messages from KinCare360 including account/service messages, daily check-in notifications, family-approved routine reminders, appointment updates, family concern notifications, and time-sensitive family follow-up notices for non-medical everyday coordination. Message frequency varies, up to 5 messages per day. Message and data rates may apply. Reply STOP to opt out at any time. Reply HELP for help. Consent is not a condition of purchase. KinCare360 is not an emergency, crisis, medical, or in-home care service. View our Privacy Policy and Terms of Service."
 
 Family members and safety contacts provide their own consent at:
 
@@ -29,12 +35,13 @@ https://www.kincare360.com/family-consent
 
 The Family SMS Consent page asks for the family member's name, mobile phone number, loved one's name, and a required checkbox with this disclosure:
 
-"I agree to receive recurring automated SMS/text messages from KinCare360 about my loved one, including daily check-in summaries, family-approved routine reminders, appointment updates, family concern notifications, and urgent safety concern notices if my loved one shares something that may need immediate family attention. Message frequency varies, up to 5 messages per day. Message and data rates may apply. Reply STOP to opt out at any time. Reply HELP for help. Consent is not a condition of purchase. KinCare360 is not an emergency, crisis, medical, or in-home care service. I have read the Privacy Policy and Terms of Service."
+"I agree to receive recurring automated SMS/text messages from KinCare360 about my loved one, including daily check-in summaries, family-approved routine reminders, appointment updates, family concern notifications, and time-sensitive family follow-up notices if my loved one shares a non-medical everyday concern that may need family attention. Message frequency varies, up to 5 messages per day. Message and data rates may apply. Reply STOP to opt out at any time. Reply HELP for help. Consent is not a condition of purchase. KinCare360 is not an emergency, crisis, medical, or in-home care service. I have read the Privacy Policy and Terms of Service."
 
-Family members who do not submit the Family SMS Consent form are not enrolled for recurring text updates.
+Family members who do not submit the Family SMS Consent form are not enrolled for recurring family-contact text updates. Account owners cannot create an account from the public signup page unless the SMS consent checkbox is checked.
 
 ## Opt-in evidence URLs
 
+- Account-owner signup consent page: https://www.kincare360.com/signup
 - Public family consent page: https://www.kincare360.com/family-consent
 - Terms of Service SMS section: https://www.kincare360.com/terms
 - Privacy Policy SMS section: https://www.kincare360.com/privacy
@@ -59,7 +66,7 @@ KinCare360: To receive recurring family text updates, please confirm consent at 
 
 3. KinCare360 family update: Maria asked for help coordinating transportation for Friday. Please follow up when available. Reply STOP to opt out.
 
-4. Urgent KinCare360 safety concern: Maria shared something that may need immediate family attention. Please check on them now. If there is immediate danger, call 911. KinCare360 is not an emergency response service. Reply STOP to opt out.
+4. KinCare360 family follow-up: Maria shared a non-medical concern that may need family attention. Please check the family dashboard or follow up when available. KinCare360 is not an emergency or medical service. Reply STOP to opt out.
 
 5. KinCare360: Your family profile was updated. Visit kincare360.com/login to review family settings. Reply HELP for help or STOP to opt out.
 
@@ -72,7 +79,7 @@ If Telnyx flags embedded links or phone numbers, use samples without links/phone
 
 ## Data/privacy statement for reviewer
 
-KinCare360 does not sell, rent, share, or distribute mobile numbers or SMS opt-in data to third parties or affiliates for marketing or promotional purposes. SMS data is used only to provide requested family coordination, account, and service notifications.
+KinCare360 does not sell, rent, share, or distribute mobile phone numbers, SMS opt-in data, or SMS consent records to third parties or affiliates for marketing or promotional purposes. Text messaging originator opt-in data and consent will not be shared with any third parties except service providers that operate the KinCare360 messaging service. SMS data is used only to provide requested family coordination, account, and service notifications.
 
 ## Backend implementation notes
 
@@ -101,11 +108,12 @@ The inbound route handles STOP/STOPALL/UNSUBSCRIBE/CANCEL/END/QUIT, START/YES/UN
 - Twilio-specific public wording removed from Privacy page: yes
 - Active API SMS sender migrated to Telnyx helper: yes
 - Build verified after migration: yes, `npm run build` passed
+- Peer review status: wording hardened on 2026-06-07 to remove crisis-coded/urgent-safety sample language before submission.
 
 ## Submission blocker
 
 This package is ready to submit after:
 
-1. The approved site changes are deployed to https://www.kincare360.com.
+1. The updated safety/consent wording is deployed to https://www.kincare360.com.
 2. Telnyx credentials/account access are available in the deployment environment.
-3. The Telnyx phone number to use for KinCare360 is selected and configured.
+3. The Telnyx phone number `+1 272 766 9090` is connected to the campaign/messaging profile.

@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
     const label = categoryLabel(category);
     const dashboardUrl = "https://www.kincare360.com/dashboard";
 
-    const smsMsg = `Urgent KinCare360 safety concern\n\n${patientName} ${concernDescription}.\n\nType: ${label}.\nTime: ${now}\n\nPlease call or check on them now. If there is immediate danger, call 911. If this involves suicide or emotional crisis, call or text 988. KinCare360 is not an emergency or crisis service.\n\nDashboard: ${dashboardUrl}`;
+    const smsMsg = `KinCare360 family follow-up\n\n${patientName} shared a non-medical concern that may need family attention.\n\nDetails: ${concernDescription}.\nType: ${label}.\nTime: ${now}\n\nPlease check the family dashboard or follow up when available. KinCare360 is not an emergency, crisis, or medical service. If there is immediate danger, call 911.\n\nDashboard: ${dashboardUrl}`;
 
     const emailHtml = `
       <div style="font-family:Arial,sans-serif;max-width:640px;margin:0 auto;padding:20px;">

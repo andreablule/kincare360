@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
     const description = emergencyDescription || "shared an urgent safety concern";
     const now = new Date().toLocaleString("en-US", { timeZone: "America/New_York" });
 
-    const smsMsg = `Urgent KinCare360 safety concern\n\n${patientName} ${description}.\n\nTime: ${now}\n\nPlease check on them immediately. If there is immediate danger, call 911. KinCare360 is not an emergency response service.\n\n— KinCare360 Safety Notice`;
+    const smsMsg = `KinCare360 family follow-up\n\n${patientName} shared a non-medical concern that may need family attention.\n\nDetails: ${description}.\nTime: ${now}\n\nPlease check the family dashboard or follow up when available. KinCare360 is not an emergency or medical service. If there is immediate danger, call 911.\n\n— KinCare360 Family Notice`;
 
     const emailHtml = `
       <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px;">

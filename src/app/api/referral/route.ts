@@ -4,7 +4,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import nodemailer from "nodemailer";
 import { generateFlyer } from "./generate-flyer";
-import { sendSMS } from "@/lib/sms";
 
 function generateCode(name: string): string {
   const prefix = name
@@ -59,22 +58,11 @@ export async function POST(req: NextRequest) {
     const link = `https://kincare360.com/register?ref=${referral.code}`;
     const dashLink = `https://kincare360.com/partners?code=${referral.code}`;
 
-    // Send SMS confirmation + social media post through Telnyx when a phone is provided
+    // Referral-program SMS is intentionally disabled until a dedicated referral SMS consent
+    // checkbox is added. This keeps the Telnyx A2P campaign limited to family/account
+    // coordination messages that match the public consent flow.
     if (phone) {
-      try {
-        const digits = phone.replace(/\D/g, "").slice(-10);
-        if (digits.length === 10) {
-          // Confirmation SMS
-          const smsBody = `Welcome to the KinCare360 Referral Program, ${name.split(" ")[0]}! 🎉\n\nYour code: ${referral.code}\nShare this link: ${link}\n\nYou earn $50 for every new subscriber.\nTrack earnings: ${dashLink}\n\nReply STOP to opt out.`;
-          await sendSMS(`+1${digits}`, smsBody);
-
-          // Send ready-to-post social media message
-          const socialPost = `🎉 I just partnered with KinCare360 — a service that provides daily family check-in calls, family-approved routine reminders, and everyday coordination for aging parents.\n\nIf you or someone you know is caring for an elderly loved one, check it out:\n${link}\n\n✅ 7-day free trial\n✅ Daily check-in calls\n✅ Routine reminder calls\n✅ Family dashboard\n\n#ElderCare #AgingParents #KinCare360 #Caregiving`;
-          await sendSMS(`+1${digits}`, `📱 Ready-to-post for social media (just copy & paste):\n\n${socialPost}`);
-        }
-      } catch (smsErr) {
-        console.error("Partner SMS error:", smsErr);
-      }
+      console.log("[referral] SMS skipped; referral SMS consent flow is not enabled.", { referralId: referral.id });
     }
 
     // Send confirmation email

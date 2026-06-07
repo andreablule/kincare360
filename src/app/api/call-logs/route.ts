@@ -132,10 +132,10 @@ export async function POST(req: NextRequest) {
     // EMERGENCY ESCALATION: If urgent, SMS all family members + Andrea
     if (urgent && patient) {
       const patientName = `${patient.firstName} ${patient.lastName}`;
-      const urgentMsg = `⚠️ URGENT — KinCare360 Alert\n\n${patientName} reported a possible emergency during their daily check-in.\n\nDetails: ${summary}\n\nPlease check on them immediately or call 911 if needed.\n\n— KinCare360 Automated Alert`;
+      const urgentMsg = `KinCare360 family follow-up\n\n${patientName} shared a concern during their Lily check-in.\n\nDetails: ${summary}\n\nPlease check the family dashboard or follow up when available. KinCare360 is not an emergency or medical service. If there is immediate danger, call 911.\n\n— KinCare360 Family Notice`;
 
-      // Also send check-in summary with urgent flag to family
-      const urgentCheckInMsg = `KinCare360 Update: ${patientName}'s check-in with Lily is complete.\n⚠️ URGENT CONCERN FLAGGED — please call them.\nView full report: kincare360.com/dashboard`;
+      // Also send check-in summary with family follow-up flag to family
+      const urgentCheckInMsg = `KinCare360 Update: ${patientName}'s check-in with Lily is complete.\nFamily follow-up requested — please review the dashboard when available.\nView full report: kincare360.com/dashboard`;
 
       // SMS all family members with notifications enabled
       for (const member of patient.familyMembers) {

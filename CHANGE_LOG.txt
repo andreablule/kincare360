@@ -1,3 +1,11 @@
+2026-06-07 EDT - A2P peer-review hardening for Telnyx submission
+- Ran peer review of KinCare360 Telnyx A2P campaign package against live signup, family consent, Terms, and Privacy evidence pages.
+- Replaced SMS-facing `urgent safety concern` wording with carrier-safer `time-sensitive non-medical family follow-up` wording on signup, family consent, Privacy, Terms, sample SMS, and A2P package.
+- Strengthened Privacy no-sharing language for SMS opt-in data and consent records.
+- Disabled referral-program SMS until a dedicated referral SMS consent flow exists, keeping the Telnyx campaign aligned with family/account coordination consent.
+- Hardened active family-follow-up SMS bodies away from crisis/emergency alert phrasing while preserving 911 disclaimer where appropriate.
+- Removed old local Twilio env lines from `.env.local`; build passed and public/package A2P wording scan is clean for crisis-coded phrases.
+
 2026-06-07 EDT - One-number Telnyx migration for KinCare360
 - Replaced public/support/Lily phone references from the old number to `+1 272 766 9090` across website pages, components, referral/outreach copy, Lily prompt copy, and generated referral/flyer text.
 - Converted remaining Twilio SMS routes (`/api/book-voice`, `/api/send-digest`, `/api/referral`) to the shared Telnyx SMS helper.

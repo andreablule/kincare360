@@ -171,7 +171,7 @@ function SignupForm() {
             className="mt-1 h-4 w-4 rounded border-gray-300 text-teal focus:ring-teal"
           />
           <label htmlFor="smsConsent" className="text-xs text-gray-600 leading-relaxed">
-            I agree to receive SMS messages from KinCare360 including daily check-in notifications, family-approved routine reminders, appointment updates, service alerts, family concern notifications, and urgent safety concern notices. Message frequency varies (up to 5 msgs/day). Message and data rates may apply. Reply STOP to opt out at any time. Reply HELP for help. KinCare360 is not an emergency, crisis, medical, or in-home care service. View our{" "}
+            I agree to receive recurring automated SMS/text messages from KinCare360 including account/service messages, daily check-in notifications, family-approved routine reminders, appointment updates, family concern notifications, and time-sensitive family follow-up notices for non-medical everyday coordination. Message frequency varies, up to 5 messages per day. Message and data rates may apply. Reply STOP to opt out at any time. Reply HELP for help. Consent is not a condition of purchase. KinCare360 is not an emergency, crisis, medical, or in-home care service. View our{" "}
             <a href="/privacy" className="text-teal underline">Privacy Policy</a> and{" "}
             <a href="/terms" className="text-teal underline">Terms of Service</a>.
           </label>
