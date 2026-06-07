@@ -1,3 +1,11 @@
+2026-06-07 EDT - Telnyx provider wiring and A2P submission attempt
+- Recovered a valid Telnyx API key from approved read-only MyShiftReminder env/config scope without printing secrets.
+- Added `TELNYX_API_KEY` to KinCare360 Vercel Production and Development, redeployed production, and verified Vercel env presence by name only.
+- Updated existing Telnyx `kincare360` messaging profile webhook to `https://www.kincare360.com/api/sms-inbound` and assigned `+1 272 766 9090` to that messaging profile.
+- Verified the Telnyx number exists, is assigned to the `kincare360` messaging profile, and still has no voice connection attached.
+- Confirmed the existing ACTIVE Telnyx 10DLC campaign is MyShiftReminder, not KinCare360, so KinCare360 needs a separate campaign.
+- Attempted KinCare360 Telnyx 10DLC campaign submission using the peer-reviewed `ACCOUNT_NOTIFICATION` package; Telnyx blocked submission with `402 Insufficient Funds` / account must have at least `$30.00`. No KinCare360 campaign was created.
+
 2026-06-07 EDT - A2P peer-review hardening for Telnyx submission
 - Ran peer review of KinCare360 Telnyx A2P campaign package against live signup, family consent, Terms, and Privacy evidence pages.
 - Replaced SMS-facing `urgent safety concern` wording with carrier-safer `time-sensitive non-medical family follow-up` wording on signup, family consent, Privacy, Terms, sample SMS, and A2P package.
