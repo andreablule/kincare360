@@ -5,7 +5,7 @@ Provider target: Telnyx A2P 10DLC
 Business/legal entity: Son Healthcare Services LLC, operating as KinCare360
 Website: https://www.kincare360.com
 Support email: hello@kincare360.com
-Support phone: (812) 515-5252
+Support/SMS phone: +1 272 766 9090
 
 ## Campaign recommendation
 
@@ -41,7 +41,7 @@ Family members who do not submit the Family SMS Consent form are not enrolled fo
 
 ## HELP response
 
-KinCare360 family updates. Help: hello@kincare360.com or (812) 515-5252. Terms: kincare360.com/terms Privacy: kincare360.com/privacy Reply STOP to opt out.
+KinCare360 family updates. Help: hello@kincare360.com or +1 272 766 9090. Terms: kincare360.com/terms Privacy: kincare360.com/privacy Reply STOP to opt out.
 
 ## STOP response
 

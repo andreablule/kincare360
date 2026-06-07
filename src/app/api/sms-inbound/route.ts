@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
   }
 
   if (["HELP", "INFO"].includes(body)) {
-    return acknowledge(from, "KinCare360 family updates. Help: hello@kincare360.com or (812) 515-5252. Terms: kincare360.com/terms Privacy: kincare360.com/privacy Reply STOP to opt out.");
+    return acknowledge(from, "KinCare360 family updates. Help: hello@kincare360.com or +1 272 766 9090. Terms: kincare360.com/terms Privacy: kincare360.com/privacy Reply STOP to opt out.");
   }
 
   return acknowledge(from, "KinCare360: Message received. For help, reply HELP. To opt out, reply STOP.");

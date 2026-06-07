@@ -1,3 +1,8 @@
+2026-06-07 EDT - KinCare360 Telnyx number configured for SMS
+- Configured KinCare360 Telnyx SMS number `+1 272 766 9090` as `TELNYX_PHONE_NUMBER` in Vercel Production and local `.env.local`.
+- Updated Telnyx A2P package and `/api/sms-inbound` HELP response to use the new KinCare360 Telnyx SMS number.
+- `TELNYX_API_KEY` is still required before live Telnyx SMS verification or A2P submission.
+
 2026-06-06 EDT - Production deploy and GitHub push for safety/Telnyx prep
 - Deployed approved KinCare360 safety, positioning, and Telnyx-prep changes to Vercel production; production alias completed for `https://www.kincare360.com`.
 - Pushed local commits `264eb89` and `44b6e29` to `origin/main`.
