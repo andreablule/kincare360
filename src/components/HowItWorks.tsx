@@ -3,7 +3,7 @@ const steps = [
     number: "1",
     title: "Call or Sign Up",
     description:
-      "Call Lily at (812) 515-5252 or visit kincare360.com to start your 7-day free trial.",
+      "Call Lily at +1 272 766 9090 or visit kincare360.com to start your 7-day free trial.",
   },
   {
     number: "2",

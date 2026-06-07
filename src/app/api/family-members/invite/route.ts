@@ -157,7 +157,7 @@ export async function POST(req: NextRequest) {
 
     <!-- Footer -->
     <div style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:20px 40px;text-align:center;">
-      <p style="color:#64748b;font-size:13px;margin:0;">KinCare360 &nbsp;|&nbsp; <a href="mailto:hello@kincare360.com" style="color:#0d9488;text-decoration:none;">hello@kincare360.com</a> &nbsp;|&nbsp; (812) 515-5252</p>
+      <p style="color:#64748b;font-size:13px;margin:0;">KinCare360 &nbsp;|&nbsp; <a href="mailto:hello@kincare360.com" style="color:#0d9488;text-decoration:none;">hello@kincare360.com</a> &nbsp;|&nbsp; +1 272 766 9090</p>
     </div>
   </div>
 </body>

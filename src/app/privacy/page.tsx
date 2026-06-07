@@ -46,7 +46,7 @@ export default function PrivacyPage() {
           </ul>
           <p className="mt-2">Message frequency varies (up to 5 messages per day). Message and data rates may apply. Your consent is not a condition of purchase.</p>
           <p className="mt-2"><strong>To opt out:</strong> Reply STOP to any message at any time. You will receive a confirmation and no further messages.</p>
-          <p className="mt-2"><strong>For help:</strong> Reply HELP to any message, or contact us at <a href="mailto:hello@kincare360.com" className="text-teal underline">hello@kincare360.com</a> or <a href="tel:+18125155252" className="text-teal underline">(812) 515-5252</a>.</p>
+          <p className="mt-2"><strong>For help:</strong> Reply HELP to any message, or contact us at <a href="mailto:hello@kincare360.com" className="text-teal underline">hello@kincare360.com</a> or <a href="tel:+12727669090" className="text-teal underline">+1 272 766 9090</a>.</p>
           <p className="mt-2">Supported carriers include AT&amp;T, T-Mobile, Verizon, and most major US carriers. KinCare360 will never sell, rent, share, or distribute your mobile phone number or SMS opt-in data to third parties or affiliates for marketing or promotional purposes.</p>
         </div>
 

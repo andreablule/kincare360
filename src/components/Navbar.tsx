@@ -54,10 +54,10 @@ export default function Navbar() {
               Log In
             </a>
             <a
-              href="tel:+18125155252"
+              href="tel:+12727669090"
               className="bg-teal text-white px-5 py-2 rounded-full text-sm font-semibold hover:bg-teal-dark transition-colors"
             >
-              Call (812) 515-5252
+              Call +1 272 766 9090
             </a>
           </div>
 
@@ -115,11 +115,11 @@ export default function Navbar() {
               Log In
             </a>
             <a
-              href="tel:+18125155252"
+              href="tel:+12727669090"
               onClick={() => setMobileOpen(false)}
               className="bg-teal text-white px-5 py-2 rounded-full text-sm font-semibold text-center hover:bg-teal-dark transition-colors"
             >
-              Call (812) 515-5252
+              Call +1 272 766 9090
             </a>
           </div>
         </div>

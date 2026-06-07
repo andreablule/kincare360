@@ -36,7 +36,7 @@ const html = `
 <p><strong>See how it works: <a href="https://kincare360.com" style="color: #0d9488;">kincare360.com</a></strong></p>
 <br>
 <p>The KinCare360 Team<br>
-<a href="mailto:hello@kincare360.com">hello@kincare360.com</a> | (812) 515-5252</p>
+<a href="mailto:hello@kincare360.com">hello@kincare360.com</a> | +1 272 766 9090</p>
 </div>
 `;
 

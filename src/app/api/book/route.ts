@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     const e164Phone = cleanPhone.startsWith('1') ? `+${cleanPhone}` : `+1${cleanPhone}`;
 
     // Client confirmation message
-    const clientMsg = `Hi ${name}! ✅ Your KinCare360 appointment is confirmed!\n\n📅 ${date} at ${time}\n💼 ${service || 'Care Consultation'}\n\nQuestions? Call/text (812) 515-5252\n- KinCare360 Team`;
+    const clientMsg = `Hi ${name}! ✅ Your KinCare360 appointment is confirmed!\n\n📅 ${date} at ${time}\n💼 ${service || 'Care Consultation'}\n\nQuestions? Call/text +1 272 766 9090\n- KinCare360 Team`;
 
     // Andrea alert message
     const andreaMsg = `🔔 NEW BOOKING!\n👤 ${name}\n📱 ${phone}\n📧 ${email || 'N/A'}\n📅 ${date} at ${time}\n💼 ${service || 'Care Consultation'}\n📝 ${message || 'No notes'}`;

@@ -26,7 +26,7 @@ function ThankYouContent() {
         {booked && (
           <p className="text-gray-500 text-sm mb-6">
             Didn&apos;t get a text? Call or text us at{" "}
-            <a href="tel:+18125155252" className="text-teal font-medium">(812) 515-5252</a>
+            <a href="tel:+12727669090" className="text-teal font-medium">+1 272 766 9090</a>
           </p>
         )}
         <a

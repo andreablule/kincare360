@@ -43,7 +43,7 @@ export default function FamilyConsentPage() {
           <button disabled={loading} className="w-full rounded-xl bg-teal text-white font-bold py-3 disabled:opacity-60">{loading ? "Recording consent..." : "I Consent to Receive KinCare360 Text Updates"}</button>
         </form>
         {result && <div className={`mt-5 rounded-xl p-4 text-sm ${result.type === "success" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>{result.message}</div>}
-        <p className="text-xs text-gray-500 mt-8 leading-relaxed">Need help? Email <a href="mailto:hello@kincare360.com" className="text-teal underline">hello@kincare360.com</a> or call <a href="tel:+18125155252" className="text-teal underline">(812) 515-5252</a>. To stop texts after enrollment, reply STOP to any message.</p>
+        <p className="text-xs text-gray-500 mt-8 leading-relaxed">Need help? Email <a href="mailto:hello@kincare360.com" className="text-teal underline">hello@kincare360.com</a> or call <a href="tel:+12727669090" className="text-teal underline">+1 272 766 9090</a>. To stop texts after enrollment, reply STOP to any message.</p>
       </div>
     </main>
   );

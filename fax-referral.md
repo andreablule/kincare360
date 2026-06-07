@@ -56,13 +56,13 @@ Share your link with patients â€” you earn when they sign up.
 â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
 
 TO REFER A PATIENT:
-Simply tell them to visit kincare360.com or call (812) 515-5252
+Simply tell them to visit kincare360.com or call +1 272 766 9090
 No paperwork. No setup on your end. Patient signs up directly.
 
 â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
 
 CONTACT US:
-Phone: (812) 515-5252 (Talk to Lily 24/7)
+Phone: +1 272 766 9090 (Talk to Lily 24/7)
 Email: hello@kincare360.com
 Web:   kincare360.com
 

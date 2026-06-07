@@ -27,7 +27,7 @@ export default function Home() {
             "name": "KinCare360",
             "description": "AI-powered phone conversations, daily check-in calls, routine reminders, and family updates for aging parents — no smartphone, computer, or app required.",
             "url": "https://kincare360.com",
-            "telephone": "+18125155252",
+            "telephone": "+12727669090",
             "email": "hello@kincare360.com",
             "address": {
               "@type": "PostalAddress",

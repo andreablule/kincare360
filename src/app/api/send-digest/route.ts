@@ -1,24 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import nodemailer from "nodemailer";
+import { sendSMS } from "@/lib/sms";
 
 export const maxDuration = 55;
 export const dynamic = 'force-dynamic';
-
-const twilioSid = process.env.TWILIO_ACCOUNT_SID!;
-const twilioToken = process.env.TWILIO_AUTH_TOKEN!;
-const twilioPhone = process.env.TWILIO_PHONE_NUMBER!;
-
-async function sendSMS(to: string, body: string) {
-  const auth = Buffer.from(`${twilioSid}:${twilioToken}`).toString("base64");
-  try {
-    await fetch(`https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`, {
-      method: "POST",
-      headers: { Authorization: `Basic ${auth}`, "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ To: to, From: twilioPhone, Body: body }).toString(),
-    });
-  } catch (e) { console.error("[send-digest] SMS failed:", e); }
-}
 
 async function sendEmail(to: string, subject: string, html: string) {
   const transporter = nodemailer.createTransport({
@@ -128,7 +114,7 @@ export async function GET(req: NextRequest) {
               <p style="color:#94a3b8;font-size:12px;margin-top:8px;">To change when you receive this summary, update your preferences in the dashboard.</p>
             </div>
           </div>
-          <p style="color:#94a3b8;font-size:11px;text-align:center;margin-top:12px;">KinCare360 Daily Digest — hello@kincare360.com | (812) 515-5252</p>
+          <p style="color:#94a3b8;font-size:11px;text-align:center;margin-top:12px;">KinCare360 Daily Digest — hello@kincare360.com | +1 272 766 9090</p>
         </div>`;
 
       const smsText = `KinCare360 Daily Update — ${patientName} (${dateStr})\n\n${textSummary}View details: kincare360.com/dashboard`;

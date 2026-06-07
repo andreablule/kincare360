@@ -58,14 +58,14 @@ const html = `
 
 <p>We'd love for your audience to know about this. Whether it's a mention in your newsletter, a listing in your resource directory, or just sharing with families who might benefit — we're grateful for any help getting the word out.</p>
 
-<p>You can try it yourself right now — just call Lily at <strong>(812) 515-5252</strong> and she'll walk you through everything.</p>
+<p>You can try it yourself right now — just call Lily at <strong>+1 272 766 9090</strong> and she'll walk you through everything.</p>
 
 <p><strong>Website:</strong> <a href="https://kincare360.com" style="color: #0d9488;">kincare360.com</a></p>
 
 <p>Thank you for the work you do for caregivers. It matters more than you know.</p>
 
 <p style="color: #666;">The KinCare360 Team<br>
-<a href="mailto:hello@kincare360.com" style="color: #0d9488;">hello@kincare360.com</a> | (812) 515-5252</p>
+<a href="mailto:hello@kincare360.com" style="color: #0d9488;">hello@kincare360.com</a> | +1 272 766 9090</p>
 </div>
 `;
 

@@ -714,7 +714,7 @@ export default function IntakePage() {
         </div>
 
         <p className="text-center text-sm text-gray-400 mt-6">
-          Need help? Call <a href="tel:+18125155252" className="text-teal font-medium">(812) 515-5252</a>
+          Need help? Call <a href="tel:+12727669090" className="text-teal font-medium">+1 272 766 9090</a>
         </p>
       </div>
     </main>

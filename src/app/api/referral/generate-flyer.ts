@@ -87,7 +87,7 @@ export function generateFlyer(partnerName: string, referralCode: string, referra
 
   <div class="cta">
     <div class="cta-title">Get Started Today</div>
-    <div class="cta-phone">(812) 515-5252</div>
+    <div class="cta-phone">+1 272 766 9090</div>
     <div class="cta-web">Visit <a href="${referralLink}">${referralLink.replace('https://', '')}</a></div>
   </div>
 
@@ -99,7 +99,7 @@ export function generateFlyer(partnerName: string, referralCode: string, referra
 
   <!-- Tear-off tabs for bulletin boards -->
   <div class="tear-strip">
-    ${Array(6).fill('').map(() => `<div class="tear-tab"><div class="tear-phone">(812) 515-5252</div><div class="tear-site">kincare360.com</div><div style="font-size:8px;color:#0EA5A0;margin-top:2px;">Code: ${referralCode}</div></div>`).join('')}
+    ${Array(6).fill('').map(() => `<div class="tear-tab"><div class="tear-phone">+1 272 766 9090</div><div class="tear-site">kincare360.com</div><div style="font-size:8px;color:#0EA5A0;margin-top:2px;">Code: ${referralCode}</div></div>`).join('')}
   </div>
 </div>
 </body>

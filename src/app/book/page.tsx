@@ -69,7 +69,7 @@ export default function BookPage() {
       if (data.success) {
         setSuccess(true);
       } else {
-        setError('Something went wrong. Please try again or call us directly at (812) 515-5252.');
+        setError('Something went wrong. Please try again or call us directly at +1 272 766 9090.');
         setSubmitting(false);
       }
     } catch {
@@ -118,7 +118,7 @@ export default function BookPage() {
             <p className="text-gray-500 text-sm mt-1">{form.service}</p>
             <div className="bg-teal/5 rounded-xl p-4 mt-4 text-sm text-gray-600">
               A confirmation text has been sent to <strong>{form.phone}</strong>.
-              <br />Questions? Call us at <a href="tel:+18125155252" className="text-teal font-medium">(812) 515-5252</a>
+              <br />Questions? Call us at <a href="tel:+12727669090" className="text-teal font-medium">+1 272 766 9090</a>
             </div>
             <a href="/" className="mt-6 inline-block bg-teal text-white px-6 py-2.5 rounded-full font-semibold hover:bg-teal-dark transition-colors text-sm">
               Back to Home
@@ -270,7 +270,7 @@ export default function BookPage() {
         </div>}
 
         <p className="text-center text-sm text-gray-400 mt-6">
-          Questions? Call or text <a href="tel:+18125155252" className="text-teal font-medium">(812) 515-5252</a>
+          Questions? Call or text <a href="tel:+12727669090" className="text-teal font-medium">+1 272 766 9090</a>
         </p>
       </div>
     </main>

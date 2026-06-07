@@ -74,7 +74,7 @@ async function sendWelcomeEmail(to: string, customerName: string, trialEnd: stri
 
           <h2 style="color: #0F2147; font-size: 18px; margin-top: 30px;">Need help?</h2>
           <p style="color: #555; font-size: 16px;">
-            Call Lily anytime: <a href="tel:+18125155252" style="color: #0EA5A0; font-weight: bold;">(812) 515-5252</a><br/>
+            Call Lily anytime: <a href="tel:+12727669090" style="color: #0EA5A0; font-weight: bold;">+1 272 766 9090</a><br/>
             Email us: <a href="mailto:hello@kincare360.com" style="color: #0EA5A0;">hello@kincare360.com</a><br/>
             Visit: <a href="https://kincare360.com" style="color: #0EA5A0;">kincare360.com</a>
           </p>
@@ -479,7 +479,7 @@ export async function POST(req: NextRequest) {
       if (digits.length === 10) {
         await sendSMS(
           `+1${digits}`,
-          `Welcome to KinCare360, ${customerName.split(' ')[0]}! 🎉\n\nYour 7-day free trial has started. Lily will begin daily check-ins at your preferred time.\n\nTrial ends: ${trialEnd}\nDashboard: kincare360.com/login\nCall Lily: (812) 515-5252\n\nReply STOP to opt out.`
+          `Welcome to KinCare360, ${customerName.split(' ')[0]}! 🎉\n\nYour 7-day free trial has started. Lily will begin daily check-ins at your preferred time.\n\nTrial ends: ${trialEnd}\nDashboard: kincare360.com/login\nCall Lily: +1 272 766 9090\n\nReply STOP to opt out.`
         );
       }
     }

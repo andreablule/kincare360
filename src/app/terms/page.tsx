@@ -75,7 +75,7 @@ export default function TermsPage() {
 
         <div>
           <h2 className="text-xl font-semibold text-navy mb-2">8. Cancellation & Refunds</h2>
-          <p>You may cancel your subscription at any time. Cancellations take effect at the end of the current billing cycle. To cancel, contact us at <a href="mailto:hello@kincare360.com" className="text-teal underline">hello@kincare360.com</a> or call <a href="tel:+18125155252" className="text-teal underline">(812) 515-5252</a>. Refunds are evaluated on a case-by-case basis.</p>
+          <p>You may cancel your subscription at any time. Cancellations take effect at the end of the current billing cycle. To cancel, contact us at <a href="mailto:hello@kincare360.com" className="text-teal underline">hello@kincare360.com</a> or call <a href="tel:+12727669090" className="text-teal underline">+1 272 766 9090</a>. Refunds are evaluated on a case-by-case basis.</p>
         </div>
 
         <div>
@@ -107,7 +107,7 @@ export default function TermsPage() {
             <li>Reply <strong>STOP</strong> to cancel at any time</li>
             <li>Reply <strong>HELP</strong> for assistance</li>
           </ul>
-          <p className="mt-2">For questions about SMS, contact <a href="mailto:hello@kincare360.com" className="text-teal underline">hello@kincare360.com</a> or <a href="tel:+18125155252" className="text-teal underline">(812) 515-5252</a>. See our <a href="/privacy" className="text-teal underline">Privacy Policy</a> for how we handle your data.</p>
+          <p className="mt-2">For questions about SMS, contact <a href="mailto:hello@kincare360.com" className="text-teal underline">hello@kincare360.com</a> or <a href="tel:+12727669090" className="text-teal underline">+1 272 766 9090</a>. See our <a href="/privacy" className="text-teal underline">Privacy Policy</a> for how we handle your data.</p>
         </div>
 
         <div>
@@ -122,7 +122,7 @@ export default function TermsPage() {
 
         <div>
           <h2 className="text-xl font-semibold text-navy mb-2">14. Contact Us</h2>
-          <p>Questions? Contact us at <a href="mailto:hello@kincare360.com" className="text-teal underline">hello@kincare360.com</a> or <a href="tel:+18125155252" className="text-teal underline">(812) 515-5252</a></p>
+          <p>Questions? Contact us at <a href="mailto:hello@kincare360.com" className="text-teal underline">hello@kincare360.com</a> or <a href="tel:+12727669090" className="text-teal underline">+1 272 766 9090</a></p>
         </div>
 
       </section>

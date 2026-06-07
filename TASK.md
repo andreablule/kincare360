@@ -85,7 +85,7 @@ In src/app/page.tsx, add a script tag with JSON-LD structured data at the top of
       "name": "KinCare360",
       "description": "AI-powered daily check-in calls, family-approved routine reminders, and everyday coordination for aging parents.",
       "url": "https://kincare360.com",
-      "telephone": "+18125155252",
+      "telephone": "+12727669090",
       "email": "hello@kincare360.com",
       "address": {
         "@type": "PostalAddress",

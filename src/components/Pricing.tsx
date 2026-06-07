@@ -29,7 +29,7 @@ const features = [
   },
   {
     name: "24/7 access to Lily",
-    detail: "Your parent can call Lily anytime — day or night — at (812) 515-5252. Whether they need help, have a question, feel lonely, or just want to chat, Lily is always there. No hold times, no voicemail, no waiting.",
+    detail: "Your parent can call Lily anytime — day or night — at +1 272 766 9090. Whether they need help, have a question, feel lonely, or just want to chat, Lily is always there. No hold times, no voicemail, no waiting.",
   },
   {
     name: "Cancel anytime",
@@ -147,7 +147,7 @@ export default function Pricing() {
 
         <p className="text-center text-sm text-gray-400">
           Questions?{" "}
-          <a href="tel:+18125155252" className="text-teal hover:underline">Call Lily at (812) 515-5252</a>
+          <a href="tel:+12727669090" className="text-teal hover:underline">Call Lily at +1 272 766 9090</a>
           {" "}&mdash; she&apos;ll help you get started.
         </p>
       </div>

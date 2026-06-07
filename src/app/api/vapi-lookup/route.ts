@@ -344,7 +344,7 @@ function buildTransferDestinations(patient: any): any[] {
   }
   // Always include a fallback
   if (dests.length === 0) {
-    dests.push({ type: "number", number: "+18125155252", description: "KinCare360 main line" });
+    dests.push({ type: "number", number: "+12727669090", description: "KinCare360 main line" });
   }
   return dests;
 }

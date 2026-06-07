@@ -52,10 +52,10 @@ const html = `
 <p>Your clients sign up directly at <a href="https://kincare360.com" style="color: #0d9488; font-weight: bold;">kincare360.com</a>. No setup required on your end. No extra work for your staff.</p>
 <p>Plans start at <strong>$50/month</strong> with a <strong>free 7-day trial</strong>. Available nationwide.</p>
 <p><strong>See how it works: <a href="https://kincare360.com" style="color: #0d9488;">kincare360.com</a></strong></p>
-<p>Or call Lily directly to hear it in action: <strong>(812) 515-5252</strong></p>
+<p>Or call Lily directly to hear it in action: <strong>+1 272 766 9090</strong></p>
 <br>
 <p style="color: #666;">The KinCare360 Team<br>
-<a href="mailto:hello@kincare360.com" style="color: #0d9488;">hello@kincare360.com</a> | (812) 515-5252<br>
+<a href="mailto:hello@kincare360.com" style="color: #0d9488;">hello@kincare360.com</a> | +1 272 766 9090<br>
 <a href="https://kincare360.com" style="color: #0d9488;">kincare360.com</a></p>
 </div>
 `;

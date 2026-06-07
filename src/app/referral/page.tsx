@@ -148,7 +148,7 @@ export default function ReferralPage() {
         )}
 
         <p className="text-center text-xs text-gray-400 mt-6">
-          Questions? Call <a href="tel:+18125155252" className="text-teal hover:underline">(812) 515-5252</a>
+          Questions? Call <a href="tel:+12727669090" className="text-teal hover:underline">+1 272 766 9090</a>
         </p>
       </div>
     </main>

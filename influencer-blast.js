@@ -58,14 +58,14 @@ function getEmail(contact) {
   <li>Practical tips families can use TODAY to keep aging parents safe</li>
 </ul>
 
-<p>Your listeners can even try it right now — just call <strong>(812) 515-5252</strong> and Lily will answer.</p>
+<p>Your listeners can even try it right now — just call <strong>+1 272 766 9090</strong> and Lily will answer.</p>
 
 <p><strong>Website:</strong> <a href="https://kincare360.com" style="color: #0d9488;">kincare360.com</a></p>
 
 <p>Would you be open to a conversation?</p>
 
 <p style="color: #666;">The KinCare360 Team<br>
-<a href="mailto:hello@kincare360.com" style="color: #0d9488;">hello@kincare360.com</a> | (812) 515-5252</p>
+<a href="mailto:hello@kincare360.com" style="color: #0d9488;">hello@kincare360.com</a> | +1 272 766 9090</p>
 </div>`;
   } else {
     return `
@@ -80,7 +80,7 @@ function getEmail(contact) {
 
 <p>I'm not looking for paid promotion — just wondering if you'd be open to trying it yourself and sharing with your community if you think it's genuinely helpful.</p>
 
-<p>Your audience can call Lily right now at <strong>(812) 515-5252</strong> to hear what a check-in sounds like.</p>
+<p>Your audience can call Lily right now at <strong>+1 272 766 9090</strong> to hear what a check-in sounds like.</p>
 
 <ul>
   <li>Plans from <strong>$50/month</strong></li>
@@ -95,7 +95,7 @@ function getEmail(contact) {
 <p>Thank you for the work you do. It matters.</p>
 
 <p style="color: #666;">The KinCare360 Team<br>
-<a href="mailto:hello@kincare360.com" style="color: #0d9488;">hello@kincare360.com</a> | (812) 515-5252</p>
+<a href="mailto:hello@kincare360.com" style="color: #0d9488;">hello@kincare360.com</a> | +1 272 766 9090</p>
 </div>`;
   }
 }

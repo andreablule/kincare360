@@ -17,10 +17,10 @@ export default function CTASection() {
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <a
-            href="tel:+18125155252"
+            href="tel:+12727669090"
             className="inline-block bg-teal text-white px-10 py-4 rounded-full text-lg font-semibold hover:bg-teal-dark transition-colors"
           >
-            Call Lily Now — (812) 515-5252
+            Call Lily Now — +1 272 766 9090
           </a>
           <a
             href="#pricing"

@@ -12,7 +12,7 @@ No apps. No devices. Just a daily phone call that gives you peace of mind.
 Plans start at $50/month. 7-day free trial. No contracts.
 
 Try it free at kincare360.com
-Or call Lily right now: (812) 515-5252
+Or call Lily right now: +1 272 766 9090
 
 #KinCare360 #ElderCare #AgingParents #SeniorCare #CaregiverSupport`;
 

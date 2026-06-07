@@ -81,7 +81,7 @@ function SuccessContent() {
             ? "A confirmation has been sent to your phone. Setting up your care profile now…"
             : "Finalizing your account…"}
           {" "}Questions? Call or text{" "}
-          <a href="tel:+18125155252" className="text-teal font-medium">(812) 515-5252</a>
+          <a href="tel:+12727669090" className="text-teal font-medium">+1 272 766 9090</a>
         </p>
 
         {confirmed && (

@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import nodemailer from "nodemailer";
 import { generateFlyer } from "./generate-flyer";
+import { sendSMS } from "@/lib/sms";
 
 function generateCode(name: string): string {
   const prefix = name
@@ -58,33 +59,18 @@ export async function POST(req: NextRequest) {
     const link = `https://kincare360.com/register?ref=${referral.code}`;
     const dashLink = `https://kincare360.com/partners?code=${referral.code}`;
 
-    // Send SMS confirmation + social media post
+    // Send SMS confirmation + social media post through Telnyx when a phone is provided
     if (phone) {
       try {
-        const twilioSid = process.env.TWILIO_ACCOUNT_SID!;
-        const twilioToken = process.env.TWILIO_AUTH_TOKEN!;
-        const twilioPhone = process.env.TWILIO_PHONE_NUMBER!;
-        const smsAuth = Buffer.from(`${twilioSid}:${twilioToken}`).toString("base64");
-
-        // Confirmation SMS
-        const smsBody = `Welcome to the KinCare360 Referral Program, ${name.split(" ")[0]}! 🎉\n\nYour code: ${referral.code}\nShare this link: ${link}\n\nYou earn $50 for every new subscriber.\nTrack earnings: ${dashLink}\n\nReply STOP to opt out.`;
-
         const digits = phone.replace(/\D/g, "").slice(-10);
         if (digits.length === 10) {
-          await fetch(`https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`, {
-            method: "POST",
-            headers: { "Authorization": `Basic ${smsAuth}`, "Content-Type": "application/x-www-form-urlencoded" },
-            body: new URLSearchParams({ To: `+1${digits}`, From: twilioPhone, Body: smsBody }).toString(),
-          });
+          // Confirmation SMS
+          const smsBody = `Welcome to the KinCare360 Referral Program, ${name.split(" ")[0]}! 🎉\n\nYour code: ${referral.code}\nShare this link: ${link}\n\nYou earn $50 for every new subscriber.\nTrack earnings: ${dashLink}\n\nReply STOP to opt out.`;
+          await sendSMS(`+1${digits}`, smsBody);
 
           // Send ready-to-post social media message
           const socialPost = `🎉 I just partnered with KinCare360 — a service that provides daily family check-in calls, family-approved routine reminders, and everyday coordination for aging parents.\n\nIf you or someone you know is caring for an elderly loved one, check it out:\n${link}\n\n✅ 7-day free trial\n✅ Daily check-in calls\n✅ Routine reminder calls\n✅ Family dashboard\n\n#ElderCare #AgingParents #KinCare360 #Caregiving`;
-
-          await fetch(`https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`, {
-            method: "POST",
-            headers: { "Authorization": `Basic ${smsAuth}`, "Content-Type": "application/x-www-form-urlencoded" },
-            body: new URLSearchParams({ To: `+1${digits}`, From: twilioPhone, Body: `📱 Ready-to-post for social media (just copy & paste):\n\n${socialPost}` }).toString(),
-          });
+          await sendSMS(`+1${digits}`, `📱 Ready-to-post for social media (just copy & paste):\n\n${socialPost}`);
         }
       } catch (smsErr) {
         console.error("Partner SMS error:", smsErr);
@@ -175,7 +161,7 @@ ${link}
               <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;" />
 
               <p style="color: #999; font-size: 12px;">
-                Questions? Call Lily at <a href="tel:+18125155252" style="color: #999;">(812) 515-5252</a> or email <a href="mailto:hello@kincare360.com" style="color: #999;">hello@kincare360.com</a>
+                Questions? Call Lily at <a href="tel:+12727669090" style="color: #999;">+1 272 766 9090</a> or email <a href="mailto:hello@kincare360.com" style="color: #999;">hello@kincare360.com</a>
               </p>
             </div>
           `,
