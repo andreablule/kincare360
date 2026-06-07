@@ -2,6 +2,7 @@
 - Replaced public/support/Lily phone references from the old number to `+1 272 766 9090` across website pages, components, referral/outreach copy, Lily prompt copy, and generated referral/flyer text.
 - Converted remaining Twilio SMS routes (`/api/book-voice`, `/api/send-digest`, `/api/referral`) to the shared Telnyx SMS helper.
 - Removed hardcoded Vapi bearer token and phone-number ID from `/api/outbound-call`; outbound voice now uses `VAPI_API_KEY` and `VAPI_PHONE_NUMBER_ID`.
+- Removed old Twilio environment variables from Vercel Production; Vercel now shows only `TELNYX_PHONE_NUMBER` among Telnyx/Twilio phone provider env names.
 - Old local Twilio env lines and the old Twilio A2P resubmission package still need manual/local cleanup; production still needs `TELNYX_API_KEY` and Vapi/Telnyx voice routing before live SMS/call tests.
 
 2026-06-07 EDT - KinCare360 Telnyx number configured for SMS
