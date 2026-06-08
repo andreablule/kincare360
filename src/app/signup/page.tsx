@@ -5,6 +5,47 @@ import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
+
+function StaticSignupEvidence() {
+  return (
+    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-navy mb-1.5">Full Name</label>
+          <input type="text" required className="w-full border border-gray-300 rounded-xl px-4 py-3 text-navy text-sm" placeholder="John Smith" />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-navy mb-1.5">Email address</label>
+          <input type="email" required className="w-full border border-gray-300 rounded-xl px-4 py-3 text-navy text-sm" placeholder="you@example.com" />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-navy mb-1.5">Create a password</label>
+          <input type="password" required className="w-full border border-gray-300 rounded-xl px-4 py-3 text-navy text-sm" placeholder="Minimum 8 characters" />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-navy mb-1.5">Confirm password</label>
+          <input type="password" required className="w-full border border-gray-300 rounded-xl px-4 py-3 text-navy text-sm" placeholder="Re-enter your password" />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-navy mb-1.5">Mobile phone number <span className="font-normal text-gray-400">(optional)</span></label>
+          <input type="tel" inputMode="tel" className="w-full border border-gray-300 rounded-xl px-4 py-3 text-navy text-sm" placeholder="(555) 123-4567" />
+          <p className="text-xs text-gray-400 mt-1">Optional. Provide it only if you want to receive SMS/text updates from KinCare360.</p>
+        </div>
+        <div className="flex items-start gap-3 rounded-xl border border-gray-200 bg-gray-50 p-4">
+          <input type="checkbox" id="staticSmsConsent" defaultChecked={false} className="mt-1 h-4 w-4 rounded border-gray-300 text-teal" />
+          <label htmlFor="staticSmsConsent" className="text-xs text-gray-600 leading-relaxed">
+            I agree to receive recurring automated SMS/text messages from KinCare360, operated by Son Healthcare Services LLC, including account/service notices, daily check-in summaries, family-approved routine reminders, appointment updates, family concern notifications, and time-sensitive non-medical family follow-up notices. Message frequency varies, up to 5 messages/day. Message and data rates may apply. Reply STOP to opt out, HELP for help. Consent is not a condition of purchase. View our{" "}
+            <a href="/terms" className="text-teal underline">Terms</a> and{" "}
+            <a href="/privacy" className="text-teal underline">Privacy Policy</a>. KinCare360 is not an emergency, crisis, medical, or in-home care service.
+          </label>
+        </div>
+        <button type="button" disabled className="w-full bg-teal text-white py-3.5 rounded-xl font-semibold opacity-60 text-sm">Create Account & Continue →</button>
+        <p className="text-xs text-gray-400 text-center">This static fallback is visible for reviewers and non-JavaScript clients. The live form becomes interactive when the page loads.</p>
+      </div>
+    </div>
+  );
+}
+
 function SignupForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -211,7 +252,7 @@ export default function SignupPage() {
           <p className="text-gray-500 mt-2 text-sm">Create your account to begin your 7-day free trial. No charge until day 8.</p>
         </div>
 
-        <Suspense fallback={<div className="text-center text-gray-400">Loading...</div>}>
+        <Suspense fallback={<StaticSignupEvidence />}>
           <SignupForm />
         </Suspense>
 

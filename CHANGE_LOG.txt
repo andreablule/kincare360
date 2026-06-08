@@ -1,3 +1,9 @@
+2026-06-08 EDT - Signup static HTML Telnyx reviewer fallback
+- Fixed final peer-review blocker where raw `/signup` HTML showed only `Loading...` before client-side rendering, which could cause Telnyx reviewers/crawlers to miss the optional phone field and SMS consent checkbox.
+- Added a static Suspense fallback on `/signup` that visibly includes optional mobile phone field, optional unchecked SMS checkbox, full SMS consent language, Terms link, Privacy Policy link, STOP/HELP, frequency, consent-not-condition-of-purchase, and non-emergency/non-medical wording for non-JavaScript/reviewer clients.
+- Added spacing before the Family SMS Consent submit button.
+- Verified local production `/signup` raw HTML contains the required SMS consent evidence and no `Loading...` placeholder.
+
 2026-06-08 EDT - ChatGPT/Claude website-only A2P remediation
 - Implemented approved website-only changes from ChatGPT and Claude peer review; did not touch Telnyx/provider settings.
 - Added optional mobile phone field plus separate optional unchecked SMS consent checkbox to `/signup`; account creation remains available without SMS opt-in, and checked signup SMS consent records an opted-in contact using existing family/safety-contact consent fields.
