@@ -117,4 +117,4 @@ The inbound route handles STOP/STOPALL/UNSUBSCRIBE/CANCEL/END/QUIT, START/YES/UN
 - Twilio-specific public wording removed from Privacy page: yes
 - Embedded link setting should be Yes: yes
 - Embedded phone number setting should be Yes: yes
-- Provider-side Telnyx update status: not performed in this website-only revision; wait for explicit approval after peer review.
+- Provider-side Telnyx update status: separate KinCare360 10DLC Brand created on 2026-06-08 with Brand ID `4b20019e-a622-9258-b1cd-48d218a5fd53` and read-back status `OK`; campaign submission under this Brand is blocked by Telnyx `402 Insufficient Funds` until the Telnyx account has at least `$30.00`. No number assignment has been changed.

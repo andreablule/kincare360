@@ -1,6 +1,7 @@
-2026-06-08 EDT - Separate KinCare360 Brand/campaign approval prep
+2026-06-08 EDT - Separate KinCare360 Brand created; campaign blocked by Telnyx balance
 - Updated `KINCARE360_TELNYX_A2P_CAMPAIGN_PACKAGE.md` with Andrea-approved separate KinCare360 10DLC Brand plan and refined carrier-safe campaign description using `designated trusted contacts` and `family-requested appointment coordination updates`.
-- Provider-side creation is blocked pending the company EIN/tax ID required by Telnyx Brand creation; no Telnyx Brand/campaign/number changes were made.
+- Created a separate Telnyx 10DLC Brand parent for KinCare360 under legal entity `Son Healthcare Services LLC`, display name `KinCare360`, website `https://www.kincare360.com`; read-back showed Brand ID `4b20019e-a622-9258-b1cd-48d218a5fd53` and status `OK`.
+- Campaign submission under the new KinCare360 Brand was attempted with corrected keyword formatting but Telnyx returned `402 Insufficient Funds`: account must have at least `$30.00`; no KinCare360 campaign was created under the new Brand and no number assignment was changed.
 
 2026-06-08 EDT - Server-rendered signup SMS evidence
 - Split `/signup` into a server-rendered page plus client-only signup form component so the SMS evidence section is in the initial static DOM, not dependent on client rendering or Suspense fallback.
