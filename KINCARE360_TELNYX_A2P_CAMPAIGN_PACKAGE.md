@@ -21,28 +21,21 @@ KinCare360 is not a medical provider, emergency response service, crisis counsel
 
 ## Message flow / opt-in flow
 
-Account owners opt in during signup at:
-
-https://www.kincare360.com/signup
-
-The signup page requires an SMS consent checkbox before account creation with this disclosure:
-
-"I agree to receive recurring automated SMS/text messages from KinCare360 including account/service messages, daily check-in notifications, family-approved routine reminders, appointment updates, family concern notifications, and time-sensitive family follow-up notices for non-medical everyday coordination. Message frequency varies, up to 5 messages per day. Message and data rates may apply. Reply STOP to opt out at any time. Reply HELP for help. Consent is not a condition of purchase. KinCare360 is not an emergency, crisis, medical, or in-home care service. View our Privacy Policy and Terms of Service."
-
-Family members and safety contacts provide their own consent at:
+Family members and safety contacts provide SMS consent at:
 
 https://www.kincare360.com/family-consent
 
-The Family SMS Consent page asks for the family member's name, mobile phone number, loved one's name, and a required checkbox with this disclosure:
+The Family SMS Consent page shows the phone number field and full SMS opt-in language on the same form. The mobile phone number field is optional and labeled: "Mobile phone number (optional; required only if you choose SMS consent)." The SMS checkbox is also optional and labeled "Optional SMS consent." The checkbox disclosure says:
 
-"I agree to receive recurring automated SMS/text messages from KinCare360 about my loved one, including daily check-in summaries, family-approved routine reminders, appointment updates, family concern notifications, and time-sensitive family follow-up notices if my loved one shares a non-medical everyday concern that may need family attention. Message frequency varies, up to 5 messages per day. Message and data rates may apply. Reply STOP to opt out at any time. Reply HELP for help. Consent is not a condition of purchase. KinCare360 is not an emergency, crisis, medical, or in-home care service. I have read the Privacy Policy and Terms of Service."
+"Optional SMS consent: I agree to receive recurring automated SMS/text messages from KinCare360 about my loved one, including daily check-in summaries, family-approved routine reminders, appointment updates, family concern notifications, and time-sensitive family follow-up notices if my loved one shares a non-medical everyday concern that may need family attention. Message frequency varies, up to 5 messages per day. Message and data rates may apply. Reply STOP to opt out at any time. Reply HELP for help. Consent is not a condition of purchase. KinCare360 is not an emergency, crisis, medical, or in-home care service. I have read the Privacy Policy and Terms of Service."
 
-Family members who do not submit the Family SMS Consent form are not enrolled for recurring family-contact text updates. Account owners cannot create an account from the public signup page unless the SMS consent checkbox is checked.
+A family member is enrolled for recurring SMS only when they both provide a valid mobile phone number and choose the optional SMS consent checkbox. If they do not provide a phone number and do not check the box, no SMS consent is recorded and they are not enrolled. If they provide a phone number without choosing SMS consent, the form explains that consent is required to enroll that mobile number for text updates.
+
+Account-owner signup at https://www.kincare360.com/signup does not enroll SMS recipients and is not used as A2P opt-in evidence because the public signup form does not collect a mobile phone number. Signup may show an optional notice that SMS enrollment requires a mobile phone number and separate opt-in consent.
 
 ## Opt-in evidence URLs
 
-- Account-owner signup consent page: https://www.kincare360.com/signup
-- Public family consent page: https://www.kincare360.com/family-consent
+- Public family consent page showing phone field and full opt-in language: https://www.kincare360.com/family-consent
 - Terms of Service SMS section: https://www.kincare360.com/terms
 - Privacy Policy SMS section: https://www.kincare360.com/privacy
 

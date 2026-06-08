@@ -161,7 +161,7 @@ function SignupForm() {
           )}
         </div>
 
-        {/* SMS Consent */}
+        {/* Optional SMS notice only. SMS enrollment requires a mobile number and separate consent form. */}
         <div className="flex items-start gap-3">
           <input
             type="checkbox"
@@ -171,13 +171,13 @@ function SignupForm() {
             className="mt-1 h-4 w-4 rounded border-gray-300 text-teal focus:ring-teal"
           />
           <label htmlFor="smsConsent" className="text-xs text-gray-600 leading-relaxed">
-            I agree to receive recurring automated SMS/text messages from KinCare360 including account/service messages, daily check-in notifications, family-approved routine reminders, appointment updates, family concern notifications, and time-sensitive family follow-up notices for non-medical everyday coordination. Message frequency varies, up to 5 messages per day. Message and data rates may apply. Reply STOP to opt out at any time. Reply HELP for help. Consent is not a condition of purchase. KinCare360 is not an emergency, crisis, medical, or in-home care service. View our{" "}
+            Optional: I would like KinCare360 to show me how to enroll in SMS/text updates after signup. SMS enrollment requires a mobile phone number and separate opt-in consent. Message frequency varies, up to 5 messages per day. Message and data rates may apply. Reply STOP to opt out at any time. Reply HELP for help. Consent is not a condition of purchase. KinCare360 is not an emergency, crisis, medical, or in-home care service. View our{" "}
             <a href="/privacy" className="text-teal underline">Privacy Policy</a> and{" "}
             <a href="/terms" className="text-teal underline">Terms of Service</a>.
           </label>
         </div>
 
-        <button type="submit" disabled={loading || password !== confirmPassword || password.length < 8 || !smsConsent}
+        <button type="submit" disabled={loading || password !== confirmPassword || password.length < 8}
           className="w-full bg-teal text-white py-3.5 rounded-xl font-semibold hover:bg-teal-dark transition-colors disabled:opacity-40 text-sm">
           {loading ? "Creating account..." : "Create Account & Continue →"}
         </button>

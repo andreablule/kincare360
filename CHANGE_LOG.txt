@@ -1,3 +1,12 @@
+2026-06-08 EDT - Telnyx forced opt-in review remediation
+- Fixed Telnyx review failure for KinCare360 campaign `4b30019e-a135-5cef-a291-3d93b10859e2` / TCR `CP39XTU`.
+- Updated `/family-consent` so the mobile phone field is optional and labeled as required only if the visitor chooses SMS consent; the SMS consent checkbox is optional and labeled `Optional SMS consent`, with full frequency, rates, STOP, HELP, consent-not-condition-of-purchase, Privacy, Terms, and non-emergency/non-medical language visible on the same form.
+- Updated `/signup` so account creation no longer requires SMS consent and no longer acts as A2P opt-in evidence because the live signup form does not collect a mobile phone number.
+- Updated `KINCARE360_TELNYX_A2P_CAMPAIGN_PACKAGE.md` to use only the public family consent form as SMS opt-in evidence and to describe the optional phone/checkbox workflow.
+- Built and deployed production; verified live `/family-consent` shows optional phone plus optional SMS consent and live `/signup` shows optional SMS notice only.
+- Updated the failed Telnyx campaign message flow via API; Telnyx returned `200`. Appeal endpoint refused with `Only campaigns in TELNYX_FAILED or MNO_REJECTED state can be appealed`, indicating the update moved the record out of the appealable failed state.
+- Attempted to assign `+1 272 766 9090` to the KinCare360 campaign; Telnyx blocked assignment with `Campaign ... is still pending and has not been approved yet`, so wait for final approval before assigning the number.
+
 2026-06-07 EDT - KinCare360 Telnyx A2P resubmission accepted
 - Recovered a valid Telnyx API key from approved read-only MyShiftReminder env/config scope without printing secrets.
 - Added `TELNYX_API_KEY` to KinCare360 Vercel Production and Development, redeployed production, and verified Vercel env presence by name only.
