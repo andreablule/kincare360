@@ -1,7 +1,7 @@
 2026-06-08 EDT - New KinCare360 PASS campaign submitted after old rows deactivated
 - Andrea deactivated the old non-number campaigns in Telnyx: the older CP39XTU row under the MyShiftReminder Brand and the failed KinCare360 TCR-creation row.
 - Created a fresh KinCare360 `ACCOUNT_NOTIFICATION` campaign under the separate KinCare360 Brand using the agreed ChatGPT PASS/refined copy, opt-in evidence from `/signup` and `/family-consent`, and explicit `subscriberHelp`, `subscriberOptin`, and `subscriberOptout` fields.
-- Read-back showed campaign ID `4b30019e-a63a-0559-84ee-337137722240`, TCR ID `4b30019e-a63a-0559-84ee-337137722240`, campaign status `TCR_PENDING`, submission status `PENDING`, subscriber fields all `true`, and no failure reasons. No phone-number campaign assignment was changed.
+- Follow-up API read-back showed campaign ID `4b30019e-a63a-0559-84ee-337137722240`, TCR ID `CRKDBDI`, campaign status `TCR_ACCEPTED`, status `ACTIVE`, submission status `CREATED`, subscriber fields all `true`, and no failure reasons. No phone-number campaign assignment was changed. Earlier pending/TCR-ID reporting was corrected after final read-back.
 
 2026-06-08 EDT - Server-rendered signup SMS evidence
 - Split `/signup` into a server-rendered page plus client-only signup form component so the SMS evidence section is in the initial static DOM, not dependent on client rendering or Suspense fallback.
