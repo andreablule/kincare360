@@ -14,17 +14,27 @@ Recommended campaign/use case: Account Notification.
 
 KinCare360 should be positioned as a non-medical family coordination and elder-support service. Avoid medical treatment, diagnosis, emergency response, crisis counseling, medication-compliance, hospital-readmission, health-monitoring, or broad service-fulfillment claims.
 
+## Brand recommendation
+
+Create/register a separate Telnyx 10DLC Brand parent for KinCare360, while leaving the existing MyShiftReminder Brand/campaign untouched:
+
+- Display name: KinCare360
+- Legal company: Son Healthcare Services LLC
+- Website: https://www.kincare360.com
+- Entity type: Private Profit
+- Vertical: Healthcare
+
 ## Campaign description
 
-KinCare360, operated by Son Healthcare Services LLC, sends opt-in account notification and family coordination SMS messages to account owners, family members, and safety contacts who have separately consented to receive text messages. Messages may include daily check-in summaries, family-approved routine reminders, appointment updates, service/account notices, family concern notifications, and time-sensitive non-medical family follow-up notices about a loved one. KinCare360 is not an emergency, medical, crisis, or in-home care service. Messages are non-marketing and are sent only to recipients who opt in.
+KinCare360, operated by Son Healthcare Services LLC, sends opt-in account notification and family coordination SMS messages to account owners, family members, and designated trusted contacts who have separately consented to receive text messages. Messages may include daily check-in summaries, family-approved routine reminders, family-requested appointment coordination updates, service/account notices, family concern notifications, and time-sensitive non-medical family follow-up notices about a loved one. KinCare360 is not an emergency, medical, crisis, or in-home care service. Messages are non-marketing and are sent only to recipients who opt in.
 
 ## Message flow / opt-in flow
 
 Account owners may opt in to receive SMS messages during signup at https://www.kincare360.com/signup. The signup form includes an optional mobile phone number field and a separate optional, unchecked SMS consent checkbox. The checkbox is not required to create an account and is separate from Terms of Service acceptance.
 
-The SMS consent checkbox states that by checking the box, the user agrees to receive recurring automated SMS/text messages from KinCare360, operated by Son Healthcare Services LLC, including account/service notices, daily check-in summaries, family-approved routine reminders, appointment updates, family concern notifications, and time-sensitive non-medical family follow-up notices. The disclosure states that message frequency varies up to 5 messages per day, message and data rates may apply, reply STOP to opt out, reply HELP for help, and consent is not a condition of purchase. The form also links to the KinCare360 Terms of Service and Privacy Policy.
+The SMS consent checkbox states that by checking the box, the user agrees to receive recurring automated SMS/text messages from KinCare360, operated by Son Healthcare Services LLC, including account/service notices, daily check-in summaries, family-approved routine reminders, family-requested appointment coordination updates, family concern notifications, and time-sensitive non-medical family follow-up notices. The disclosure states that message frequency varies up to 5 messages per day, message and data rates may apply, reply STOP to opt out, reply HELP for help, and consent is not a condition of purchase. The form also links to the KinCare360 Terms of Service and Privacy Policy.
 
-Family members and safety contacts may separately opt in at https://www.kincare360.com/family-consent. The family consent form includes required fields for full name, loved one's name, and relationship to the loved one. It also includes an optional mobile phone number field and a separate optional, unchecked SMS consent checkbox. The mobile phone number field is optional and is used only if the family member or safety contact wants to receive SMS/text updates. The SMS checkbox is not mandatory.
+Family members and designated trusted contacts may separately opt in at https://www.kincare360.com/family-consent. The family consent form includes required fields for full name, loved one's name, and relationship to the loved one. It also includes an optional mobile phone number field and a separate optional, unchecked SMS consent checkbox. The mobile phone number field is optional and is used only if the family member or designated trusted contact wants to receive SMS/text updates. The SMS checkbox is not mandatory.
 
 Consent records are stored with phone number, name, relationship to the loved one, timestamp, consent source, and consent text version where supported by the current form path. Recipients who do not provide a mobile phone number and do not check the SMS consent checkbox are not enrolled for recurring SMS/text updates.
 
@@ -62,7 +72,7 @@ KinCare360: To receive recurring family text updates, please confirm consent at 
 
 2. KinCare360: Family-approved routine reminder for Robert: evening walk reminder is scheduled for 6:00 PM. Reply HELP for help. Reply STOP to opt out.
 
-3. KinCare360: Appointment update for Elena: family notes show a visit planned for Tuesday at 10:00 AM. Reply HELP for help. Reply STOP to opt out.
+3. KinCare360: Family-requested appointment update for Elena: family notes show a visit planned for Tuesday at 10:00 AM. Reply HELP for help. Reply STOP to opt out.
 
 4. KinCare360: Family concern notification for James: he asked for a callback from family after today's check-in. Reply HELP for help. Reply STOP to opt out.
 

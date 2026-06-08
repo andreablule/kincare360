@@ -1,3 +1,7 @@
+2026-06-08 EDT - Separate KinCare360 Brand/campaign approval prep
+- Updated `KINCARE360_TELNYX_A2P_CAMPAIGN_PACKAGE.md` with Andrea-approved separate KinCare360 10DLC Brand plan and refined carrier-safe campaign description using `designated trusted contacts` and `family-requested appointment coordination updates`.
+- Provider-side creation is blocked pending the company EIN/tax ID required by Telnyx Brand creation; no Telnyx Brand/campaign/number changes were made.
+
 2026-06-08 EDT - Server-rendered signup SMS evidence
 - Split `/signup` into a server-rendered page plus client-only signup form component so the SMS evidence section is in the initial static DOM, not dependent on client rendering or Suspense fallback.
 - Verified raw HTML for `https://www.kincare360.com/signup`, `https://www.kincare360.com/signup?server=1`, and `https://kincare360.com/signup` contains the permanent `Optional SMS/text updates during signup` section, optional phone wording, consent-not-condition-of-purchase language, account-without-SMS note, and Terms/Privacy links, with no `Loading...` placeholder.
