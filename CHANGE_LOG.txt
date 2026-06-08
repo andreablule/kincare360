@@ -1,3 +1,10 @@
+2026-06-08 EDT - Final peer-review signup visibility fix
+- Added a permanent visible `/signup` SMS consent evidence section outside the JavaScript/Suspense form so crawlers and reviewer text extraction see optional phone, optional unchecked SMS consent, full SMS language, Terms/Privacy links, and the account-creation-without-SMS note even if the interactive form does not load.
+- Updated signup SMS checkbox wording to the exact peer-review language: account/service notices and family coordination updates.
+- Changed homepage founder wording from `Missed medications` to `Missed routines` to avoid medication-compliance implications.
+- Added additional spacing before the Family SMS Consent submit button.
+- No Telnyx/provider-side changes made.
+
 2026-06-08 EDT - Signup static HTML Telnyx reviewer fallback
 - Fixed final peer-review blocker where raw `/signup` HTML showed only `Loading...` before client-side rendering, which could cause Telnyx reviewers/crawlers to miss the optional phone field and SMS consent checkbox.
 - Added a static Suspense fallback on `/signup` that visibly includes optional mobile phone field, optional unchecked SMS checkbox, full SMS consent language, Terms link, Privacy Policy link, STOP/HELP, frequency, consent-not-condition-of-purchase, and non-emergency/non-medical wording for non-JavaScript/reviewer clients.

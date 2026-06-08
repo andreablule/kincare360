@@ -38,7 +38,7 @@ export default function FounderStory() {
               <p>
                 Over the years, I&apos;ve seen the same problem again and again — families
                 doing their best, but things still fall through the cracks. Missed
-                medications. Missed appointments. Constant worry.
+                routines. Missed appointments. Constant worry.
               </p>
               <p>
                 I built KinCare360 to solve that.
