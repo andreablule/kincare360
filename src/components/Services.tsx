@@ -1,6 +1,6 @@
 const services = [
   {
-    title: "Daily Wellness Check-Ins",
+    title: "Daily Family Check-Ins",
     description:
       "Lily calls your loved one every day at their preferred time to check in, ask how the day is going, and share a family update with you.",
     image: "/daily-checkin.png",
@@ -48,9 +48,9 @@ const services = [
     ),
   },
   {
-    title: "Local Service Concierge",
+    title: "Everyday Service Connection Support",
     description:
-      "Need a plumber, pizza, a ride, or another everyday service? Your loved one can just ask Lily by phone. No web browser, app, password, or computer needed.",
+      "Lily can help organize everyday service requests and family follow-up, such as rides, errands, local services, or appointment details. KinCare360 does not guarantee service availability or replace professional judgment.",
     image: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=600&q=80&auto=format&fit=crop",
     alt: "Elderly person on phone getting help from AI assistant",
     icon: (
@@ -78,7 +78,7 @@ export default function Services() {
     <section id="services" className="bg-gray-light py-16 md:py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-3xl md:text-4xl font-bold text-navy text-center mb-4">
-          Everything your parent needs. Handled automatically.
+          Daily check-ins and everyday coordination by phone
         </h2>
         <p className="text-gray-500 text-center mb-6 max-w-2xl mx-auto">
           Lily works like a simple voice interface for daily life: your loved one can talk, ask questions, request help, and keep family informed without using an app or computer.

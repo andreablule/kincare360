@@ -97,12 +97,12 @@ export default function TermsPage() {
 
         <div>
           <h2 className="text-xl font-semibold text-navy mb-2">11. SMS Communications</h2>
-          <p>Account owners may consent during signup/intake. Family members provide their own consent at <a href="https://www.kincare360.com/family-consent" className="text-teal underline">https://www.kincare360.com/family-consent</a> after being added to a family profile. By submitting the applicable SMS consent form, you expressly agree to receive recurring automated SMS messages from KinCare360 at the phone number provided. Messages include daily check-in notifications, family-approved routine reminders, appointment updates, family concern notifications, time-sensitive non-medical family follow-up notices, daily summaries, and service alerts.</p>
+          <p>Account owners may consent during signup using an optional mobile phone field and a separate optional, unchecked SMS consent checkbox, or during intake. Family members and safety contacts provide their own consent at <a href="https://www.kincare360.com/family-consent" className="text-teal underline">https://www.kincare360.com/family-consent</a> after being added to a family profile. By submitting the applicable SMS consent form, providing a mobile phone number, and checking the optional SMS consent checkbox, you expressly agree to receive recurring automated SMS messages from KinCare360 at the phone number provided. Messages include daily check-in notifications, family-approved routine reminders, appointment updates, service/account notices, family concern notifications, time-sensitive non-medical family follow-up notices, daily summaries, and service alerts.</p>
           <ul className="list-disc list-inside mt-2 space-y-1 ml-2">
             <li>Message frequency: up to 5 messages per day</li>
             <li>Message and data rates may apply</li>
             <li>Consent is not required to purchase services</li>
-            <li>Family members who do not submit the Family SMS Consent form will not receive recurring text updates</li>
+            <li>People who do not provide a mobile phone number and do not check the optional SMS consent checkbox will not receive recurring text updates</li>
             <li>Reply <strong>STOP</strong> to cancel at any time</li>
             <li>Reply <strong>HELP</strong> for assistance</li>
           </ul>

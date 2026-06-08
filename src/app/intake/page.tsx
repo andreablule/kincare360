@@ -646,11 +646,11 @@ export default function IntakePage() {
                 <p className="text-xs text-gray-400 mt-2 text-center">7-day free trial • No charge until day 8 • Cancel anytime</p>
               </div>
 
-              {/* SMS Consent — required for A2P 10DLC carrier approval */}
+              {/* Optional SMS Consent */}
               <label className="flex items-start gap-3 cursor-pointer p-4 rounded-xl border-2 border-gray-200 hover:border-teal transition-colors bg-blue-50/30">
                 <input type="checkbox" checked={agreedToSms} onChange={e => setAgreedToSms(e.target.checked)} className="w-5 h-5 mt-0.5 accent-teal flex-shrink-0" />
                 <span className="text-xs text-gray-600">
-                  <strong className="text-navy">SMS Consent:</strong> By checking this box, I consent to receive SMS text messages from KinCare360 at the phone number provided above. Messages may include daily check-in confirmations, family-approved routine reminders, appointment notifications, family updates, family concern notifications, and urgent safety concern notices. Message frequency varies. Message and data rates may apply. Reply <strong>STOP</strong> to unsubscribe at any time. Reply <strong>HELP</strong> for assistance. KinCare360 is not an emergency, crisis, medical, or in-home care service. View our <a href="/privacy" target="_blank" className="text-teal underline">Privacy Policy</a> and <a href="/terms" target="_blank" className="text-teal underline">Terms of Service</a>.
+                  <strong className="text-navy">SMS Consent:</strong> By checking this box, I consent to receive SMS text messages from KinCare360 at the phone number provided above. Messages may include daily check-in confirmations, family-approved routine reminders, appointment notifications, family updates, family concern notifications, and time-sensitive non-medical family follow-up notices. Message frequency varies, up to 5 messages/day. Message and data rates may apply. Reply <strong>STOP</strong> to unsubscribe at any time. Reply <strong>HELP</strong> for assistance. KinCare360 is not an emergency, crisis, medical, or in-home care service. View our <a href="/privacy" target="_blank" className="text-teal underline">Privacy Policy</a> and <a href="/terms" target="_blank" className="text-teal underline">Terms of Service</a>.
                 </span>
               </label>
 
@@ -658,13 +658,13 @@ export default function IntakePage() {
               <label className="flex items-start gap-3 cursor-pointer p-4 rounded-xl border-2 border-gray-200 hover:border-teal transition-colors">
                 <input type="checkbox" checked={agreedToTerms} onChange={e => setAgreedToTerms(e.target.checked)} className="w-5 h-5 mt-0.5 accent-teal flex-shrink-0" />
                 <span className="text-xs text-gray-600">
-                  I agree to KinCare360&apos;s <a href="/terms" target="_blank" className="text-teal underline">Terms of Service</a> and <a href="/privacy" target="_blank" className="text-teal underline">Privacy Policy</a>. I understand KinCare360 is a non-medical care coordination service, not a substitute for emergency care, crisis counseling, suicide prevention, medical care, or in-home care. If a caller shares an urgent safety concern, KinCare360 may notify listed family/safety contacts and encourage 911, 988, Poison Control, or other appropriate support.
+                  I agree to KinCare360&apos;s <a href="/terms" target="_blank" className="text-teal underline">Terms of Service</a> and <a href="/privacy" target="_blank" className="text-teal underline">Privacy Policy</a>. I understand KinCare360 is a non-medical care coordination service, not a substitute for emergency care, crisis counseling, suicide prevention, medical care, or in-home care. If a caller shares a concern that may need family follow-up, KinCare360 may notify listed family/safety contacts. In an emergency or immediate danger, call 911.
                 </span>
               </label>
 
               <div className="flex gap-3">
                 <button onClick={() => setStep(2)} className="flex-1 border border-gray-200 text-navy py-3 rounded-full font-semibold hover:bg-gray-50">← Back</button>
-                <button onClick={handleSubmit} disabled={submitting || !agreedToTerms || !agreedToSms || !form.selectedPlan}
+                <button onClick={handleSubmit} disabled={submitting || !agreedToTerms || !form.selectedPlan}
                   className="flex-1 bg-teal text-white py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors disabled:opacity-40 flex items-center justify-center gap-2">
                   {submitting ? (
                     <>

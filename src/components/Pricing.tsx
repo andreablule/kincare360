@@ -12,12 +12,12 @@ const features = [
     detail: "Lily can call at scheduled times to remind your parent about everyday routines like meals, appointments, errands, and family check-ins. These are supportive routine reminders, not medical instructions or advice.",
   },
   {
-    name: "Appointment scheduling",
+    name: "Appointment reminders and coordination support",
     detail: "Lily helps keep appointment details organized and can support reminder calls before important events, so your family has one place to track what is coming up.",
   },
   {
-    name: "Find & connect to any service",
-    detail: "Need a plumber? A pharmacy? A ride to the store? Your parent just tells Lily what they need. She searches, finds a local provider, and connects them directly by phone — no apps, no internet needed. Like having a personal assistant on call 24/7.",
+    name: "Everyday service connection support",
+    detail: "Lily can help organize everyday service requests and family follow-up, such as rides, errands, local services, and appointment details. KinCare360 does not guarantee service availability or replace professional judgment.",
   },
   {
     name: "Family concern notifications",

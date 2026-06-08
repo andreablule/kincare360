@@ -49,7 +49,7 @@ function PartnersContent() {
         .then((d) => {
           if (!d.error) {
             setStats(d);
-            setResult({ code: d.code, link: `https://kincare360.com/register?ref=${d.code}` });
+            setResult({ code: d.code, link: `https://kincare360.com/signup?ref=${d.code}` });
           }
         })
         .catch(() => {});
@@ -360,7 +360,7 @@ ${result.link}
                       const data = await res.json();
                       if (data.code) {
                         setStats(data);
-                        setResult({ code: data.code, link: `https://kincare360.com/register?ref=${data.code}` });
+                        setResult({ code: data.code, link: `https://kincare360.com/signup?ref=${data.code}` });
                       } else {
                         setError("No referral found. Check your code or email.");
                       }
@@ -380,7 +380,7 @@ ${result.link}
 
           <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
             <p className="text-sm text-gray-600 mb-2">
-              Sign up below to get your unique partner referral code. Earn $50 for every new KinCare360 subscription.
+              Sign up below to get your unique partner referral code. Join the KinCare360 partner program and receive referral rewards for eligible new subscriptions.
             </p>
 
             {error && (

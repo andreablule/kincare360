@@ -5,10 +5,10 @@ function digits(value: string) { return String(value || "").replace(/\D/g, "").s
 
 export async function POST(req: NextRequest) {
   try {
-    const { name, phone, lovedOne, consent } = await req.json();
+    const { name, phone, lovedOne, relationship, consent } = await req.json();
     const phoneDigits = digits(phone);
-    if (!name || !lovedOne || phoneDigits.length !== 10 || consent !== true) {
-      return NextResponse.json({ error: "Name, loved one, valid mobile number, and consent are required." }, { status: 400 });
+    if (!name || !lovedOne || !relationship || phoneDigits.length !== 10 || consent !== true) {
+      return NextResponse.json({ error: "Name, relationship, loved one, valid mobile number, and consent are required for SMS enrollment." }, { status: 400 });
     }
 
     const members = await prisma.familyMember.findMany({ include: { patient: { select: { firstName: true, lastName: true } } } });
@@ -26,6 +26,7 @@ export async function POST(req: NextRequest) {
       where: { id: member.id },
       data: {
         name: name || member.name,
+        relationship: relationship || member.relationship,
         smsConsentStatus: "opted_in",
         smsConsentSource: "family_web_form",
         smsConsentedAt: new Date(),

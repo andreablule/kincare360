@@ -812,7 +812,7 @@ export default async function AdminPage() {
             <div className="border-2 border-dashed border-gray-200 rounded-2xl p-5 opacity-60 cursor-not-allowed flex flex-col items-start">
               <span className="text-2xl mb-2">💬</span>
               <div className="font-bold text-[#0f172a]">SMS/Text Campaign</div>
-              <div className="text-sm text-gray-500">Coming soon via Twilio</div>
+              <div className="text-sm text-gray-500">Configured through Telnyx for SMS/text messaging</div>
             </div>
           </div>
         </div>

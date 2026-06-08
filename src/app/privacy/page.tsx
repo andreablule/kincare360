@@ -36,7 +36,7 @@ export default function PrivacyPage() {
 
         <div>
           <h2 className="text-xl font-semibold text-navy mb-2">3. SMS Communications</h2>
-          <p>Account owners may consent during signup/intake. Family members provide their own consent on the public Family SMS Consent page at <a href="https://www.kincare360.com/family-consent" className="text-teal underline">https://www.kincare360.com/family-consent</a> after the account owner adds them to the family profile. By submitting the applicable consent form and providing your phone number, you expressly consent to receive recurring automated SMS messages from KinCare360. These messages include:</p>
+          <p>Account owners may consent during signup using an optional mobile phone field and a separate optional SMS consent checkbox, or during intake. Family members provide their own consent on the public Family SMS Consent page at <a href="https://www.kincare360.com/family-consent" className="text-teal underline">https://www.kincare360.com/family-consent</a> after the account owner adds them to the family profile. By submitting the applicable consent form and providing your phone number, you expressly consent to receive recurring automated SMS messages from KinCare360. These messages include:</p>
           <ul className="list-disc list-inside mt-2 space-y-1">
             <li>Daily family check-in notifications</li>
             <li>Family-approved routine reminder notifications</li>
@@ -52,7 +52,7 @@ export default function PrivacyPage() {
 
         <div>
           <h2 className="text-xl font-semibold text-navy mb-2">4. Information Sharing</h2>
-          <p>We do not sell your personal information. We may share information with trusted third-party service providers (such as Stripe for payments and Telnyx or another telecommunications provider for SMS) solely to operate our services. These providers are bound by confidentiality obligations.</p>
+          <p>We do not sell your personal information. We may share information with trusted third-party service providers, such as Stripe for payments and Telnyx or other telecommunications providers for SMS/voice delivery, solely to operate our services. These providers are bound by confidentiality obligations.</p>
         </div>
 
         <div>

@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, password, name, stripeCustomerId, plan, referralCode } = await req.json();
+    const { email, password, name, stripeCustomerId, plan, referralCode, mobilePhone, smsConsent } = await req.json();
 
     if (!email || !password) {
       return NextResponse.json({ error: 'Email and password are required' }, { status: 400 });
@@ -20,6 +20,10 @@ export async function POST(req: NextRequest) {
     }
 
     const hashed = await bcrypt.hash(password, 12);
+    const phoneDigits = String(mobilePhone || "").replace(/\D/g, "").slice(-10);
+    if (smsConsent === true && phoneDigits.length !== 10) {
+      return NextResponse.json({ error: "A valid U.S. mobile number is required to opt in to SMS/text updates." }, { status: 400 });
+    }
 
     const user = await prisma.user.create({
       data: {
@@ -47,14 +51,35 @@ export async function POST(req: NextRequest) {
     }
 
     // Create a default patient record
-    await prisma.patient.create({
+    const patient = await prisma.patient.create({
       data: {
         userId: user.id,
         firstName: name ? name.split(' ')[0] : email.split('@')[0],
         lastName: name ? name.split(' ').slice(1).join(' ') : '',
+        phone: phoneDigits ? phoneDigits : null,
         referralCode: validReferralCode,
       },
     });
+
+    // If the account owner separately opts in to SMS during signup, record the consent
+    // with the existing FamilyMember SMS-consent fields so outbound text paths can gate on consent.
+    if (smsConsent === true && phoneDigits.length === 10) {
+      await prisma.familyMember.create({
+        data: {
+          patientId: patient.id,
+          name: name || email,
+          relationship: 'Account owner',
+          phone: phoneDigits,
+          email,
+          alertMode: 'both',
+          alertsEnabled: true,
+          notifyUpdates: true,
+          smsConsentStatus: 'opted_in',
+          smsConsentSource: 'signup_web_form',
+          smsConsentedAt: new Date(),
+        },
+      });
+    }
 
     return NextResponse.json({ success: true, userId: user.id });
   } catch (err) {

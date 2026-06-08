@@ -224,7 +224,7 @@ export default function FamilyPage() {
             </svg>
           </div>
           <p className="text-gray-500 font-medium mb-1">No family members added.</p>
-          <p className="text-gray-400 text-sm mb-4">Add family or safety contacts to receive daily updates, family concern notifications, and urgent safety concern notices about your loved one.</p>
+          <p className="text-gray-400 text-sm mb-4">Add family or safety contacts to receive daily updates, family concern notifications, and time-sensitive non-medical family follow-up notices about your loved one.</p>
           {isOwner && (
             <button onClick={addMember} className="bg-teal text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-teal-dark">
               Add Family Member

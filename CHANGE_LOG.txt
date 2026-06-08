@@ -1,3 +1,12 @@
+2026-06-08 EDT - ChatGPT/Claude website-only A2P remediation
+- Implemented approved website-only changes from ChatGPT and Claude peer review; did not touch Telnyx/provider settings.
+- Added optional mobile phone field plus separate optional unchecked SMS consent checkbox to `/signup`; account creation remains available without SMS opt-in, and checked signup SMS consent records an opted-in contact using existing family/safety-contact consent fields.
+- Updated `/family-consent` with required relationship-to-loved-one field, optional phone field note, optional unchecked SMS checkbox, and peer-reviewed consent language.
+- Added visible footer `SMS Consent` link, standardized homepage CTA to `/signup`, added clear hero AI disclosure, replaced the hero regret line, and softened service/pricing/dashboard wording away from appointment scheduling, any-service fulfillment, emergency detection, and urgent-safety SMS framing.
+- Updated Privacy/Terms provider and SMS language for Telnyx/SMS/voice delivery, optional opt-in, STOP/HELP, and non-medical limits.
+- Updated local `KINCARE360_TELNYX_A2P_CAMPAIGN_PACKAGE.md` only with revised description, message flow, opt-in response, sample 5, and embedded-link/phone settings to use after future explicit Telnyx approval.
+- Risk scan found 0 remaining matches for old phone/Twilio/risky marketing strings in active `.tsx` surfaces except safety-disclaimer FAQ language; `npm run build` passed.
+
 2026-06-08 EDT - Telnyx forced opt-in review remediation
 - Fixed Telnyx review failure for KinCare360 campaign `4b30019e-a135-5cef-a291-3d93b10859e2` / TCR `CP39XTU`.
 - Updated `/family-consent` so the mobile phone field is optional and labeled as required only if the visitor chooses SMS consent; the SMS consent checkbox is optional and labeled `Optional SMS consent`, with full frequency, rates, STOP, HELP, consent-not-condition-of-purchase, Privacy, Terms, and non-emergency/non-medical language visible on the same form.

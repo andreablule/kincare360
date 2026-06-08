@@ -1,6 +1,7 @@
 # KinCare360 Telnyx A2P Campaign Package
 
 Date prepared: 2026-06-07
+Last website-only revision: 2026-06-08
 Provider target: Telnyx A2P 10DLC
 Business/legal entity: Son Healthcare Services LLC, operating as KinCare360
 Website: https://www.kincare360.com
@@ -9,35 +10,39 @@ Support/SMS phone: +1 272 766 9090
 
 ## Campaign recommendation
 
-Recommended campaign/use case: Low-volume mixed / customer care / account notifications.
+Recommended campaign/use case: Account Notification.
 
-KinCare360 should be positioned as a non-medical family coordination and elder-support service. Avoid medical treatment, diagnosis, emergency response, crisis counseling, medication-compliance, hospital-readmission, or health-monitoring claims.
+KinCare360 should be positioned as a non-medical family coordination and elder-support service. Avoid medical treatment, diagnosis, emergency response, crisis counseling, medication-compliance, hospital-readmission, health-monitoring, or broad service-fulfillment claims.
 
 ## Campaign description
 
-KinCare360 sends recurring SMS messages to account owners, family members, and safety contacts who expressly opt in to receive updates about a loved one. Messages include family check-in notifications, family-approved routine reminder notifications, appointment and everyday coordination updates, account/service messages, family concern notifications, time-sensitive family follow-up notices for non-medical everyday coordination, and daily summaries.
-
-KinCare360 is not a medical provider, emergency response service, crisis counseling service, suicide-prevention service, or in-home care provider. Messages are for non-medical family coordination and account/service support only.
+KinCare360, operated by Son Healthcare Services LLC, sends opt-in account notification and family coordination SMS messages to account owners, family members, and safety contacts who have separately consented to receive text messages. Messages may include daily check-in summaries, family-approved routine reminders, appointment updates, service/account notices, family concern notifications, and time-sensitive non-medical family follow-up notices about a loved one. KinCare360 is not an emergency, medical, crisis, or in-home care service. Messages are non-marketing and are sent only to recipients who opt in.
 
 ## Message flow / opt-in flow
 
-Family members and safety contacts provide SMS consent at:
+Account owners may opt in to receive SMS messages during signup at https://www.kincare360.com/signup. The signup form includes an optional mobile phone number field and a separate optional, unchecked SMS consent checkbox. The checkbox is not required to create an account and is separate from Terms of Service acceptance.
 
-https://www.kincare360.com/family-consent
+The SMS consent checkbox states that by checking the box, the user agrees to receive recurring automated SMS/text messages from KinCare360, operated by Son Healthcare Services LLC, including account/service notices, daily check-in summaries, family-approved routine reminders, appointment updates, family concern notifications, and time-sensitive non-medical family follow-up notices. The disclosure states that message frequency varies up to 5 messages per day, message and data rates may apply, reply STOP to opt out, reply HELP for help, and consent is not a condition of purchase. The form also links to the KinCare360 Terms of Service and Privacy Policy.
 
-The Family SMS Consent page shows the phone number field and full SMS opt-in language on the same form. The mobile phone number field is optional and labeled: "Mobile phone number (optional; required only if you choose SMS consent)." The SMS checkbox is also optional and labeled "Optional SMS consent." The checkbox disclosure says:
+Family members and safety contacts may separately opt in at https://www.kincare360.com/family-consent. The family consent form includes required fields for full name, loved one's name, and relationship to the loved one. It also includes an optional mobile phone number field and a separate optional, unchecked SMS consent checkbox. The mobile phone number field is optional and is used only if the family member or safety contact wants to receive SMS/text updates. The SMS checkbox is not mandatory.
 
-"Optional SMS consent: I agree to receive recurring automated SMS/text messages from KinCare360 about my loved one, including daily check-in summaries, family-approved routine reminders, appointment updates, family concern notifications, and time-sensitive family follow-up notices if my loved one shares a non-medical everyday concern that may need family attention. Message frequency varies, up to 5 messages per day. Message and data rates may apply. Reply STOP to opt out at any time. Reply HELP for help. Consent is not a condition of purchase. KinCare360 is not an emergency, crisis, medical, or in-home care service. I have read the Privacy Policy and Terms of Service."
+Consent records are stored with phone number, name, relationship to the loved one, timestamp, consent source, and consent text version where supported by the current form path. Recipients who do not provide a mobile phone number and do not check the SMS consent checkbox are not enrolled for recurring SMS/text updates.
 
-A family member is enrolled for recurring SMS only when they both provide a valid mobile phone number and choose the optional SMS consent checkbox. If they do not provide a phone number and do not check the box, no SMS consent is recorded and they are not enrolled. If they provide a phone number without choosing SMS consent, the form explains that consent is required to enroll that mobile number for text updates.
+Screenshot evidence of the signup and family consent opt-in forms should be added before provider-side resubmission:
 
-Account-owner signup at https://www.kincare360.com/signup does not enroll SMS recipients and is not used as A2P opt-in evidence because the public signup form does not collect a mobile phone number. Signup may show an optional notice that SMS enrollment requires a mobile phone number and separate opt-in consent.
+- Signup screenshot: [ADD SIGNUP SCREENSHOT LINK]
+- Family consent screenshot: [ADD FAMILY CONSENT SCREENSHOT LINK]
 
 ## Opt-in evidence URLs
 
-- Public family consent page showing phone field and full opt-in language: https://www.kincare360.com/family-consent
+- Account-owner signup page showing optional phone field and full opt-in language: https://www.kincare360.com/signup
+- Public family consent page showing optional phone field and full opt-in language: https://www.kincare360.com/family-consent
 - Terms of Service SMS section: https://www.kincare360.com/terms
 - Privacy Policy SMS section: https://www.kincare360.com/privacy
+
+## Opt-in auto-response
+
+KinCare360: You are opted in to family coordination texts. Msg frequency varies, up to 5/day. Msg&data rates may apply. Reply HELP for help, STOP to opt out. Privacy: kincare360.com/privacy
 
 ## HELP response
 
@@ -45,30 +50,28 @@ KinCare360 family updates. Help: hello@kincare360.com or +1 272 766 9090. Terms:
 
 ## STOP response
 
-You have been unsubscribed from KinCare360 text updates. No more messages will be sent. Reply START to resubscribe or visit kincare360.com/family-consent.
+KinCare360: You are opted out and will no longer receive KinCare360 texts. Reply START to opt back in or visit kincare360.com/family-consent for help.
 
 ## START/UNSTOP response
 
-KinCare360: To receive recurring family text updates, please confirm consent at https://www.kincare360.com/family-consent. Msg & data rates may apply. Reply STOP to opt out.
+KinCare360: To receive recurring family text updates, please confirm consent at https://www.kincare360.com/family-consent. Msg&data rates may apply. Reply STOP to opt out.
 
 ## Sample SMS messages
 
-1. KinCare360: Lily completed today's family check-in with Maria. Summary: she said she is doing okay and would like a call from family later today. Reply STOP to opt out.
+1. KinCare360: Daily check-in summary for Maria: Lily completed today's call and shared no new family concerns. Reply HELP for help. Reply STOP to opt out.
 
-2. KinCare360 routine reminder: Maria asked to be reminded about her 3:00 PM appointment. Please check the family dashboard for details. Reply STOP to opt out.
+2. KinCare360: Family-approved routine reminder for Robert: evening walk reminder is scheduled for 6:00 PM. Reply HELP for help. Reply STOP to opt out.
 
-3. KinCare360 family update: Maria asked for help coordinating transportation for Friday. Please follow up when available. Reply STOP to opt out.
+3. KinCare360: Appointment update for Elena: family notes show a visit planned for Tuesday at 10:00 AM. Reply HELP for help. Reply STOP to opt out.
 
-4. KinCare360 family follow-up: Maria shared a non-medical concern that may need family attention. Please check the family dashboard or follow up when available. KinCare360 is not an emergency or medical service. Reply STOP to opt out.
+4. KinCare360: Family concern notification for James: he asked for a callback from family after today's check-in. Reply HELP for help. Reply STOP to opt out.
 
-5. KinCare360: Your family profile was updated. Visit kincare360.com/login to review family settings. Reply HELP for help or STOP to opt out.
+5. KinCare360: Time-sensitive family follow-up for Ana: please follow up directly when available. This is not an emergency service. Reply HELP for help. Reply STOP to opt out.
 
 ## Embedded links and phone numbers
 
-- Embedded links: Yes, for consent, login, privacy, and terms URLs that are owned by KinCare360.
-- Embedded phone numbers: Yes, KinCare360 includes its support phone number in HELP/legal/support messages.
-
-If Telnyx flags embedded links or phone numbers, use samples without links/phone numbers except HELP/STOP responses, and keep links limited to the verified domain kincare360.com.
+- Embedded links: Yes, because HELP/START/STOP and campaign evidence use kincare360.com/privacy, kincare360.com/terms, kincare360.com/family-consent, and other KinCare360-owned URLs.
+- Embedded phone numbers: Yes, because the HELP/legal/support messages include +1 272 766 9090.
 
 ## Data/privacy statement for reviewer
 
@@ -89,24 +92,19 @@ The inbound route handles STOP/STOPALL/UNSUBSCRIBE/CANCEL/END/QUIT, START/YES/UN
 
 ## Review checklist
 
-- Public consent page contains clear opt-in checkbox: yes
+- Public family consent page contains optional phone field and optional unchecked checkbox: yes
+- Signup page contains optional phone field and optional unchecked checkbox: yes
+- Account creation works without SMS opt-in: yes
 - Message frequency disclosed: yes, up to 5/day
 - Msg/data rates disclosed: yes
 - Consent not condition of purchase: yes
 - STOP instructions disclosed: yes
 - HELP instructions disclosed: yes
 - Terms and Privacy links present: yes
+- Footer links to SMS Consent page: yes
 - SMS data sharing/no-sale language present: yes
 - Non-medical/emergency limitation present: yes
 - Twilio-specific public wording removed from Privacy page: yes
-- Active API SMS sender migrated to Telnyx helper: yes
-- Build verified after migration: yes, `npm run build` passed
-- Peer review status: wording hardened on 2026-06-07 to remove crisis-coded/urgent-safety sample language before submission.
-
-## Submission blocker
-
-This package is ready to submit after:
-
-1. The updated safety/consent wording is deployed to https://www.kincare360.com.
-2. Telnyx credentials/account access are available in the deployment environment.
-3. The Telnyx phone number `+1 272 766 9090` is connected to the campaign/messaging profile.
+- Embedded link setting should be Yes: yes
+- Embedded phone number setting should be Yes: yes
+- Provider-side Telnyx update status: not performed in this website-only revision; wait for explicit approval after peer review.

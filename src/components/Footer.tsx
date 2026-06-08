@@ -6,6 +6,7 @@ const footerLinks = [
   { label: "Pricing", href: "#pricing" },
   { label: "Referral Program", href: "/partners" },
   { label: "Contact", href: "#contact" },
+  { label: "SMS Consent", href: "/family-consent" },
 ];
 
 export default function Footer() {
@@ -83,6 +84,7 @@ export default function Footer() {
           <div className="flex gap-6">
             <a href="/terms" className="hover:text-white transition-colors">Terms of Service</a>
             <a href="/privacy" className="hover:text-white transition-colors">Privacy Policy</a>
+            <a href="/family-consent" className="hover:text-white transition-colors">SMS Consent</a>
           </div>
         </div>
       </div>

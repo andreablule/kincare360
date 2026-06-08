@@ -14,12 +14,15 @@ export default function Hero() {
               Like a web browser or app they can use with their voice. Starting at $99/month.
             </p>
             <p className="mt-4 text-lg font-medium text-navy/80 italic max-w-lg">
-              The call you don&apos;t make shouldn&apos;t be the one you regret.
+              A simple daily phone routine for family updates, everyday coordination, and peace of mind.
+            </p>
+            <p className="mt-3 text-sm text-gray-500 max-w-lg">
+              Lily is an AI family check-in assistant for non-medical daily calls and everyday coordination.
             </p>
             {/* CTA buttons */}
             <div className="mt-8 flex flex-wrap gap-3">
               <a
-                href="/register"
+                href="/signup"
                 className="bg-teal text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-teal-dark transition-colors shadow-lg"
               >
                 Start Daily Family Check-Ins &rarr;

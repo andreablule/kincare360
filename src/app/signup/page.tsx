@@ -18,6 +18,7 @@ function SignupForm() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [smsConsent, setSmsConsent] = useState(false);
+  const [mobilePhone, setMobilePhone] = useState("");
   const [referrerName, setReferrerName] = useState("");
 
   useEffect(() => {
@@ -46,11 +47,16 @@ function SignupForm() {
       setLoading(false);
       return;
     }
+    if (smsConsent && mobilePhone.replace(/\D/g, "").slice(-10).length !== 10) {
+      setError("Please enter a valid U.S. mobile number to opt in to KinCare360 SMS/text updates, or leave SMS consent unchecked.");
+      setLoading(false);
+      return;
+    }
 
     const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password, name, referralCode: refParam || undefined }),
+      body: JSON.stringify({ email, password, name, referralCode: refParam || undefined, mobilePhone: mobilePhone || undefined, smsConsent }),
     });
     const data = await res.json();
     if (!res.ok) {
@@ -161,8 +167,15 @@ function SignupForm() {
           )}
         </div>
 
-        {/* Optional SMS notice only. SMS enrollment requires a mobile number and separate consent form. */}
-        <div className="flex items-start gap-3">
+        <div>
+          <label className="block text-sm font-medium text-navy mb-1.5">Mobile phone number <span className="font-normal text-gray-400">(optional)</span></label>
+          <input type="tel" inputMode="tel" value={mobilePhone} onChange={(e) => setMobilePhone(e.target.value)}
+            className="w-full border border-gray-300 rounded-xl px-4 py-3 text-navy focus:outline-none focus:ring-2 focus:ring-teal focus:border-transparent text-sm"
+            placeholder="(555) 123-4567" />
+          <p className="text-xs text-gray-400 mt-1">Optional. Provide it only if you want to receive SMS/text updates from KinCare360.</p>
+        </div>
+
+        <div className="flex items-start gap-3 rounded-xl border border-gray-200 bg-gray-50 p-4">
           <input
             type="checkbox"
             id="smsConsent"
@@ -171,9 +184,9 @@ function SignupForm() {
             className="mt-1 h-4 w-4 rounded border-gray-300 text-teal focus:ring-teal"
           />
           <label htmlFor="smsConsent" className="text-xs text-gray-600 leading-relaxed">
-            Optional: I would like KinCare360 to show me how to enroll in SMS/text updates after signup. SMS enrollment requires a mobile phone number and separate opt-in consent. Message frequency varies, up to 5 messages per day. Message and data rates may apply. Reply STOP to opt out at any time. Reply HELP for help. Consent is not a condition of purchase. KinCare360 is not an emergency, crisis, medical, or in-home care service. View our{" "}
-            <a href="/privacy" className="text-teal underline">Privacy Policy</a> and{" "}
-            <a href="/terms" className="text-teal underline">Terms of Service</a>.
+            I agree to receive recurring automated SMS/text messages from KinCare360, operated by Son Healthcare Services LLC, including account/service notices, daily check-in summaries, family-approved routine reminders, appointment updates, family concern notifications, and time-sensitive non-medical family follow-up notices. Message frequency varies, up to 5 messages/day. Message and data rates may apply. Reply STOP to opt out, HELP for help. Consent is not a condition of purchase. View our{" "}
+            <a href="/terms" className="text-teal underline">Terms</a> and{" "}
+            <a href="/privacy" className="text-teal underline">Privacy Policy</a>. KinCare360 is not an emergency, crisis, medical, or in-home care service.
           </label>
         </div>
 
