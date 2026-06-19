@@ -1,9 +1,10 @@
 2026-06-19 EDT - Lily voice routed through Vapi/Telnyx
 - Recovered the existing valid Vapi key from Andrea-approved Mac archive search without printing the secret; old Vapi phone number read-back showed the previous Twilio-backed `+1 812 515 5252` line.
 - Created Vapi Telnyx credential `a11643a7-3430-4239-8ede-bde57d20b318` and imported/connected `+1 272 766 9090` as Vapi phone number `a684dc3a-81ec-441b-971e-0bf58a9746d3` named `KinCare360 Main Line - Lily Telnyx`.
-- Attached the Vapi Telnyx number to Lily assistant `8dc06b99-9533-4b28-b379-7ed4f07768aa` (`Lily - KinCare360 Concierge`) and server URL `https://www.kincare360.com/api/vapi-lookup`.
 - Added `VAPI_API_KEY`, `VAPI_PHONE_NUMBER_ID`, and `VAPI_LILY_ASSISTANT_ID` to Vercel Production and Development without printing values; redeployed production and verified alias to `https://www.kincare360.com`.
-- Final read-back: Vapi phone provider `telnyx`, status `active`; Telnyx phone `+1 272 766 9090` status `active`, voice `connection_name` `Vapi`, connection ID `2985597920767640588`, messaging profile `kincare360`. No live call test was placed.
+- Initial live test reached Vapi but used the old static Lily assistant, which said it was looking up the account and then ended with Vapi `silence-timed-out` because no tool call happened.
+- Fixed the root cause by detaching the old static assistant from the Vapi Telnyx phone and leaving the phone-level server route `https://www.kincare360.com/api/vapi-lookup`; read-back now shows `assistantId`, `squadId`, and `workflowId` are `null`, provider `telnyx`, status `active`, server route configured.
+- Telnyx read-back: phone `+1 272 766 9090` status `active`, voice `connection_name` `Vapi`, connection ID `2985597920767640588`, messaging profile `kincare360`. MyShiftReminder was not touched.
 
 2026-06-19 EDT - Telnyx-only cleanup for KinCare360
 - Removed the last active code-level Twilio reference from Lily reminder calls by deleting Vapi voicemail-detection blocks that explicitly selected the Twilio provider; Lily reminder routes now rely on Vapi/Telnyx voice configuration instead of any Twilio-specific setting.
