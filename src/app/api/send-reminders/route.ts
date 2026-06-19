@@ -93,25 +93,11 @@ async function vapiCheckinCall(phone: string, firstName: string): Promise<string
     callBody.assistant = {
       ...assistantConfig,
       firstMessage: `Hi ${firstName}! This is Lily from KinCare360 with your daily check-in. How are you feeling today?`,
-      voicemailDetection: {
-        provider: "twilio",
-        enabled: true,
-        machineDetectionTimeout: 8,
-        machineDetectionSpeechThreshold: 3000,
-        machineDetectionSpeechEndThreshold: 2000,
-      },
     };
   } else if (LILY_ASSISTANT_ID) {
     callBody.assistantId = LILY_ASSISTANT_ID;
     callBody.assistantOverrides = {
       firstMessage: `Hi ${firstName}! This is Lily from KinCare360 with your daily check-in. How are you feeling today?`,
-      voicemailDetection: {
-        provider: "twilio",
-        enabled: true,
-        machineDetectionTimeout: 8,
-        machineDetectionSpeechThreshold: 3000,
-        machineDetectionSpeechEndThreshold: 2000,
-      },
     };
   } else {
     return 'VAPI assistant not configured';
@@ -142,25 +128,11 @@ async function vapiMedicationCall(phone: string, firstName: string): Promise<str
     callBody.assistant = {
       ...assistantConfig,
       firstMessage: `Hi ${firstName}! This is Lily from KinCare360. This is your routine reminder from your family. Please follow the instructions your family or care team gave you. Have you reviewed it?`,
-      voicemailDetection: {
-        provider: "twilio",
-        enabled: true,
-        machineDetectionTimeout: 8,
-        machineDetectionSpeechThreshold: 3000,
-        machineDetectionSpeechEndThreshold: 2000,
-      },
     };
   } else if (LILY_ASSISTANT_ID) {
     callBody.assistantId = LILY_ASSISTANT_ID;
     callBody.assistantOverrides = {
       firstMessage: `Hi ${firstName}! This is Lily from KinCare360. This is your routine reminder from your family. Please follow the instructions your family or care team gave you. Have you reviewed it?`,
-      voicemailDetection: {
-        provider: "twilio",
-        enabled: true,
-        machineDetectionTimeout: 8,
-        machineDetectionSpeechThreshold: 3000,
-        machineDetectionSpeechEndThreshold: 2000,
-      },
     };
   } else {
     return 'VAPI assistant not configured';
@@ -185,13 +157,6 @@ async function vapiReminderCall(phone: string, firstName: string, message: strin
     customer: { number: formattedPhone },
     assistant: {
       name: "Lily - Reminder",
-      voicemailDetection: {
-        provider: "twilio",
-        enabled: true,
-        machineDetectionTimeout: 8,
-        machineDetectionSpeechThreshold: 3000,
-        machineDetectionSpeechEndThreshold: 2000,
-      },
       model: {
         provider: "openai",
         model: "gpt-4o-mini",
