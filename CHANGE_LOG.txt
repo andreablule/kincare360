@@ -1,7 +1,11 @@
+2026-06-19 EDT - KinCare360 number assigned to approved Telnyx campaign
+- After Andrea confirmed Telnyx Brand status verified and KinCare360 campaign approved/active, assigned `+1 272 766 9090` to KinCare360 campaign `4b30019e-a63a-0559-84ee-337137722240` / TCR `CRKDBDI`.
+- Read-back showed assignment status `PENDING_ASSIGNMENT`, T-Mobile mapping `PENDING`, AT&T mapping `null`, non-T-Mobile mapping `ADDED`, and no errors/failure reasons. SMS campaign mapping should be monitored until all carrier mapping clears before treating production SMS delivery as fully ready.
+
 2026-06-08 EDT - New KinCare360 PASS campaign submitted after old rows deactivated
 - Andrea deactivated the old non-number campaigns in Telnyx: the older CP39XTU row under the MyShiftReminder Brand and the failed KinCare360 TCR-creation row.
 - Created a fresh KinCare360 `ACCOUNT_NOTIFICATION` campaign under the separate KinCare360 Brand using the agreed ChatGPT PASS/refined copy, opt-in evidence from `/signup` and `/family-consent`, and explicit `subscriberHelp`, `subscriberOptin`, and `subscriberOptout` fields.
-- API read-back showed campaign ID `4b30019e-a63a-0559-84ee-337137722240`, TCR ID `CRKDBDI`, campaign status `TCR_ACCEPTED`, API `status` `ACTIVE`, submission status `CREATED`, subscriber fields all `true`, and no failure reasons. Andrea's Telnyx Console still shows the campaign as `Pending Telnyx Review`; treat Console review status as the operational source of truth and do not assign the phone number until the Console/Telnyx workflow clearly allows it. No phone-number campaign assignment was changed.
+- API read-back showed campaign ID `4b30019e-a63a-0559-84ee-337137722240`, TCR ID `CRKDBDI`, campaign status `TCR_ACCEPTED`, API `status` `ACTIVE`, submission status `CREATED`, subscriber fields all `true`, and no failure reasons. Andrea's Telnyx Console later confirmed verified/approved/active before number assignment.
 
 2026-06-08 EDT - Server-rendered signup SMS evidence
 - Split `/signup` into a server-rendered page plus client-only signup form component so the SMS evidence section is in the initial static DOM, not dependent on client rendering or Suspense fallback.
