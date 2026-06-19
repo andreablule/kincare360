@@ -1,7 +1,7 @@
 2026-06-19 EDT - Telnyx-only cleanup for KinCare360
 - Removed the last active code-level Twilio reference from Lily reminder calls by deleting Vapi voicemail-detection blocks that explicitly selected the Twilio provider; Lily reminder routes now rely on Vapi/Telnyx voice configuration instead of any Twilio-specific setting.
 - Verified Vercel Production and Development env names have no `TWILIO_*` variables; provider env names are Telnyx plus non-provider phone/contact values.
-- Verified active `src` search has 0 matches for Twilio/TwiML/TWILIO references; `npm run build` passed. `npm run lint` remains blocked by pre-existing project-wide/generated-output lint errors unrelated to this change.
+- Verified active `src` search has 0 matches for Twilio/TwiML/TWILIO references; local `npm run build` passed, and Vercel production deploy completed/aliased to `https://www.kincare360.com`. `npm run lint` remains blocked by pre-existing project-wide/generated-output lint errors unrelated to this change.
 
 2026-06-19 EDT - KinCare360 number assigned to approved Telnyx campaign
 - After Andrea confirmed Telnyx Brand status verified and KinCare360 campaign approved/active, assigned `+1 272 766 9090` to KinCare360 campaign `4b30019e-a63a-0559-84ee-337137722240` / TCR `CRKDBDI`.
