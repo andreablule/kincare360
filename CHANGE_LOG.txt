@@ -1,3 +1,13 @@
+2026-06-23 EDT - Dashboard liability cleanup and client/admin separation
+- Reframed the client dashboard away from clinical records: renamed the medical dashboard area to Care Contacts & Routine Notes and removed client-facing medication/condition list sections.
+- Removed Admin and Admin Call Logs dashboard links for non-admin users by eliminating hardcoded email-based admin bypasses; admin UI/API access now depends on ADMIN role.
+- Rewrote appointment/request dashboard copy so Lily no longer claims she schedules appointments, handles everything, calls providers, requests refills/tests, or confirms medical details.
+- Removed provider-scheduling tooling from Lily's active Vapi config and disabled the schedule-appointment API route with a 410 scope-limit response.
+- Reframed intake and second-parent forms away from medication/condition/allergy/insurance collection, keeping only provider/pharmacy contact fields for family coordination.
+- Updated family invite email, Privacy, and Terms to reinforce non-medical family coordination, no medical record/clinical chart/medication-management role, and direct family/provider responsibility for appointments and medical questions.
+- Verified `npm run build` passed. Focused ESLint still reports pre-existing no-explicit-any/img/link warnings/errors in touched legacy files; no build blocker.
+- Deployed to Vercel production and aliased to https://www.kincare360.com after Andrea approval. Pushed to GitHub main.
+
 2026-06-23 EDT - Signup Google sign-in option
 - Added a reusable client-only Google sign-in button and placed it on `/signup` above the email signup form, matching the existing `/login` Google OAuth flow while keeping the signup page server-rendered for SMS consent review visibility.
 - Verified `npm run build` passed and inspected generated `/signup` HTML: Google button text, email divider, SMS consent section, Terms link, Privacy link, and unchecked checkbox markup remain present. Focused ESLint exits 0 with the pre-existing `<img>` optimization warning on the signup logo.

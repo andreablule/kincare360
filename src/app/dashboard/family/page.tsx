@@ -209,7 +209,7 @@ export default function FamilyPage() {
             </div>
             <div className="flex items-start gap-3">
               <span className="inline-flex items-center gap-1 text-xs font-semibold bg-teal/10 text-teal px-2 py-0.5 rounded-full flex-shrink-0 mt-0.5">Manager</span>
-              <span className="text-gray-600">Can also edit care records (medications, doctors) and submit requests. Cannot access billing.</span>
+              <span className="text-gray-600">Can also edit shared coordination details and family contacts. Cannot access billing.</span>
             </div>
           </div>
           <p className="text-xs text-gray-400 mt-3">Only you (the account owner) can grant or remove Manager access. For text alerts, send family members to <a href="/family-consent" target="_blank" className="text-teal underline">kincare360.com/family-consent</a> after adding them.</p>

@@ -59,7 +59,7 @@ export default function ProfilePage() {
             checkInDays: data.patient.checkInDays || "",
             gender: data.patient.gender || "",
           });
-          // Split comma-separated med times into array
+          // Split comma-separated routine reminder times into array
           const times = data.patient.medicationReminderTime
             ? data.patient.medicationReminderTime.split(',').map((t: string) => t.trim()).filter(Boolean)
             : [""];
@@ -104,7 +104,7 @@ export default function ProfilePage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-navy mb-6">Patient Profile</h1>
+      <h1 className="text-2xl font-bold text-navy mb-6">Care Profile</h1>
       <PatientSwitcher />
 
       {!canEditProfile && (
@@ -187,10 +187,10 @@ export default function ProfilePage() {
                 setForm({ ...form, preferredCallTime: newTime });
               }}>
                 <option value="">Select a time</option>
-                {timeOptions.map(t => <option key={t.value} value={t.value} disabled={medTimes.includes(t.value)}>{t.label}{medTimes.includes(t.value) ? ' (med reminder)' : ''}</option>)}
+                {timeOptions.map(t => <option key={t.value} value={t.value} disabled={medTimes.includes(t.value)}>{t.label}{medTimes.includes(t.value) ? ' (routine reminder)' : ''}</option>)}
               </select>
             )}
-            <p className="text-xs text-gray-400 mt-1">Check-in and medication times cannot be the same hour</p>
+            <p className="text-xs text-gray-400 mt-1">Check-in and routine reminder times cannot be the same hour</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-navy mb-1">Routine Reminder Times</label>
@@ -232,7 +232,7 @@ export default function ProfilePage() {
                 </button>
               </>
             )}
-            <p className="text-xs text-gray-400 mt-1">Lily will call at each time to remind about medications</p>
+            <p className="text-xs text-gray-400 mt-1">Lily can call at each time for family-approved routine reminders</p>
           </div>
         </div>
 

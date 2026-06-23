@@ -16,7 +16,8 @@ export default function PrivacyPage() {
           <p>We collect information you provide directly to us, including:</p>
           <ul className="list-disc list-inside mt-2 space-y-1">
             <li>Name, email address, and phone number</li>
-            <li>Information about your loved one receiving care</li>
+            <li>Information about your loved one receiving non-medical family coordination support</li>
+            <li>Provider, pharmacy, routine, and appointment-related details you choose to share for family coordination only</li>
             <li>Payment information (processed securely by Stripe — we do not store card details)</li>
             <li>Communications you send us</li>
           </ul>
@@ -59,6 +60,7 @@ export default function PrivacyPage() {
           <h2 className="text-xl font-semibold text-navy mb-2">5. Family Follow-Up Notices</h2>
           <p>KinCare360 is not an emergency, crisis counseling, suicide-prevention, medical, or in-home care service. KinCare360 may send family/safety contacts non-medical family follow-up notices when a caller shares an everyday concern, request, missed check-in, or coordination need that may require family attention. These notices are for family coordination only. KinCare360 does not verify emergencies, dispatch help, provide clinical assessment, or guarantee that any person will respond. In an emergency or immediate danger, call 911.</p>
           <p className="mt-2">These notices do not mean Lily verified an emergency or medical issue. They mean a caller shared something that may warrant family follow-up.</p>
+          <p className="mt-2">Provider contacts, pharmacy contacts, appointment details, routine notes, and other health-related details you choose to share are used only to support non-medical family coordination. KinCare360 is not a medical record system, clinical chart, medication-management tool, medication-compliance service, or emergency monitoring record.</p>
         </div>
 
         <div>

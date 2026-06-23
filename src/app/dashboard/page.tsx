@@ -167,8 +167,8 @@ export default async function DashboardPage() {
             </svg>
           </div>
           <div>
-            <div className="text-sm font-semibold text-navy">Medical Records</div>
-            <div className="text-xs text-gray-500">Doctors, meds, conditions</div>
+            <div className="text-sm font-semibold text-navy">Care Info</div>
+            <div className="text-xs text-gray-500">Provider and pharmacy contacts</div>
           </div>
         </Link>
         <Link href="/dashboard/family" className="bg-white rounded-2xl border border-gray-100 p-4 hover:border-teal transition-colors flex items-center gap-3">
@@ -240,7 +240,7 @@ function PatientCard({ data, label }: {
         <div className="bg-white rounded-2xl border border-gray-100 p-5">
           <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Daily Check-In</div>
           <div className="text-lg font-bold text-navy">{patient.preferredCallTime || "Not set"}</div>
-          <div className="text-sm text-gray-500 mt-1">Daily wellness call with Lily</div>
+          <div className="text-sm text-gray-500 mt-1">Daily family check-in with Lily</div>
         </div>
 
         {/* Routine reminders */}
@@ -273,7 +273,7 @@ function PatientCard({ data, label }: {
                   ? "bg-green-100 text-green-700"
                   : "bg-blue-100 text-blue-700"
               }`}>
-                {nextAppointment.status === "DONE" || nextAppointment.status === "COMPLETED" ? "✓ Confirmed" : "Scheduling..."}
+                {nextAppointment.status === "DONE" || nextAppointment.status === "COMPLETED" ? "✓ Saved" : "Family follow-up"}
               </span>
             </>
           ) : (
@@ -296,9 +296,9 @@ function PatientCard({ data, label }: {
               <span className="text-navy font-medium">{recentCall.mood || "N/A"}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500">Medications Taken</span>
+              <span className="text-gray-500">Routine Reminder Reviewed</span>
               <span className={`font-medium ${recentCall.medicationsTaken ? "text-teal" : "text-red-500"}`}>
-                {recentCall.medicationsTaken ? "Yes ✓" : "No ✗"}
+                {recentCall.medicationsTaken ? "Reviewed ✓" : "Not reviewed"}
               </span>
             </div>
             {recentCall.summary && (

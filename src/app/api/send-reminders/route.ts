@@ -217,7 +217,7 @@ export async function GET(req: NextRequest) {
       }
     });
 
-    const medsSent: string[] = [];
+    const routineSent: string[] = [];
     const checkinSent: string[] = [];
     const remindersSent: string[] = [];
     const skipped: string[] = [];
@@ -239,16 +239,16 @@ export async function GET(req: NextRequest) {
             if (callId && !callId.includes('Bad Request') && !callId.includes('error')) {
               await logCall(patient.id, 'medication', callId);
             }
-            console.log(`[med-reminder] ${patient.firstName} @ ${t} → ${callId}`);
-            medsSent.push(`${patient.firstName}@${t}: ${callId}`);
+            console.log(`[routine-reminder] ${patient.firstName} @ ${t} → ${callId}`);
+            routineSent.push(`${patient.firstName}@${t}: ${callId}`);
             break;
           }
         }
       }
 
       // --- Daily check-in ---
-      if (medsSent.some(m => m.startsWith(patient.firstName || ''))) {
-        console.log(`[stagger] Skipping check-in for ${patient.firstName} - med reminder just sent this tick`);
+      if (routineSent.some(m => m.startsWith(patient.firstName || ''))) {
+        console.log(`[stagger] Skipping check-in for ${patient.firstName} - routine reminder just sent this tick`);
         skipped.push(`${patient.firstName}@${patient.preferredCallTime}: stagger-wait`);
         continue;
       }
@@ -309,11 +309,11 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       ok: true,
       time: etTime,
-      medReminders: medsSent.length,
+      routineReminders: routineSent.length,
       dailyCheckins: checkinSent.length,
       reminders: remindersSent.length,
       skipped: skipped.length,
-      sent: { medReminders: medsSent, dailyCheckins: checkinSent, reminders: remindersSent, skipped }
+      sent: { routineReminders: routineSent, dailyCheckins: checkinSent, reminders: remindersSent, skipped }
     });
   } catch (e) {
     console.error('[send-reminders] Error:', e);

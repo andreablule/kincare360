@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import PatientSwitcher from "@/components/PatientSwitcher";
 import { usePatientContext } from "@/components/PatientContext";
 
-interface Appointment {
+interface AppointmentNote {
   id: string;
   type: string;
   description: string;
@@ -20,24 +20,24 @@ const statusColors: Record<string, string> = {
 };
 
 const statusLabels: Record<string, string> = {
-  PENDING: "Pending",
-  IN_PROGRESS: "Lily is scheduling",
-  COMPLETED: "Confirmed",
-  DONE: "Confirmed",
+  PENDING: "Family follow-up",
+  IN_PROGRESS: "Family follow-up",
+  COMPLETED: "Saved",
+  DONE: "Saved",
 };
 
 const typeIcons: Record<string, string> = {
   APPOINTMENT: "📅",
   FOLLOWUP: "🔄",
-  MEDICATION_CHANGE: "💊",
+  MEDICATION_CHANGE: "📝",
   OTHER: "📋",
 };
 
 const typeLabels: Record<string, string> = {
-  APPOINTMENT: "Appointment",
-  FOLLOWUP: "Follow-up",
-  MEDICATION_CHANGE: "Prescription",
-  OTHER: "Other",
+  APPOINTMENT: "Appointment Note",
+  FOLLOWUP: "Follow-up Note",
+  MEDICATION_CHANGE: "Routine Note",
+  OTHER: "Coordination Note",
 };
 
 function parseDescription(desc: string) {
@@ -62,7 +62,7 @@ function formatDate(dateStr: string) {
 
 export default function AppointmentsPage() {
   const { selectedPatientId, patientQuery } = usePatientContext();
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [appointmentNotes, setAppointmentNotes] = useState<AppointmentNote[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -70,31 +70,32 @@ export default function AppointmentsPage() {
     fetch(`/api/service-requests${qs}`)
       .then((r) => r.json())
       .then((data) => {
-        setAppointments(data.items || []);
+        setAppointmentNotes(data.items || []);
         setLoading(false);
       });
   }, [selectedPatientId, patientQuery]);
 
   if (loading) return <div className="text-gray-400 p-8">Loading...</div>;
 
-  // Split into upcoming (IN_PROGRESS, PENDING) and past (COMPLETED, DONE)
-  const active = appointments.filter(a => a.status === "IN_PROGRESS" || a.status === "PENDING");
-  const confirmed = appointments.filter(a => a.status === "COMPLETED" || a.status === "DONE");
+  const active = appointmentNotes.filter(a => a.status === "IN_PROGRESS" || a.status === "PENDING");
+  const saved = appointmentNotes.filter(a => a.status === "COMPLETED" || a.status === "DONE");
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-2xl font-bold text-navy mb-2">Appointments</h1>
+      <h1 className="text-2xl font-bold text-navy mb-2">Appointments &amp; Family Follow-Up</h1>
       <PatientSwitcher />
-      <p className="text-sm text-gray-500 mb-6">
-        All appointments are scheduled by Lily through phone calls. Just call <a href="tel:+12727669090" className="text-teal font-medium">+1 272 766 9090</a> and ask Lily to schedule, reschedule, or cancel any appointment.
+      <p className="text-sm text-gray-500 mb-4">
+        Use this page to view appointment-related notes and family follow-up items. KinCare360 helps keep details organized for family coordination, but does not provide medical advice, schedule or cancel appointments as a healthcare provider, or guarantee provider communication.
       </p>
+      <div className="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3 mb-6 text-sm text-amber-800">
+        Families remain responsible for confirming appointments, medication questions, referrals, refills, tests, and care decisions directly with qualified providers.
+      </div>
 
-      {/* Active / In Progress */}
       {active.length > 0 && (
         <div className="mb-8">
           <h2 className="text-sm font-bold text-navy mb-3 flex items-center gap-2">
-            <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
-            In Progress
+            <span className="w-2 h-2 bg-blue-500 rounded-full" />
+            Family Follow-Up
           </h2>
           <div className="space-y-3">
             {active.map((appt) => {
@@ -104,40 +105,40 @@ export default function AppointmentsPage() {
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <span className="text-xl">{typeIcons[appt.type] || "📋"}</span>
-                      <span className="text-sm font-bold text-navy">{typeLabels[appt.type] || appt.type}</span>
+                      <span className="text-sm font-bold text-navy">{typeLabels[appt.type] || "Coordination Note"}</span>
                     </div>
                     <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${statusColors[appt.status]}`}>
-                      {statusLabels[appt.status] || appt.status}
+                      {statusLabels[appt.status] || "Family follow-up"}
                     </span>
                   </div>
                   <div className="space-y-1.5 text-sm">
                     {parsed["DOCTOR"] && (
                       <div className="flex items-center gap-2">
-                        <span className="text-gray-400 text-xs w-16">Doctor</span>
+                        <span className="text-gray-400 text-xs w-20">Provider</span>
                         <span className="font-semibold text-navy">{parsed["DOCTOR"]}</span>
                       </div>
                     )}
                     {parsed["PHARMACY"] && (
                       <div className="flex items-center gap-2">
-                        <span className="text-gray-400 text-xs w-16">Pharmacy</span>
+                        <span className="text-gray-400 text-xs w-20">Pharmacy</span>
                         <span className="font-semibold text-navy">{parsed["PHARMACY"]}</span>
                       </div>
                     )}
                     {parsed["DATE"] && (
                       <div className="flex items-center gap-2">
-                        <span className="text-gray-400 text-xs w-16">Requested</span>
+                        <span className="text-gray-400 text-xs w-20">Requested</span>
                         <span className="text-navy">{parsed["DATE"]}</span>
                       </div>
                     )}
                     {parsed["NOTES"] && (
                       <div className="flex items-center gap-2">
-                        <span className="text-gray-400 text-xs w-16">Reason</span>
+                        <span className="text-gray-400 text-xs w-20">Note</span>
                         <span className="text-gray-600">{parsed["NOTES"]}</span>
                       </div>
                     )}
                   </div>
                   <p className="text-xs text-blue-600 mt-3">
-                    Lily is handling this. You'll receive a call back with confirmation.
+                    Saved as a family coordination note. Please confirm details directly with the provider when needed.
                   </p>
                 </div>
               );
@@ -146,49 +147,48 @@ export default function AppointmentsPage() {
         </div>
       )}
 
-      {/* Confirmed appointments */}
-      {confirmed.length > 0 && (
+      {saved.length > 0 && (
         <div className="mb-8">
           <h2 className="text-sm font-bold text-navy mb-3 flex items-center gap-2">
             <span className="text-green-500">✓</span>
-            Confirmed Appointments
+            Saved Notes
           </h2>
           <div className="space-y-3">
-            {confirmed.map((appt) => {
+            {saved.map((appt) => {
               const parsed = parseDescription(appt.description);
               return (
                 <div key={appt.id} className="bg-white border border-gray-100 rounded-2xl p-5">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <span className="text-xl">{typeIcons[appt.type] || "📋"}</span>
-                      <span className="text-sm font-bold text-navy">{typeLabels[appt.type] || appt.type}</span>
+                      <span className="text-sm font-bold text-navy">{typeLabels[appt.type] || "Coordination Note"}</span>
                     </div>
                     <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-green-100 text-green-700">
-                      ✓ Confirmed
+                      ✓ Saved
                     </span>
                   </div>
                   <div className="space-y-1.5 text-sm">
                     {parsed["DOCTOR"] && (
                       <div className="flex items-center gap-2">
-                        <span className="text-gray-400 text-xs w-16">Doctor</span>
+                        <span className="text-gray-400 text-xs w-20">Provider</span>
                         <span className="font-semibold text-navy">{parsed["DOCTOR"]}</span>
                       </div>
                     )}
                     {parsed["DATE"] && (
                       <div className="flex items-center gap-2">
-                        <span className="text-gray-400 text-xs w-16">Date</span>
+                        <span className="text-gray-400 text-xs w-20">Date</span>
                         <span className="text-navy">{parsed["DATE"]}</span>
                       </div>
                     )}
                     {parsed["NOTES"] && (
                       <div className="flex items-center gap-2">
-                        <span className="text-gray-400 text-xs w-16">Reason</span>
+                        <span className="text-gray-400 text-xs w-20">Note</span>
                         <span className="text-gray-600">{parsed["NOTES"]}</span>
                       </div>
                     )}
                   </div>
                   <p className="text-xs text-gray-400 mt-3">
-                    Scheduled on {formatDate(appt.createdAt)}
+                    Saved on {formatDate(appt.createdAt)}
                   </p>
                 </div>
               );
@@ -197,44 +197,32 @@ export default function AppointmentsPage() {
         </div>
       )}
 
-      {/* Empty state */}
-      {appointments.length === 0 && (
+      {appointmentNotes.length === 0 && (
         <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center">
           <div className="w-14 h-14 bg-teal/10 rounded-full flex items-center justify-center mx-auto mb-4">
             <span className="text-2xl">📅</span>
           </div>
-          <h2 className="text-lg font-bold text-navy mb-2">No appointments yet</h2>
+          <h2 className="text-lg font-bold text-navy mb-2">No appointment notes yet</h2>
           <p className="text-sm text-gray-500 mb-4">
-            Call Lily to schedule your first appointment. She'll handle everything — finding a doctor, calling the office, and confirming the details.
+            Appointment details and family follow-up notes can appear here when shared. Families should schedule, cancel, and confirm appointments directly with providers.
           </p>
-          <a href="tel:+12727669090" className="inline-flex items-center gap-2 bg-teal text-white px-6 py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors text-sm">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-            </svg>
-            Call Lily: +1 272 766 9090
-          </a>
         </div>
       )}
 
-      {/* Help text */}
       <div className="bg-gray-50 rounded-xl p-4 mt-6">
-        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">How it works</h3>
+        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Important limits</h3>
         <ul className="space-y-1.5 text-xs text-gray-500">
           <li className="flex items-start gap-2">
-            <span className="text-teal mt-0.5">1.</span>
-            Call Lily and tell her what you need — an appointment, refill, or test
+            <span className="text-teal mt-0.5">•</span>
+            KinCare360 is for non-medical family coordination and routine reminders.
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-teal mt-0.5">2.</span>
-            Lily calls the doctor's office or pharmacy on your behalf
+            <span className="text-teal mt-0.5">•</span>
+            We do not provide medical advice, clinical assessment, appointment guarantees, or provider-side case management.
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-teal mt-0.5">3.</span>
-            Lily calls you back with the confirmed appointment details
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="text-teal mt-0.5">4.</span>
-            Need to reschedule? Just call Lily again
+            <span className="text-teal mt-0.5">•</span>
+            Contact providers directly for appointment changes, prescriptions, tests, referrals, or clinical questions.
           </li>
         </ul>
       </div>

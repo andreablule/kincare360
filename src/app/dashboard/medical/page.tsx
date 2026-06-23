@@ -7,8 +7,6 @@ import { usePatientContext } from "@/components/PatientContext";
 
 interface Doctor { id?: string; name: string; specialty: string; phone: string; address: string; notes: string; }
 interface Pharmacy { id?: string; name: string; phone: string; address: string; }
-interface Medication { id?: string; name: string; dosage: string; frequency: string; instructions: string; }
-interface Condition { id?: string; name: string; notes: string; }
 
 function Section<T extends { id?: string }>({
   title,
@@ -17,6 +15,7 @@ function Section<T extends { id?: string }>({
   endpoint,
   fields,
   emptyItem,
+  emptyMessage,
   readOnly = false,
 }: {
   title: string;
@@ -25,6 +24,7 @@ function Section<T extends { id?: string }>({
   endpoint: string;
   fields: { key: keyof T; label: string; type?: string }[];
   emptyItem: T;
+  emptyMessage: string;
   readOnly?: boolean;
 }) {
   const [saving, setSaving] = useState(false);
@@ -70,12 +70,7 @@ function Section<T extends { id?: string }>({
       </div>
 
       {items.length === 0 && (
-        <p className="text-sm text-gray-400 py-2">
-          {title === "Medications" ? "No medications added yet. Add one to help Lily remind your loved one." :
-           title === "Doctors" ? "No doctors added yet. Add your loved one's care team." :
-           title === "Conditions" ? "No conditions added yet. Add known medical conditions." :
-           "No pharmacies added yet. Add your preferred pharmacy."}
-        </p>
+        <p className="text-sm text-gray-400 py-2">{emptyMessage}</p>
       )}
 
       <div className="space-y-4">
@@ -91,7 +86,7 @@ function Section<T extends { id?: string }>({
                     value={String(item[f.key] || "")}
                     onChange={(e) => {
                       const updated = [...items];
-                      (updated[i] as any)[f.key] = e.target.value;
+                      (updated[i] as Record<string, string>)[String(f.key)] = e.target.value;
                       setItems(updated);
                     }}
                   />
@@ -124,14 +119,12 @@ function Section<T extends { id?: string }>({
 
 export default function MedicalPage() {
   const { data: session } = useSession();
-  const userRole = (session?.user as any)?.role || "CLIENT";
+  const userRole = (session?.user as { role?: string } | undefined)?.role || "CLIENT";
   const readOnly = userRole === "FAMILY";
   const { selectedPatientId, patientQuery } = usePatientContext();
 
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [pharmacies, setPharmacies] = useState<Pharmacy[]>([]);
-  const [medications, setMedications] = useState<Medication[]>([]);
-  const [conditions, setConditions] = useState<Condition[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -139,13 +132,9 @@ export default function MedicalPage() {
     Promise.all([
       fetch(`/api/doctors${qs}`).then((r) => r.json()),
       fetch(`/api/pharmacies${qs}`).then((r) => r.json()),
-      fetch(`/api/medications${qs}`).then((r) => r.json()),
-      fetch(`/api/conditions${qs}`).then((r) => r.json()),
-    ]).then(([d, p, m, c]) => {
+    ]).then(([d, p]) => {
       setDoctors(d.items || []);
       setPharmacies(p.items || []);
-      setMedications(m.items || []);
-      setConditions(c.items || []);
       setLoading(false);
     });
   }, [selectedPatientId, patientQuery]);
@@ -154,71 +143,52 @@ export default function MedicalPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-navy mb-6">Medical Records</h1>
+      <h1 className="text-2xl font-bold text-navy mb-3">Care Contacts &amp; Routine Notes</h1>
+      <p className="text-sm text-gray-500 mb-6">
+        For family coordination only. This page is not a medical record, medication-management tool, clinical chart, or emergency monitoring record.
+      </p>
       <PatientSwitcher />
 
       {readOnly && (
         <div className="bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 mb-4 text-sm text-gray-500 flex items-center gap-2">
           <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-          Read-only view. Only the account owner or a Manager can edit medical records.
+          Read-only view. Only the account owner or a Manager can edit shared coordination details.
         </div>
       )}
 
+      <div className="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3 mb-6 text-sm text-amber-800">
+        Keep only information that helps family coordination, reminders, and follow-up. Do not rely on KinCare360 for medical decisions, medication instructions, clinical records, or emergency response.
+      </div>
+
       <Section<Doctor>
-        title="Doctors"
+        title="Provider Contacts"
         items={doctors}
         setItems={setDoctors}
         endpoint="/api/doctors"
         readOnly={readOnly}
+        emptyMessage="No provider contacts added yet. Add contact information only if it helps family coordination."
         emptyItem={{ name: "", specialty: "", phone: "", address: "", notes: "" }}
         fields={[
           { key: "name", label: "Name" },
-          { key: "specialty", label: "Specialty" },
+          { key: "specialty", label: "Type / Specialty" },
           { key: "phone", label: "Phone", type: "tel" },
           { key: "address", label: "Address" },
-          { key: "notes", label: "Notes" },
+          { key: "notes", label: "Coordination Notes" },
         ]}
       />
 
       <Section<Pharmacy>
-        title="Pharmacies"
+        title="Pharmacy Contacts"
         items={pharmacies}
         setItems={setPharmacies}
         endpoint="/api/pharmacies"
         readOnly={readOnly}
+        emptyMessage="No pharmacy contacts added yet. Add pharmacy contact information only if it helps family coordination."
         emptyItem={{ name: "", phone: "", address: "" }}
         fields={[
           { key: "name", label: "Name" },
           { key: "phone", label: "Phone", type: "tel" },
           { key: "address", label: "Address" },
-        ]}
-      />
-
-      <Section<Medication>
-        title="Medications"
-        items={medications}
-        setItems={setMedications}
-        endpoint="/api/medications"
-        readOnly={readOnly}
-        emptyItem={{ name: "", dosage: "", frequency: "", instructions: "" }}
-        fields={[
-          { key: "name", label: "Medication Name" },
-          { key: "dosage", label: "Dosage" },
-          { key: "frequency", label: "Frequency" },
-          { key: "instructions", label: "Instructions" },
-        ]}
-      />
-
-      <Section<Condition>
-        title="Conditions"
-        items={conditions}
-        setItems={setConditions}
-        endpoint="/api/conditions"
-        readOnly={readOnly}
-        emptyItem={{ name: "", notes: "" }}
-        fields={[
-          { key: "name", label: "Condition" },
-          { key: "notes", label: "Notes" },
         ]}
       />
     </div>

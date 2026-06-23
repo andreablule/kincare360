@@ -8,7 +8,7 @@ export async function GET() {
   const session = await getServerSession(authOptions);
   const user = session?.user as any;
 
-  if (!user || (user.role !== "ADMIN" && user.email !== "hello@kincare360.com" && user.email !== "andreablule@gmail.com")) {
+  if (!user || user.role !== "ADMIN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

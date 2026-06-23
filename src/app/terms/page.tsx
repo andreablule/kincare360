@@ -27,11 +27,11 @@ export default function TermsPage() {
           <ul className="list-disc list-inside mt-2 space-y-1 ml-2">
             <li>Daily family check-in phone calls (non-clinical)</li>
             <li>Routine reminder notifications for family-approved everyday routines</li>
-            <li>Appointment and everyday coordination assistance</li>
+            <li>Appointment reminder and family coordination support</li>
             <li>Communication and reporting to family members</li>
             <li>Phone-based local service connection support</li>
           </ul>
-          <p className="mt-3">KinCare360 is an <strong>AI-powered coordination service</strong> and does not provide clinical assessments, medical diagnoses, or healthcare treatment of any kind.</p>
+          <p className="mt-3">KinCare360 is an <strong>AI-powered coordination service</strong> and does not provide clinical assessments, medical diagnoses, healthcare treatment, appointment scheduling guarantees, provider-side case management, prescription handling, or healthcare communications as a medical representative.</p>
         </div>
 
         <div>
@@ -62,7 +62,7 @@ export default function TermsPage() {
         <div>
           <h2 className="text-xl font-semibold text-navy mb-2">6. Privacy & Health Information</h2>
           <p>KinCare360 is a <strong>non-medical care coordination service</strong>. We are not a Covered Entity or Business Associate under HIPAA. We do not provide medical treatment, and the information you share with us (such as routine preferences, appointment times, errands, and general family notes) is used <strong>solely</strong> for coordination purposes.</p>
-          <p className="mt-2">We implement reasonable administrative, technical, and physical safeguards to protect your information. We treat all personal and health-related data with care and confidentiality.</p>
+          <p className="mt-2">We implement reasonable administrative, technical, and physical safeguards to protect your information. We treat personal and health-related details with care and confidentiality, but KinCare360 is not a medical record system, clinical chart, medication-management tool, medication-compliance service, or emergency monitoring record.</p>
           <p className="mt-2">We will <strong>never sell</strong> your personal or health-related information. Information shared is used only to provide the care coordination services you have requested. For full details, see our <a href="/privacy" className="text-teal underline">Privacy Policy</a>.</p>
         </div>
 

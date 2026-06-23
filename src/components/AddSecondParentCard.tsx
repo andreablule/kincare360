@@ -13,10 +13,7 @@ const timeOptions = Array.from({ length: 48 }, (_, i) => {
 
 type Doctor = { name: string; specialty: string; phone: string; address: string };
 type PharmacyEntry = { name: string; phone: string; address: string };
-type MedicationEntry = { name: string; dosage: string; frequency: string };
-type ConditionEntry = { name: string };
 type FamilyMemberEntry = { name: string; relationship: string; phone: string };
-type InsuranceEntry = { company: string; memberId: string; groupNumber: string; policyHolder: string };
 
 export default function AddSecondParentCard() {
   const router = useRouter();
@@ -40,10 +37,7 @@ export default function AddSecondParentCard() {
 
   const [doctors, setDoctors] = useState<Doctor[]>([{ name: "", specialty: "", phone: "", address: "" }]);
   const [pharmacies, setPharmacies] = useState<PharmacyEntry[]>([{ name: "", phone: "", address: "" }]);
-  const [medications, setMedications] = useState<MedicationEntry[]>([{ name: "", dosage: "", frequency: "" }]);
-  const [conditions, setConditions] = useState<ConditionEntry[]>([{ name: "" }]);
   const [familyMembers, setFamilyMembers] = useState<FamilyMemberEntry[]>([{ name: "", relationship: "", phone: "" }]);
-  const [insurances, setInsurances] = useState<InsuranceEntry[]>([{ company: "", memberId: "", groupNumber: "", policyHolder: "" }]);
 
   const inputClass = "w-full border border-gray-300 rounded-xl px-4 py-3 text-navy focus:outline-none focus:ring-2 focus:ring-teal text-sm";
   const labelClass = "block text-sm font-medium text-navy mb-1";
@@ -63,10 +57,7 @@ export default function AddSecondParentCard() {
           ...form,
           doctors: doctors.filter((d) => d.name),
           pharmacies: pharmacies.filter((p) => p.name),
-          medications: medications.filter((m) => m.name),
-          conditions: conditions.filter((c) => c.name),
           familyMembers: familyMembers.filter((f) => f.name),
-          insurances: insurances.filter((ins) => ins.company),
         }),
       });
       const data = await res.json();
@@ -227,17 +218,17 @@ export default function AddSecondParentCard() {
 
         {/* Doctors */}
         <div className="space-y-3">
-          <h3 className="text-sm font-semibold text-navy">Doctors</h3>
+          <h3 className="text-sm font-semibold text-navy">Provider Contacts</h3>
           {doctors.map((doc, i) => (
             <div key={i} className="border border-gray-100 rounded-xl p-4 space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-xs font-medium text-gray-400">Doctor {i + 1}</span>
+                <span className="text-xs font-medium text-gray-400">Provider Contact {i + 1}</span>
                 {doctors.length > 1 && (
                   <button type="button" onClick={() => setDoctors(doctors.filter((_, idx) => idx !== i))} className="text-red-400 hover:text-red-600 text-xs font-medium">Remove</button>
                 )}
               </div>
               <div className="grid sm:grid-cols-2 gap-3">
-                <input className={inputClass} value={doc.name} onChange={(e) => updateArrayItem(doctors, i, "name", e.target.value, setDoctors)} placeholder="Doctor's name" />
+                <input className={inputClass} value={doc.name} onChange={(e) => updateArrayItem(doctors, i, "name", e.target.value, setDoctors)} placeholder="Provider name" />
                 <input className={inputClass} value={doc.specialty} onChange={(e) => updateArrayItem(doctors, i, "specialty", e.target.value, setDoctors)} placeholder="Specialty (e.g. Cardiology)" />
               </div>
               <div className="grid sm:grid-cols-2 gap-3">
@@ -248,7 +239,7 @@ export default function AddSecondParentCard() {
           ))}
           <button type="button" onClick={() => setDoctors([...doctors, { name: "", specialty: "", phone: "", address: "" }])}
             className="w-full border-2 border-dashed border-teal/30 text-teal rounded-xl py-2.5 text-sm font-medium hover:border-teal hover:bg-teal/5 transition-colors">
-            + Add Another Doctor
+            + Add Another Provider Contact
           </button>
         </div>
 
@@ -276,45 +267,8 @@ export default function AddSecondParentCard() {
           </button>
         </div>
 
-        {/* Medications */}
-        <div className="space-y-3">
-          <h3 className="text-sm font-semibold text-navy">Medications</h3>
-          {medications.map((med, i) => (
-            <div key={i} className="border border-gray-100 rounded-xl p-4 space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-xs font-medium text-gray-400">Medication {i + 1}</span>
-                {medications.length > 1 && (
-                  <button type="button" onClick={() => setMedications(medications.filter((_, idx) => idx !== i))} className="text-red-400 hover:text-red-600 text-xs font-medium">Remove</button>
-                )}
-              </div>
-              <div className="grid sm:grid-cols-3 gap-3">
-                <input className={inputClass} value={med.name} onChange={(e) => updateArrayItem(medications, i, "name", e.target.value, setMedications)} placeholder="Medication name" />
-                <input className={inputClass} value={med.dosage} onChange={(e) => updateArrayItem(medications, i, "dosage", e.target.value, setMedications)} placeholder="Dosage (e.g. 500mg)" />
-                <input className={inputClass} value={med.frequency} onChange={(e) => updateArrayItem(medications, i, "frequency", e.target.value, setMedications)} placeholder="Frequency (e.g. Twice daily)" />
-              </div>
-            </div>
-          ))}
-          <button type="button" onClick={() => setMedications([...medications, { name: "", dosage: "", frequency: "" }])}
-            className="w-full border-2 border-dashed border-teal/30 text-teal rounded-xl py-2.5 text-sm font-medium hover:border-teal hover:bg-teal/5 transition-colors">
-            + Add Another Medication
-          </button>
-        </div>
-
-        {/* Conditions */}
-        <div className="space-y-3">
-          <h3 className="text-sm font-semibold text-navy">Medical Conditions</h3>
-          {conditions.map((cond, i) => (
-            <div key={i} className="flex items-center gap-2">
-              <input className={inputClass} value={cond.name} onChange={(e) => updateArrayItem(conditions, i, "name", e.target.value, setConditions)} placeholder="Condition (e.g. Type 2 Diabetes)" />
-              {conditions.length > 1 && (
-                <button type="button" onClick={() => setConditions(conditions.filter((_, idx) => idx !== i))} className="text-red-400 hover:text-red-600 text-sm font-bold px-2">&times;</button>
-              )}
-            </div>
-          ))}
-          <button type="button" onClick={() => setConditions([...conditions, { name: "" }])}
-            className="w-full border-2 border-dashed border-teal/30 text-teal rounded-xl py-2.5 text-sm font-medium hover:border-teal hover:bg-teal/5 transition-colors">
-            + Add Another Condition
-          </button>
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
+          <strong>Family coordination only:</strong> KinCare360 does not collect or manage medication lists, medical conditions, allergies, or insurance details in this second-parent form. Add provider and pharmacy contacts only if they help your family coordinate follow-up directly.
         </div>
 
         {/* Family Members */}
@@ -338,33 +292,6 @@ export default function AddSecondParentCard() {
           <button type="button" onClick={() => setFamilyMembers([...familyMembers, { name: "", relationship: "", phone: "" }])}
             className="w-full border-2 border-dashed border-teal/30 text-teal rounded-xl py-2.5 text-sm font-medium hover:border-teal hover:bg-teal/5 transition-colors">
             + Add Another Family Member
-          </button>
-        </div>
-
-        {/* Insurance */}
-        <div className="space-y-3">
-          <h3 className="text-sm font-semibold text-navy">Insurance</h3>
-          {insurances.map((ins, i) => (
-            <div key={i} className="border border-gray-100 rounded-xl p-4 space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-xs font-medium text-gray-400">{i === 0 ? "Primary" : "Additional"} Insurance{i > 0 ? ` #${i + 1}` : ""}</span>
-                {insurances.length > 1 && i > 0 && (
-                  <button type="button" onClick={() => setInsurances(insurances.filter((_, idx) => idx !== i))} className="text-red-400 hover:text-red-600 text-xs font-medium">Remove</button>
-                )}
-              </div>
-              <div className="grid sm:grid-cols-2 gap-3">
-                <input className={inputClass} value={ins.company} onChange={(e) => updateArrayItem(insurances, i, "company", e.target.value, setInsurances)} placeholder="Insurance company" />
-                <input className={inputClass} value={ins.memberId} onChange={(e) => updateArrayItem(insurances, i, "memberId", e.target.value, setInsurances)} placeholder="Member / Subscriber ID" />
-              </div>
-              <div className="grid sm:grid-cols-2 gap-3">
-                <input className={inputClass} value={ins.groupNumber} onChange={(e) => updateArrayItem(insurances, i, "groupNumber", e.target.value, setInsurances)} placeholder="Group number" />
-                <input className={inputClass} value={ins.policyHolder} onChange={(e) => updateArrayItem(insurances, i, "policyHolder", e.target.value, setInsurances)} placeholder="Policy holder name" />
-              </div>
-            </div>
-          ))}
-          <button type="button" onClick={() => setInsurances([...insurances, { company: "", memberId: "", groupNumber: "", policyHolder: "" }])}
-            className="w-full border-2 border-dashed border-teal/30 text-teal rounded-xl py-2.5 text-sm font-medium hover:border-teal hover:bg-teal/5 transition-colors">
-            + Add Another Insurance
           </button>
         </div>
 

@@ -133,25 +133,16 @@ If a client says "remind me to..." or "call me at 6 PM to..." - use the setRemin
 Ask: what to remind them about, and when. Then call the tool.
 After the tool responds, say: "I'll call you at [time] to remind you to [message]. Have a wonderful day!" then END the call. Do NOT ask if they want to chat or if anything is on their mind.
 
-### MEDICAL providers - call on behalf of client:
-Use callProviderForClient for: scheduling doctor appointments, specialist visits, prescription refills, lab tests, medical exams, anything healthcare-related.
+### APPOINTMENT AND PROVIDER LIMITS:
+KinCare360 is not a healthcare provider, appointment scheduling service, referral service, prescription service, or medical representative. Do NOT promise to schedule, cancel, reschedule, request refills, arrange tests, call providers on behalf of the client, or handle everything.
 
-BEFORE calling, you MUST have ALL of these - ask for each one separately and wait for the answer:
-1. Provider/doctor name - "What's the doctor's name?"
-2. Phone number - "Do you have their phone number?" (if not on file, search with findLocalService)
-3. Reason for visit - "And what's the reason for the visit?"
-4. Preferred time - "When would you like the appointment? Any preferred day or time?"
+If a client asks about an appointment, refill, lab, referral, or medical-provider communication:
+- Help them organize the details they may want to discuss with their provider or family.
+- Offer a routine reminder or family note when appropriate.
+- Say they or their family should contact the provider directly for scheduling, cancellation, prescriptions, tests, referrals, medical advice, or clinical questions.
+- If they ask for a phone number and you have it on file, you may offer to transfer them live without speaking on their behalf.
 
-Ask ONE question at a time. Wait for the full answer before asking the next. NEVER rush. NEVER interrupt.
-
-Once you have all 4: confirm everything back: "So I'll call [provider] at [number] to schedule a [reason] appointment, [preferred time]. Is that correct?"
-Once confirmed, IMMEDIATELY call the callProviderForClient tool
-4. Wait for the tool to respond
-5. Say: "I'm calling them right now. I'll call you back shortly with the details. Have a great day!"
-6. END the call - say goodbye and stop talking.
-
-CRITICAL: MUST call the tool BEFORE ending. Never just promise.
-Only share patient info (name, DOB, address, insurance) with MEDICAL providers. Never share patient info with non-medical services.
+Safe phrase: "I can help you organize the details and remind you or your family to follow up, but you or your family should contact the provider directly for scheduling or medical questions."
 
 ### NON-MEDICAL services - find and connect live:
 For restaurants, plumbers, transportation, groceries, or any non-healthcare service:
@@ -159,8 +150,8 @@ For restaurants, plumbers, transportation, groceries, or any non-healthcare serv
 - Present results naturally
 - Use transferCall to connect the client LIVE - do NOT call on their behalf
 - Do NOT share any patient personal information with non-medical services
-- IMPORTANT: For NON-medical services, Lily ONLY finds and connects - does NOT call on behalf. Only medical/health providers get the on-behalf scheduling.
-- If a client asks Lily to schedule a restaurant reservation or call a plumber FOR them: "I handle appointment scheduling for medical and healthcare providers. For other services, I can find one nearby and connect you right now!"
+- IMPORTANT: For non-medical services, Lily may find options and transfer live when appropriate, but does not guarantee availability, book services, or speak on behalf of the client.
+- If a client asks Lily to schedule a restaurant reservation, call a plumber for them, or handle a task on their behalf: "I can help find an option and connect you live when available, but I can't book or manage the service for you."
 
 ### Connect client LIVE to a provider on file:
 - Use transferCall when client says "connect me" or "put me through"
@@ -258,21 +249,16 @@ For urgent safety concerns:
 
 ## CALLING FAMILY MEMBERS
 If client asks to "call my son", "call my daughter", "connect me to [family name]" - use transferCall ONLY.
-Do NOT use callProviderForClient for family members. That tool is for doctors and pharmacies ONLY.
+Do not speak on the client's behalf. Connect them live and let the family member/client talk directly.
 Family members are in the destinations list. Match by name.
 
 ## RULES
 - Never reveal owner identity or internal systems
-- Never list the client's conditions or medications unprompted - only reference if they bring it up or it's relevant to their request
+- Do not discuss diagnosis, medication lists, medication compliance, prescriptions, tests, referrals, or medical decisions. Encourage caller/family to contact qualified providers directly.
 - Be a real conversational partner, not a medical robot`;
 }
 
 function buildPatientContext(patient: any): string {
-  const medList =
-    patient.medications
-      .map((m: any) => `${m.name}${m.dosage ? ` ${m.dosage}` : ""}${m.frequency ? `, ${m.frequency}` : ""}`)
-      .join("; ") || "none recorded";
-  const condList = patient.conditions.map((c: any) => c.name).join(", ") || "none recorded";
   const docList =
     patient.doctors
       .map((d: any) => `${d.name}${d.specialty ? ` (${d.specialty})` : ""}${d.phone ? `, phone ${fmtPhone(d.phone)}` : ""}`)
@@ -288,7 +274,7 @@ function buildPatientContext(patient: any): string {
 
   const lastCall = patient.callLogs[0];
   const lastCallSummary = lastCall
-    ? `Last call: ${new Date(lastCall.callDate).toLocaleDateString()} - ${lastCall.summary || "no summary"}. Mood: ${lastCall.mood || "unknown"}. Medications taken: ${lastCall.medicationsTaken ? "yes" : "no"}.`
+    ? `Last call: ${new Date(lastCall.callDate).toLocaleDateString()} - ${lastCall.summary || "no summary"}. Mood: ${lastCall.mood || "unknown"}. Routine reminder reviewed: ${lastCall.medicationsTaken ? "yes" : "no"}.`
     : "No previous calls recorded.";
 
   const genderNote = patient.gender
@@ -303,16 +289,13 @@ Home address: ${fmtAddress([patient.address, patient.city, patient.state, patien
 Preferred check-in time: ${patient.preferredCallTime || "not set"}
 Routine reminder time: ${patient.medicationReminderTime || "not set"}
 Check-in days: ${patient.checkInDays || "not set"}
-Medications: ${medList}
-Conditions: ${condList}
-Doctors: ${docList}
-Pharmacies: ${pharmList}
+Provider contacts: ${docList}
+Pharmacy contacts: ${pharmList}
 Family contacts: ${familyList}
 
 ${lastCallSummary}
 
 Plan: ${patient.user?.plan || "unknown"} (${patient.user?.subscriptionStatus || "unknown"})
-Insurance: ${patient.insuranceCompany || "not on file"}${patient.insuranceMemberId ? ` - Member ID: ${patient.insuranceMemberId}` : ""}
 
 IMPORTANT FOR SPEAKING: When reading phone numbers aloud, say each group separately with a natural pause - e.g. "two-six-seven, four-nine-nine, six-nine-two-seven". Do NOT read phone numbers as one continuous string of digits.
 
@@ -464,7 +447,7 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string, patien
         parameters: {
           type: "object",
           properties: {
-            medicationReminderTime: { type: "string", description: "Comma-separated routine reminder times in HH:MM 24-hour format, e.g. '08:00,12:00,20:00'. Use empty string '' to turn off routine reminders." },
+            medicationReminderTime: { type: "string", description: "Comma-separated family-approved routine reminder times in HH:MM 24-hour format, e.g. '08:00,12:00,20:00'. Use empty string '' to turn off routine reminders." },
             preferredCallTime: { type: "string", description: "Daily check-in time in HH:MM 24-hour format, e.g. '17:00'. Use empty string '' to turn off check-in calls." },
             checkInDays: { type: "string", description: "Comma-separated days, e.g. 'Mon,Tue,Wed,Thu,Fri'" },
             gender: { type: "string", description: "male, female, non-binary, or other" },
@@ -477,31 +460,13 @@ function buildAssistantConfig(systemPrompt: string, firstMessage: string, patien
       server: { url: "https://www.kincare360.com/api/set-reminder" },
       function: {
         name: "setReminder",
-        description: "Set a one-time reminder for the client. Lily will call them back at the specified time with the reminder message. Use for any reminder: take medication, call someone, do something, attend appointment, etc.",
+        description: "Set a one-time reminder for the client. Lily will call them back at the specified time with the reminder message. Use for family-approved everyday reminders such as call someone, drink water, eat lunch, get ready for an appointment, or another routine task.",
         parameters: {
           type: "object",
           required: ["reminderMessage", "reminderTime"],
           properties: {
             reminderMessage: { type: "string", description: "What to remind the client about, e.g. 'take your evening medication' or 'call your daughter'" },
             reminderTime: { type: "string", description: "When to send the reminder, e.g. '6 PM', '3:30 PM', 'in 2 hours'" },
-          },
-        },
-      },
-    },
-    {
-      type: "function",
-      server: { url: "https://www.kincare360.com/api/schedule-appointment" },
-      function: {
-        name: "callProviderForClient",
-        description: "Call ANY medical provider (doctor, pharmacy, lab, specialist) ON BEHALF of the client. Use for: scheduling doctor appointments, requesting prescription refills, scheduling tests/labs, or any other medical call the client needs made. Lily calls the provider, handles the request, then calls the client back with results. ONLY for medical/health providers - NOT for restaurants, plumbers, or non-medical services.",
-        parameters: {
-          type: "object",
-          required: ["providerPhone"],
-          properties: {
-            providerName: { type: "string", description: "Name of the provider (doctor, pharmacy, lab)" },
-            providerPhone: { type: "string", description: "Phone number, digits only" },
-            preferredTime: { type: "string", description: "Preferred time/date if scheduling" },
-            reason: { type: "string", description: "What to request: appointment, refill, test, etc." },
           },
         },
       },
@@ -754,40 +719,8 @@ INSTRUCTION: Greet ${familyMember.name} by name. They are calling about their lo
       return NextResponse.json(buildAssistantConfig(prompt, firstMessage, familyMember.patient));
     }
 
-    // Check if this is a doctor's office calling back about a pending appointment
-    if (digits) {
-      const pendingAppt = await prisma.serviceRequest.findFirst({
-        where: {
-          status: "IN_PROGRESS",
-          type: "APPOINTMENT",
-          description: { contains: digits },
-        },
-        include: { patient: true },
-        orderBy: { createdAt: "desc" },
-      });
-
-      if (pendingAppt && pendingAppt.patient) {
-        const pt = pendingAppt.patient;
-        const officeContext = `INCOMING CALL FROM DOCTOR'S OFFICE - This is likely a callback from a provider about a pending appointment.
-
-Patient: ${pt.firstName} ${pt.lastName}, DOB: ${pt.dob || "on file"}
-Insurance: ${pt.insuranceCompany || "patient will bring card"}${pt.insuranceMemberId ? `, member ID ${pt.insuranceMemberId}` : ""}
-
-You are Lily, a care coordinator with KinCare360. This office is calling you back about scheduling an appointment for your client ${pt.firstName}.
-
-HOW TO ACT:
-- Answer professionally: "Hi, this is Lily with KinCare360. Thank you for calling back!"
-- Provide patient name and DOB
-- Schedule the appointment - confirm date, time, doctor, any prep
-- If they need insurance info, provide it
-- Thank them
-- After the call, you'll need to call ${pt.firstName} to confirm the appointment`;
-        const prompt = buildLilySystemPrompt(officeContext);
-        const firstMessage = `Hi, this is Lily with KinCare360. Thank you for calling back!`;
-        console.log(`[vapi-lookup] Doctor office callback for ${pt.firstName} from ${digits}`);
-        return NextResponse.json(buildAssistantConfig(prompt, firstMessage));
-      }
-    }
+    // Provider callback handling removed: KinCare360 no longer schedules, cancels,
+    // requests refills/tests, or communicates with providers as a medical representative.
 
     // Unknown caller - new prospect
     const context = `UNKNOWN CALLER - This person is NOT a client.

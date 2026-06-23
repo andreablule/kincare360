@@ -118,13 +118,13 @@ export async function POST(req: NextRequest) {
       </p>
       
       <p style="color:#475569;font-size:15px;line-height:1.6;margin:0 0 24px;">
-        KinCare360 is a personalized remote care service that keeps families connected. Our AI wellness assistant Lily checks in with ${patientFirstName} daily — tracking medications, mood, and health concerns — so you always know they're okay.
+        KinCare360 is a non-medical family coordination service that keeps families connected. Lily can call ${patientFirstName} for daily family check-ins, routine notes, and family updates so loved ones have more context for follow-up.
       </p>
 
       ${assignedRole === "MANAGER" ? `
       <div style="background:#fef3c7;border:1px solid #fde68a;border-radius:12px;padding:16px;margin:0 0 20px;">
         <p style="color:#92400e;font-size:14px;font-weight:700;margin:0 0 4px;">⭐ You've been granted Manager access</p>
-        <p style="color:#78350f;font-size:14px;margin:0;">You can update care records and submit requests on behalf of ${patientFirstName}. The account owner will be notified of any changes you make.</p>
+        <p style="color:#78350f;font-size:14px;margin:0;">You can update shared family coordination details for ${patientFirstName}. The account owner will be notified of changes you make.</p>
       </div>
       ` : ""}
 
@@ -132,9 +132,9 @@ export async function POST(req: NextRequest) {
         <p style="color:#0f766e;font-size:14px;font-weight:600;margin:0 0 10px;">With your ${assignedRole === "MANAGER" ? "Manager" : "family"} dashboard, you can:</p>
         <ul style="color:#475569;font-size:14px;line-height:1.8;margin:0;padding-left:20px;">
           <li>View daily check-in summaries from Lily</li>
-          <li>Get urgent alerts if something needs your attention</li>
-          <li>See ${patientFirstName}'s medications, doctors &amp; care plan</li>
-          ${assignedRole === "MANAGER" ? `<li>Edit care records and submit service requests</li>` : ""}
+          <li>Receive family follow-up notices when something may need attention</li>
+          <li>See shared provider/pharmacy contacts and routine coordination notes</li>
+          ${assignedRole === "MANAGER" ? `<li>Edit shared family coordination details</li>` : ""}
           <li>Update your contact info and notification preferences</li>
         </ul>
       </div>
@@ -168,8 +168,8 @@ export async function POST(req: NextRequest) {
       from: '"KinCare360" <hello@kincare360.com>',
       to: email,
       subject: assignedRole === "MANAGER"
-        ? `You've been granted Manager access on KinCare360 — ${patientFirstName}'s care`
-        : `You've been invited to KinCare360 — ${patientFirstName}'s care dashboard`,
+        ? `You've been granted Manager access on KinCare360 — ${patientFirstName}'s family dashboard`
+        : `You've been invited to KinCare360 — ${patientFirstName}'s family dashboard`,
       html,
     });
   } catch (err) {

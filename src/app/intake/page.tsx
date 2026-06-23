@@ -329,9 +329,9 @@ export default function IntakePage() {
                         if (form.medicationReminders.some(r => r.time === newTime)) return;
                         update('checkInTime', newTime);
                       }}>
-                        {timeOptions.map(t => <option key={t.value} value={t.value} disabled={form.medicationReminders.some(r => r.time === t.value)}>{t.label}{form.medicationReminders.some(r => r.time === t.value) ? ' (med reminder)' : ''}</option>)}
+                        {timeOptions.map(t => <option key={t.value} value={t.value} disabled={form.medicationReminders.some(r => r.time === t.value)}>{t.label}{form.medicationReminders.some(r => r.time === t.value) ? ' (routine reminder)' : ''}</option>)}
                       </select>
-                      <p className="text-xs text-gray-400 mt-1">Check-in and medication times cannot overlap</p>
+                      <p className="text-xs text-gray-400 mt-1">Check-in and routine reminder times cannot overlap</p>
                     </>
                   )}
                 </div>
@@ -366,7 +366,7 @@ export default function IntakePage() {
                       </button>
                     </>
                   )}
-                  <p className="text-xs text-gray-400 mt-1">Lily will call at each time to remind about medications</p>
+                  <p className="text-xs text-gray-400 mt-1">Lily can call at each time for family-approved routine reminders</p>
                 </div>
 
                 <div>
@@ -400,29 +400,29 @@ export default function IntakePage() {
           {/* Step 1 — Medical Info */}
           {step === 1 && (
             <div className="space-y-5">
-              <h2 className="text-lg font-semibold text-navy mb-4">Medical Information</h2>
+              <h2 className="text-lg font-semibold text-navy mb-4">Care Contacts</h2>
               <div className="border border-gray-100 rounded-xl p-4 space-y-3">
-                <h3 className="text-sm font-semibold text-navy">Primary Doctor</h3>
-                <input className={inputClass} value={form.primaryDoctor} onChange={e => update('primaryDoctor', e.target.value)} placeholder="Doctor's full name" />
-                <input type="tel" className={inputClass} value={form.doctorPhone} onChange={e => update('doctorPhone', e.target.value)} placeholder="Doctor's phone number" />
-                <input className={inputClass} value={form.doctorAddress} onChange={e => update('doctorAddress', e.target.value)} placeholder="Doctor's office address" />
+                <h3 className="text-sm font-semibold text-navy">Primary Provider Contact</h3>
+                <input className={inputClass} value={form.primaryDoctor} onChange={e => update('primaryDoctor', e.target.value)} placeholder="Provider name" />
+                <input type="tel" className={inputClass} value={form.doctorPhone} onChange={e => update('doctorPhone', e.target.value)} placeholder="Provider phone number" />
+                <input className={inputClass} value={form.doctorAddress} onChange={e => update('doctorAddress', e.target.value)} placeholder="Provider office address" />
               </div>
               {form.additionalDoctors.map((doc, idx) => (
                 <div key={idx} className="border border-gray-100 rounded-xl p-4 space-y-3">
                   <div className="flex justify-between items-center">
-                    <h3 className="text-sm font-semibold text-navy">Doctor #{idx + 2}</h3>
+                    <h3 className="text-sm font-semibold text-navy">Provider Contact #{idx + 2}</h3>
                     <button type="button" onClick={() => setForm(prev => ({ ...prev, additionalDoctors: prev.additionalDoctors.filter((_, i) => i !== idx) }))} className="text-red-400 hover:text-red-600 text-xs font-medium">Remove</button>
                   </div>
-                  <input className={inputClass} value={doc.name} onChange={e => { const updated = [...form.additionalDoctors]; updated[idx] = { ...updated[idx], name: e.target.value }; setForm(prev => ({ ...prev, additionalDoctors: updated })); }} placeholder="Doctor's full name" />
+                  <input className={inputClass} value={doc.name} onChange={e => { const updated = [...form.additionalDoctors]; updated[idx] = { ...updated[idx], name: e.target.value }; setForm(prev => ({ ...prev, additionalDoctors: updated })); }} placeholder="Provider name" />
                   <input className={inputClass} value={doc.specialty} onChange={e => { const updated = [...form.additionalDoctors]; updated[idx] = { ...updated[idx], specialty: e.target.value }; setForm(prev => ({ ...prev, additionalDoctors: updated })); }} placeholder="Specialty (e.g. Cardiologist, Neurologist)" />
-                  <input type="tel" className={inputClass} value={doc.phone} onChange={e => { const updated = [...form.additionalDoctors]; updated[idx] = { ...updated[idx], phone: e.target.value }; setForm(prev => ({ ...prev, additionalDoctors: updated })); }} placeholder="Doctor's phone number" />
-                  <input className={inputClass} value={doc.address} onChange={e => { const updated = [...form.additionalDoctors]; updated[idx] = { ...updated[idx], address: e.target.value }; setForm(prev => ({ ...prev, additionalDoctors: updated })); }} placeholder="Doctor's office address" />
+                  <input type="tel" className={inputClass} value={doc.phone} onChange={e => { const updated = [...form.additionalDoctors]; updated[idx] = { ...updated[idx], phone: e.target.value }; setForm(prev => ({ ...prev, additionalDoctors: updated })); }} placeholder="Provider phone number" />
+                  <input className={inputClass} value={doc.address} onChange={e => { const updated = [...form.additionalDoctors]; updated[idx] = { ...updated[idx], address: e.target.value }; setForm(prev => ({ ...prev, additionalDoctors: updated })); }} placeholder="Provider office address" />
                 </div>
               ))}
               <button type="button" onClick={() => setForm(prev => ({ ...prev, additionalDoctors: [...prev.additionalDoctors, { name: '', phone: '', address: '', specialty: '' }] }))}
                 className="w-full border-2 border-dashed border-gray-200 hover:border-teal rounded-xl py-3 text-sm font-medium text-gray-500 hover:text-teal transition-colors flex items-center justify-center gap-2">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
-                Add Another Doctor
+                Add Another Provider Contact
               </button>
 
               <div className="border border-gray-100 rounded-xl p-4 space-y-3">
@@ -447,92 +447,9 @@ export default function IntakePage() {
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
                 Add Another Pharmacy
               </button>
-              {/* Medications */}
-              <div className="border border-gray-100 rounded-xl p-4 space-y-3">
-                <h3 className="text-sm font-semibold text-navy">Medications</h3>
-                {form.medications.map((med, idx) => (
-                  <div key={idx} className="flex items-start gap-2">
-                    <div className="flex-1 grid sm:grid-cols-3 gap-2">
-                      <input className={inputClass} value={med.name} onChange={e => { const updated = [...form.medications]; updated[idx] = { ...updated[idx], name: e.target.value }; setForm(prev => ({ ...prev, medications: updated })); }} placeholder="Medication name" />
-                      <input className={inputClass} value={med.dosage} onChange={e => { const updated = [...form.medications]; updated[idx] = { ...updated[idx], dosage: e.target.value }; setForm(prev => ({ ...prev, medications: updated })); }} placeholder="Dosage (e.g. 500mg)" />
-                      <input className={inputClass} value={med.frequency} onChange={e => { const updated = [...form.medications]; updated[idx] = { ...updated[idx], frequency: e.target.value }; setForm(prev => ({ ...prev, medications: updated })); }} placeholder="Frequency (e.g. Twice daily)" />
-                    </div>
-                    {form.medications.length > 1 && (
-                      <button type="button" onClick={() => setForm(prev => ({ ...prev, medications: prev.medications.filter((_, i) => i !== idx) }))} className="text-red-400 hover:text-red-600 mt-2.5">
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                      </button>
-                    )}
-                  </div>
-                ))}
-                <button type="button" onClick={() => setForm(prev => ({ ...prev, medications: [...prev.medications, { name: '', dosage: '', frequency: '' }] }))}
-                  className="w-full border-2 border-dashed border-gray-200 hover:border-teal rounded-xl py-2.5 text-sm font-medium text-gray-500 hover:text-teal transition-colors flex items-center justify-center gap-2">
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
-                  Add Medication
-                </button>
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
+                <strong>Family coordination only:</strong> KinCare360 does not collect or manage medication lists, medical conditions, allergies, or insurance details in this signup flow. Keep provider and pharmacy contacts here only if they help your family coordinate follow-up directly.
               </div>
-
-              {/* Medical Conditions */}
-              <div className="border border-gray-100 rounded-xl p-4 space-y-3">
-                <h3 className="text-sm font-semibold text-navy">Medical Conditions</h3>
-                {form.conditions.map((cond, idx) => (
-                  <div key={idx} className="flex items-center gap-2">
-                    <input className={inputClass + " flex-1"} value={cond} onChange={e => { const updated = [...form.conditions]; updated[idx] = e.target.value; setForm(prev => ({ ...prev, conditions: updated })); }} placeholder="e.g. Type 2 Diabetes, Hypertension, COPD" />
-                    {form.conditions.length > 1 && (
-                      <button type="button" onClick={() => setForm(prev => ({ ...prev, conditions: prev.conditions.filter((_, i) => i !== idx) }))} className="text-red-400 hover:text-red-600">
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                      </button>
-                    )}
-                  </div>
-                ))}
-                <button type="button" onClick={() => setForm(prev => ({ ...prev, conditions: [...prev.conditions, ''] }))}
-                  className="w-full border-2 border-dashed border-gray-200 hover:border-teal rounded-xl py-2.5 text-sm font-medium text-gray-500 hover:text-teal transition-colors flex items-center justify-center gap-2">
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
-                  Add Condition
-                </button>
-              </div>
-
-              {/* Allergies */}
-              <div className="border border-gray-100 rounded-xl p-4 space-y-3">
-                <h3 className="text-sm font-semibold text-navy">Known Allergies</h3>
-                {form.allergies.map((allergy, idx) => (
-                  <div key={idx} className="flex items-center gap-2">
-                    <input className={inputClass + " flex-1"} value={allergy} onChange={e => { const updated = [...form.allergies]; updated[idx] = e.target.value; setForm(prev => ({ ...prev, allergies: updated })); }} placeholder="e.g. Penicillin, Sulfa, Latex" />
-                    {form.allergies.length > 1 && (
-                      <button type="button" onClick={() => setForm(prev => ({ ...prev, allergies: prev.allergies.filter((_, i) => i !== idx) }))} className="text-red-400 hover:text-red-600">
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                      </button>
-                    )}
-                  </div>
-                ))}
-                <button type="button" onClick={() => setForm(prev => ({ ...prev, allergies: [...prev.allergies, ''] }))}
-                  className="w-full border-2 border-dashed border-gray-200 hover:border-teal rounded-xl py-2.5 text-sm font-medium text-gray-500 hover:text-teal transition-colors flex items-center justify-center gap-2">
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
-                  Add Allergy
-                </button>
-              </div>
-
-              {form.insurances.map((ins, index) => (
-                <div key={index} className="border border-gray-100 rounded-xl p-4 space-y-3">
-                  <div className="flex justify-between items-center">
-                    <h3 className="text-sm font-semibold text-navy">{index === 0 ? 'Primary' : 'Additional'} Insurance{index > 0 ? ` #${index + 1}` : ''}</h3>
-                    {index > 0 && (
-                      <button type="button" onClick={() => setForm(prev => ({ ...prev, insurances: prev.insurances.filter((_, i) => i !== index) }))} className="text-red-400 hover:text-red-600 text-xs font-medium">Remove</button>
-                    )}
-                  </div>
-                  {index === 0 && <p className="text-xs text-gray-400">Needed for scheduling appointments with new doctors. Stored securely.</p>}
-                  <div className="grid sm:grid-cols-2 gap-3">
-                    <input className={inputClass} value={ins.company} onChange={e => setForm(prev => ({ ...prev, insurances: prev.insurances.map((ins2, i) => i === index ? { ...ins2, company: e.target.value } : ins2) }))} placeholder="Insurance company (e.g. Aetna, Blue Cross)" />
-                    <input className={inputClass} value={ins.memberId} onChange={e => setForm(prev => ({ ...prev, insurances: prev.insurances.map((ins2, i) => i === index ? { ...ins2, memberId: e.target.value } : ins2) }))} placeholder="Member / Subscriber ID" />
-                  </div>
-                  <div className="grid sm:grid-cols-2 gap-3">
-                    <input className={inputClass} value={ins.groupNumber} onChange={e => setForm(prev => ({ ...prev, insurances: prev.insurances.map((ins2, i) => i === index ? { ...ins2, groupNumber: e.target.value } : ins2) }))} placeholder="Group number" />
-                    <input className={inputClass} value={ins.policyHolder} onChange={e => setForm(prev => ({ ...prev, insurances: prev.insurances.map((ins2, i) => i === index ? { ...ins2, policyHolder: e.target.value } : ins2) }))} placeholder="Policy holder name" />
-                  </div>
-                </div>
-              ))}
-              <button type="button" onClick={() => setForm(prev => ({ ...prev, insurances: [...prev.insurances, { company: "", memberId: "", groupNumber: "", policyHolder: "" }] }))} className="w-full border-2 border-dashed border-teal/30 text-teal rounded-xl py-3 text-sm font-medium hover:border-teal hover:bg-teal/5 transition-colors">
-                + Add Another Insurance
-              </button>
 
               <div className="flex gap-3">
                 <button onClick={() => setStep(0)} className="flex-1 border border-gray-200 text-navy py-3 rounded-full font-semibold hover:bg-gray-50">← Back</button>
@@ -612,17 +529,14 @@ export default function IntakePage() {
                 <div className="flex justify-between"><span className="text-gray-500">Check-In Time</span><span className="font-medium text-navy">{form.checkInTime} ({form.checkInDays.join(', ')})</span></div>
                 <div className="flex justify-between"><span className="text-gray-500">Routine Reminders</span><span className="font-medium text-navy">{form.medicationReminders.map(r => timeOptions.find(t => t.value === r.time)?.label).join(', ')}</span></div>
                 <div className="flex justify-between"><span className="text-gray-500">Family Contacts</span><span className="font-medium text-navy">{form.familyContacts.filter(c => c.name).length}</span></div>
-                {form.primaryDoctor && <div className="flex justify-between"><span className="text-gray-500">Primary Doctor</span><span className="font-medium text-navy">{form.primaryDoctor}</span></div>}
+                {form.primaryDoctor && <div className="flex justify-between"><span className="text-gray-500">Primary Provider Contact</span><span className="font-medium text-navy">{form.primaryDoctor}</span></div>}
                 {form.additionalDoctors.filter(d => d.name).map((doc, i) => (
-                  <div key={i} className="flex justify-between"><span className="text-gray-500">Doctor #{i + 2}</span><span className="font-medium text-navy">{doc.name}{doc.specialty ? ` (${doc.specialty})` : ''}</span></div>
+                  <div key={i} className="flex justify-between"><span className="text-gray-500">Provider Contact #{i + 2}</span><span className="font-medium text-navy">{doc.name}{doc.specialty ? ` (${doc.specialty})` : ''}</span></div>
                 ))}
                 {form.pharmacy && <div className="flex justify-between"><span className="text-gray-500">Primary Pharmacy</span><span className="font-medium text-navy">{form.pharmacy}</span></div>}
                 {form.additionalPharmacies.filter(p => p.name).map((pharm, i) => (
                   <div key={i} className="flex justify-between"><span className="text-gray-500">Pharmacy #{i + 2}</span><span className="font-medium text-navy">{pharm.name}</span></div>
                 ))}
-                {form.medications.filter(m => m.name).length > 0 && <div className="flex justify-between"><span className="text-gray-500">Medications</span><span className="font-medium text-navy text-right max-w-[60%]">{form.medications.filter(m => m.name).map(m => `${m.name}${m.dosage ? ' ' + m.dosage : ''}${m.frequency ? ', ' + m.frequency : ''}`).join(' · ')}</span></div>}
-                {form.conditions.filter(c => c.trim()).length > 0 && <div className="flex justify-between"><span className="text-gray-500">Conditions</span><span className="font-medium text-navy text-right max-w-[60%]">{form.conditions.filter(c => c.trim()).join(', ')}</span></div>}
-                {form.allergies.filter(a => a.trim()).length > 0 && <div className="flex justify-between"><span className="text-gray-500">Allergies</span><span className="font-medium text-navy text-right max-w-[60%]">{form.allergies.filter(a => a.trim()).join(', ')}</span></div>}
               </div>
 
               {/* Plan Selection */}
