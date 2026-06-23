@@ -1,3 +1,6 @@
+import Link from "next/link";
+import GoogleSignInButton from "@/components/GoogleSignInButton";
+
 const smsConsentText = "I agree to receive recurring automated SMS/text messages from KinCare360, operated by Son Healthcare Services LLC, about account/service notices and family coordination updates, including daily check-in summaries, family-approved routine reminders, appointment updates, family concern notifications, and time-sensitive non-medical family follow-up notices. Message frequency varies, up to 5 messages/day. Message and data rates may apply. Reply STOP to opt out, HELP for help. Consent is not a condition of purchase. View our";
 
 export default function SignupPage() {
@@ -5,9 +8,9 @@ export default function SignupPage() {
     <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <a href="/">
+          <Link href="/">
             <img src="/kincare360-logo.png" alt="KinCare360" className="h-28 w-auto mx-auto mb-6" />
-          </a>
+          </Link>
           <h1 className="text-2xl font-bold text-navy">Start Your Free Trial</h1>
           <p className="text-gray-500 mt-2 text-sm">Create your account to begin your 7-day free trial. No charge until day 8.</p>
         </div>
@@ -32,6 +35,17 @@ export default function SignupPage() {
         </section>
 
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 mt-6">
+          <GoogleSignInButton />
+
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-200"></div>
+            </div>
+            <div className="relative flex justify-center text-xs">
+              <span className="bg-white px-4 text-gray-400 uppercase tracking-wide">or continue with email</span>
+            </div>
+          </div>
+
           <form className="space-y-4" aria-label="KinCare360 signup form">
             <div>
               <label className="block text-sm font-medium text-navy mb-1.5">Full Name</label>

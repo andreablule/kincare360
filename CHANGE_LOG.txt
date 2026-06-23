@@ -1,3 +1,8 @@
+2026-06-23 EDT - Signup Google sign-in option
+- Added a reusable client-only Google sign-in button and placed it on `/signup` above the email signup form, matching the existing `/login` Google OAuth flow while keeping the signup page server-rendered for SMS consent review visibility.
+- Verified `npm run build` passed and inspected generated `/signup` HTML: Google button text, email divider, SMS consent section, Terms link, Privacy link, and unchecked checkbox markup remain present. Focused ESLint exits 0 with the pre-existing `<img>` optimization warning on the signup logo.
+- Deployed to Vercel production and aliased to https://www.kincare360.com after approval. Pushed to GitHub main.
+
 2026-06-23 EDT - Lily prospect-call script and partner-language safety update
 - Updated Lily's active Vapi runtime prompt and standalone prompt to include the full current date/year, preventing stale-year guesses during calls.
 - Changed prospective-customer flow so Lily explains KinCare360 with practical non-medical service examples first and only discusses pricing when asked about cost, plans, trial, or getting started.
