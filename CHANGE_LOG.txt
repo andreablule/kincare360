@@ -4,7 +4,7 @@
 - Changed forced referral sales language to a softer Partner Program flow that Lily only mentions when relevant; updated visible referral labels across footer/home/referral/partners copy and generated partner flyer/email copy.
 - Strengthened runtime guardrails against fall detection, emergency monitoring, medical supervision, medication compliance, guaranteed safety, or replacing 911/clinicians/caregivers/family judgment.
 - Verification: `npm run build` passed. Focused ESLint on touched files is still blocked by pre-existing `no-explicit-any`, `no-html-link-for-pages`, and `no-img-element` lint issues in the same files. Risk scan found no `2024`, no visible `Referral Program`, and no forced pricing/referral instructions; remaining risky phrases are guardrail/disclaimer text only.
-- No deployment, live calls, SMS, emails, or provider-side changes made.
+- Deployed to Vercel production and aliased to https://www.kincare360.com after approval; no live calls, SMS, emails, or provider-side settings changes made. Pushed to GitHub main.
 
 2026-06-19 EDT - Lily voice routed through Vapi/Telnyx
 - Recovered the existing valid Vapi key from Andrea-approved Mac archive search without printing the secret; old Vapi phone number read-back showed the previous Twilio-backed `+1 812 515 5252` line.
