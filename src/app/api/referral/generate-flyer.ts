@@ -1,4 +1,4 @@
-// Generates a printable HTML flyer for partner referral program
+// Generates a printable HTML flyer for the KinCare360 Partner Program
 export function generateFlyer(partnerName: string, referralCode: string, referralLink: string): string {
   return `<!DOCTYPE html>
 <html>
@@ -45,31 +45,31 @@ export function generateFlyer(partnerName: string, referralCode: string, referra
 <div class="page">
   <div class="header">
     <img src="https://kincare360.com/kincare360-logo.png" alt="KinCare360" class="logo" />
-    <div class="headline">Daily Wellness Calls<br/>for Your Aging Parent</div>
-    <div class="subline">AI-powered check-ins, family-approved routine reminders, and everyday coordination — so you can breathe.</div>
-    <div class="punch">"The call you don't make shouldn't be the one you regret."</div>
+    <div class="headline">Daily Family Check-In Calls<br/>for Your Aging Parent</div>
+    <div class="subline">Voice-first daily check-ins, family-approved routine reminders, and everyday coordination — no smartphone or app required.</div>
+    <div class="punch">Simple phone-based support for family updates, everyday routines, and peace of mind.</div>
   </div>
 
   <div class="features">
     <div class="feature">
       <div class="feature-icon">📞</div>
       <div class="feature-title">Daily Check-In Calls</div>
-      <div class="feature-desc">Lily calls your loved one every day to check on their wellbeing</div>
+      <div class="feature-desc">Lily can call your loved one every day for a non-medical family check-in</div>
     </div>
     <div class="feature">
       <div class="feature-icon">💊</div>
       <div class="feature-title">Routine Reminders</div>
-      <div class="feature-desc">Never miss a dose — automatic calls at scheduled times</div>
+      <div class="feature-desc">Family-approved reminders for meals, hydration, appointments, errands, or other routines</div>
     </div>
     <div class="feature">
       <div class="feature-icon">📅</div>
-      <div class="feature-title">Appointment Scheduling</div>
-      <div class="feature-desc">Lily calls doctors and books appointments for your parent</div>
+      <div class="feature-title">Everyday Coordination</div>
+      <div class="feature-desc">Lily helps organize details, reminders, and next steps so family stays informed</div>
     </div>
     <div class="feature">
       <div class="feature-icon">👨‍👩‍👧</div>
       <div class="feature-title">Family Dashboard</div>
-      <div class="feature-desc">See daily summaries, mood, and concerns — all in one place</div>
+      <div class="feature-desc">See daily summaries, routine notes, and family updates in one place</div>
     </div>
   </div>
 
@@ -94,7 +94,7 @@ export function generateFlyer(partnerName: string, referralCode: string, referra
   ${partnerName ? `<div class="partner-line">Referred by: ${partnerName}</div>` : ''}
 
   <div class="footer">
-    © 2026 Son Healthcare Services LLC, operating as KinCare360. KinCare360 is a non-medical care coordination service, not a substitute for emergency care.
+    © 2026 Son Healthcare Services LLC, operating as KinCare360. KinCare360 is a non-medical care coordination service, not emergency response, crisis counseling, medical care, or in-home care.
   </div>
 
   <!-- Tear-off tabs for bulletin boards -->

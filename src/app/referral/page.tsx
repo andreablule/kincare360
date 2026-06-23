@@ -49,9 +49,9 @@ export default function ReferralPage() {
           <a href="/">
             <img src="/kincare360-logo.png" alt="KinCare360" className="h-28 w-auto mx-auto mb-6" />
           </a>
-          <h1 className="text-2xl font-bold text-navy">Physician Referral Program</h1>
+          <h1 className="text-2xl font-bold text-navy">KinCare360 Partner Program</h1>
           <p className="text-gray-500 mt-2">
-            Earn $50 for every patient you refer to KinCare360.
+            Introduce families to KinCare360 responsibly and receive partner rewards for eligible new subscriptions.
           </p>
         </div>
 
@@ -62,12 +62,12 @@ export default function ReferralPage() {
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
               </svg>
             </div>
-            <h2 className="text-lg font-bold text-navy mb-2">Your Referral Code</h2>
+            <h2 className="text-lg font-bold text-navy mb-2">Your Partner Code</h2>
             <div className="bg-gray-50 rounded-xl px-6 py-4 mb-4">
               <p className="text-2xl font-mono font-bold text-teal">{result.code}</p>
             </div>
             <p className="text-sm text-gray-500 mb-4">
-              Share this link with your patients:
+              Share this link with families who may benefit from KinCare360:
             </p>
             <div className="bg-gray-50 rounded-xl px-4 py-3 mb-6">
               <p className="text-sm font-medium text-navy break-all">{result.link}</p>
@@ -76,16 +76,16 @@ export default function ReferralPage() {
               onClick={() => { navigator.clipboard.writeText(result.link); }}
               className="bg-teal text-white px-6 py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors text-sm"
             >
-              Copy Referral Link
+              Copy Partner Link
             </button>
             <p className="text-xs text-gray-400 mt-4">
-              You earn $50 for each patient who signs up using your code.
+              Partner rewards apply for eligible new subscriptions using your code.
             </p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
             <p className="text-sm text-gray-600 mb-2">
-              Sign up below to get your unique referral code. When your patients sign up using your code, you earn $50 per referral.
+              Sign up below to get your unique partner code. Share KinCare360 with families who may benefit from non-medical daily check-ins and everyday coordination.
             </p>
 
             {error && (
@@ -142,7 +142,7 @@ export default function ReferralPage() {
               disabled={loading || !name}
               className="w-full bg-teal text-white py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors disabled:opacity-40"
             >
-              {loading ? "Creating..." : "Get My Referral Code"}
+              {loading ? "Creating..." : "Get My Partner Code"}
             </button>
           </form>
         )}

@@ -1,3 +1,11 @@
+2026-06-23 EDT - Lily prospect-call script and partner-language safety update
+- Updated Lily's active Vapi runtime prompt and standalone prompt to include the full current date/year, preventing stale-year guesses during calls.
+- Changed prospective-customer flow so Lily explains KinCare360 with practical non-medical service examples first and only discusses pricing when asked about cost, plans, trial, or getting started.
+- Changed forced referral sales language to a softer Partner Program flow that Lily only mentions when relevant; updated visible referral labels across footer/home/referral/partners copy and generated partner flyer/email copy.
+- Strengthened runtime guardrails against fall detection, emergency monitoring, medical supervision, medication compliance, guaranteed safety, or replacing 911/clinicians/caregivers/family judgment.
+- Verification: `npm run build` passed. Focused ESLint on touched files is still blocked by pre-existing `no-explicit-any`, `no-html-link-for-pages`, and `no-img-element` lint issues in the same files. Risk scan found no `2024`, no visible `Referral Program`, and no forced pricing/referral instructions; remaining risky phrases are guardrail/disclaimer text only.
+- No deployment, live calls, SMS, emails, or provider-side changes made.
+
 2026-06-19 EDT - Lily voice routed through Vapi/Telnyx
 - Recovered the existing valid Vapi key from Andrea-approved Mac archive search without printing the secret; old Vapi phone number read-back showed the previous Twilio-backed `+1 812 515 5252` line.
 - Created Vapi Telnyx credential `a11643a7-3430-4239-8ede-bde57d20b318` and imported/connected `+1 272 766 9090` as Vapi phone number `a684dc3a-81ec-441b-971e-0bf58a9746d3` named `KinCare360 Main Line - Lily Telnyx`.

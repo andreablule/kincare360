@@ -131,10 +131,10 @@ function PartnersContent() {
             <img src="/kincare360-logo.png" alt="KinCare360" className="h-28 w-auto mx-auto mb-6" />
           </a>
           <h1 className="text-2xl md:text-3xl font-bold text-navy">
-            Earn $50 for Every Referral
+            Partner With KinCare360
           </h1>
           <p className="text-gray-500 mt-2">
-            Doctors, agencies, families, influencers — everyone qualifies. No limits.
+            For families, professionals, agencies, and community partners who want to share KinCare360 responsibly.
           </p>
           <div className="mt-6 flex items-center justify-center gap-3 bg-teal/5 rounded-xl px-5 py-4">
             <img
@@ -179,7 +179,7 @@ function PartnersContent() {
                 onClick={copyLink}
                 className="bg-teal text-white px-6 py-3 rounded-full font-semibold hover:bg-teal-dark transition-colors text-sm w-full"
               >
-                {copied ? '✅ Copied!' : 'Copy Referral Link'}
+                {copied ? '✅ Copied!' : 'Copy Partner Link'}
               </button>
             </div>
 
@@ -301,7 +301,7 @@ ${result.link}
             <div className="text-center mt-4">
               <button
                 onClick={async () => {
-                  if (!confirm("Are you sure you want to leave the referral program? Your code will be deactivated.")) return;
+                  if (!confirm("Are you sure you want to leave the partner program? Your code will be deactivated.")) return;
                   try {
                     const res = await fetch("/api/referral", {
                       method: "DELETE",
@@ -311,7 +311,7 @@ ${result.link}
                     if (res.ok) {
                       setResult(null);
                       setStats(null);
-                      alert("You have been removed from the referral program.");
+                      alert("You have been removed from the partner program.");
                     } else {
                       setError("Failed to cancel. Please email hello@kincare360.com");
                     }
@@ -321,7 +321,7 @@ ${result.link}
                 }}
                 className="text-xs text-gray-400 hover:text-red-500 underline transition-colors"
               >
-                Leave the referral program
+                Leave the partner program
               </button>
             </div>
           </div>
@@ -380,7 +380,7 @@ ${result.link}
 
           <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
             <p className="text-sm text-gray-600 mb-2">
-              Sign up below to get your unique partner referral code. Join the KinCare360 partner program and receive referral rewards for eligible new subscriptions.
+              Sign up below to get your unique partner code. Join the KinCare360 Partner Program and receive rewards for eligible new subscriptions you introduce responsibly.
             </p>
 
             {error && (
@@ -479,9 +479,9 @@ ${result.link}
         <div className="mt-10 space-y-4">
           <h2 className="text-xl font-bold text-navy text-center">Frequently Asked Questions</h2>
           {[
-            { q: "How does it work?", a: "Sign up above to get your unique referral code and link. Share it with anyone who could benefit from KinCare360. When someone subscribes using your link, you earn $50 — paid directly to your connected bank account." },
-            { q: "When do I get paid?", a: "You earn $50 for each referral that converts to a paid subscription (after their 7-day free trial). Payouts are processed automatically once you connect your bank account via Stripe." },
-            { q: "Is there a limit?", a: "No limits whatsoever. Refer 1 person or 1,000 — you earn $50 for every single one. The more you share, the more you earn." },
+            { q: "How does it work?", a: "Sign up above to get your unique partner code and link. Share it with families who could benefit from KinCare360. When someone subscribes using your link, eligible partner rewards are paid directly to your connected bank account." },
+            { q: "When do I get paid?", a: "Partner rewards apply for eligible introductions that convert to a paid subscription after the 7-day free trial. Payouts are processed automatically once you connect your bank account via Stripe." },
+            { q: "Is there a limit?", a: "There is no set limit, but please share KinCare360 responsibly with families who may benefit from non-medical daily check-ins and everyday coordination." },
           ].map((faq, i) => (
             <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
               <h3 className="text-sm font-semibold text-navy mb-1">{faq.q}</h3>

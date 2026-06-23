@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
     const link = `https://kincare360.com/register?ref=${referral.code}`;
     const dashLink = `https://kincare360.com/partners?code=${referral.code}`;
 
-    // Referral-program SMS is intentionally disabled until a dedicated referral SMS consent
+    // Partner-program SMS is intentionally disabled until a dedicated partner SMS consent
     // checkbox is added. This keeps the Telnyx A2P campaign limited to family/account
     // coordination messages that match the public consent flow.
     if (phone) {
@@ -85,10 +85,10 @@ export async function POST(req: NextRequest) {
         await transporter.sendMail({
           from: '"KinCare360 Partners" <hello@kincare360.com>',
           to: email,
-          subject: `Welcome to the KinCare360 Referral Program, ${firstName}! 🎉`,
+          subject: `Welcome to the KinCare360 Partner Program, ${firstName}! 🎉`,
           attachments: [
             {
-              filename: 'KinCare360-Referral-Flyer.html',
+              filename: 'KinCare360-Partner-Flyer.html',
               content: flyerHtml,
               contentType: 'text/html',
             },
@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
               <h1 style="color: #0F2147; font-size: 24px;">You're in, ${firstName}!</h1>
 
               <p style="color: #555; font-size: 16px; line-height: 1.6;">
-                Your referral partner code is:
+                Your partner code is:
               </p>
 
               <div style="background: #f0faf9; border: 2px solid #0EA5A0; padding: 20px; margin: 20px 0; border-radius: 12px; text-align: center;">
@@ -108,7 +108,7 @@ export async function POST(req: NextRequest) {
               </div>
 
               <p style="color: #555; font-size: 16px; line-height: 1.6;">
-                Share this link with anyone who could use daily wellness check-ins for their aging parent:
+                Share this link with families who may benefit from non-medical daily check-ins and everyday coordination for an aging parent:
               </p>
 
               <div style="background: #f5f5f5; padding: 12px 16px; border-radius: 8px; margin: 16px 0;">
@@ -129,7 +129,7 @@ export async function POST(req: NextRequest) {
 
               <h2 style="color: #0F2147; font-size: 18px; margin-top: 30px;">🖨️ Printable Flyer Attached</h2>
               <p style="color: #555; font-size: 14px; line-height: 1.6;">
-                We've attached a ready-to-print flyer with your referral code. Open the attached HTML file in your browser, then print it. Perfect for doctor's offices, waiting rooms, community boards, home care agencies, or anywhere families gather.
+                We've attached a ready-to-print flyer with your referral code. Open the attached HTML file in your browser, then print it. Designed for community boards, offices, agencies, and places where families may look for non-medical elder-care coordination support.
               </p>
 
               <h2 style="color: #0F2147; font-size: 18px; margin-top: 30px;">📱 Ready-to-Post on Social Media</h2>
